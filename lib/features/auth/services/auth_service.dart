@@ -202,26 +202,35 @@ class AuthService {
     if (user == null) return [];
 
     try {
-      // Daha önce aksiyon alınmış (like/dislike) kullanıcıları çek
+      // 1. Swipe geçmişini al
       final swipedIdsSnapshot = await _firestore
           .collection('users')
           .doc(user.uid)
           .collection('swipes')
           .get();
       
-      final swipedIds = swipedIdsSnapshot.docs.map((doc) => doc.id).toList();
-      swipedIds.add(user.uid); // Kendini de ekle
+      final Set<String> swipedIds = swipedIdsSnapshot.docs.map((doc) => doc.id).toSet();
+      swipedIds.add(user.uid); 
 
+      // 2. Tüm kullanıcıları (en son aktif olanlar öncelikli) çek
       final snapshot = await _firestore
           .collection('users')
-          .where('uid', whereNotIn: swipedIds.isEmpty ? [''] : swipedIds.take(10).toList()) // Firestore 'not-in' limit: 10
-          .limit(50)
+          //.orderBy('lastActive', descending: true) // TODO: Index oluşturulursa açılabilir
+          .limit(50) 
           .get();
 
-      return snapshot.docs
+      // 3. Filtrele
+      final users = snapshot.docs
           .map((doc) => doc.data())
-          .where((data) => !swipedIds.contains(data['uid'])) // 10'dan fazlaysa manuel filtrele
+          .where((data) {
+             final uid = data['uid'];
+             if (uid == null) return false;
+             return !swipedIds.contains(uid);
+          })
           .toList();
+
+      print("DEBUG: Fetched ${users.length} users.");
+      return users;
     } catch (e) {
       print("Error fetching users: $e");
       return [];
