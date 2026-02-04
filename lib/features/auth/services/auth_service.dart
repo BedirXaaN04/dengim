@@ -267,13 +267,37 @@ class AuthService {
       if (matchDoc.exists && matchDoc.data()?['type'] == 'like') {
         // EŞLEŞME VAR!
         await _createMatch(user.uid, targetUserId);
+        
+        // Bildirimler (Match)
+        await _sendNotification(targetUserId, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var.");
+        await _sendNotification(user.uid, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var.");
+
         return true;
+      } else {
+        // Bildirim (Like)
+        await _sendNotification(targetUserId, type: 'like', title: "Biri seni beğendi 💖", body: "Seni beğenenleri görmek için hemen tıkla.");
       }
 
       return false;
     } catch (e) {
       print("Swipe Error: $e");
       return false;
+    }
+  }
+
+  // Bildirim Yardımcısı
+  Future<void> _sendNotification(String targetUid, {required String type, required String title, required String body}) async {
+    try {
+      await _firestore.collection('users').doc(targetUid).collection('notifications').add({
+        'type': type,
+        'title': title,
+        'body': body,
+        'fromUid': currentUser?.uid,
+        'timestamp': FieldValue.serverTimestamp(),
+        'read': false,
+      });
+    } catch (e) {
+      print("Notification Error: $e");
     }
   }
 
