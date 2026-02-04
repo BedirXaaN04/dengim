@@ -1,0 +1,70 @@
+name: dengim
+description: DENGİM - Modern Premium Tanışma Uygulaması
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+  
+  # Veri Saklama
+  shared_preferences: ^2.2.2
+
+  # Firebase
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  firebase_storage: ^12.3.2
+  google_sign_in: ^6.2.1
+  image_picker: ^1.0.7
+  
+  # Ödeme Sistemi (RevenueCat)
+  purchases_flutter: ^6.25.0
+  
+  # Reklamlar (Admob)
+  google_mobile_ads: ^5.0.0
+  
+  # Ücretsiz Harita - OpenStreetMap (API key gerektirmez!)
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+  geolocator: ^11.0.0
+  
+  # Swipe Kartları
+  flutter_card_swiper: ^7.0.0
+  
+  # Animasyonlar
+  shimmer: ^3.0.0
+  confetti: ^0.7.0
+  lottie: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/icon.png"
+    background_color: "#hex_code"
+    theme_color: "#hex_code"
+  windows:
+    generate: true
+    image_path: "assets/icon.png"
+    icon_size: 48 # min:48, max:256, default: 48
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DENGIM Onboarding 1 - Kalite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3713ec",
+                        "background-dark": "#0F1115",
+                        "muted-grey": "#8E8E93",
+                        "gold": "#D4AF37"
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "poppins": ["Poppins", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-background-dark text-white font-display overflow-hidden;
+            }
+        }
+        .abstract-illustration {
+            position: relative;
+            width: 280px;
+            height: 280px;
+        }
+        .ring {
+            position: absolute;
+            border: 1px solid rgba(55, 19, 236, 0.4);
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+        }
+        .ring-1 {
+            top: 20%;
+            left: 10%;
+        }
+        .ring-2 {
+            bottom: 20%;
+            right: 10%;
+            border-color: #D4AF37;
+            opacity: 0.6;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex items-center justify-center min-h-screen">
+<div class="relative flex h-[844px] w-[390px] flex-col overflow-hidden bg-background-dark shadow-2xl">
+<header class="pt-14 px-8 flex justify-between items-center">
+<div class="flex gap-1.5 w-full">
+<div class="h-0.5 flex-1 bg-primary rounded-full"></div>
+<div class="h-0.5 flex-1 bg-white/10 rounded-full"></div>
+<div class="h-0.5 flex-1 bg-white/10 rounded-full"></div>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+<div class="abstract-illustration mb-16 flex items-center justify-center">
+<svg fill="none" height="240" viewBox="0 0 240 240" width="240" xmlns="http://www.w3.org/2000/svg">
+<circle cx="100" cy="120" r="70" stroke="#3713ec" stroke-width="0.5"></circle>
+<circle cx="140" cy="120" r="70" stroke="#D4AF37" stroke-width="0.5"></circle>
+<path d="M120 160C120 160 170 120 170 85C170 65 155 55 140 55C130 55 120 65 120 65C120 65 110 55 100 55C85 55 70 65 70 85C70 120 120 160 120 160Z" opacity="0.3" stroke="#3713ec" stroke-width="1"></path>
+</svg>
+</div>
+<div class="space-y-4">
+<h1 class="text-3xl font-poppins font-bold tracking-tight text-white">
+                    Sadece En İyiler
+                </h1>
+<p class="text-muted-grey text-lg font-light leading-relaxed max-w-[260px] mx-auto">
+                    Seçkin bir topluluğun parçası olun.
+                </p>
+</div>
+</main>
+<footer class="p-8 pb-14">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-poppins font-semibold py-5 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-primary/20 text-lg">
+                İleri
+            </button>
+<div class="mt-8 flex justify-center">
+<p class="text-[10px] uppercase tracking-[0.3em] text-white/20 font-bold">DENGIM PREMIUM</p>
+</div>
+</footer>
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full"></div>
+</div>
+
+</body></html>

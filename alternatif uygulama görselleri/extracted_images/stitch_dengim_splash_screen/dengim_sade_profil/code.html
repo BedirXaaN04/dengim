@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17b0cf",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#0F1115",
+                        "nav-bg": "rgba(15, 17, 21, 0.85)"
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0F1115;
+        }
+        .soft-fade {
+            background: linear-gradient(to bottom, rgba(15, 17, 21, 0) 40%, rgba(15, 17, 21, 0.6) 70%, rgba(15, 17, 21, 1) 100%);
+        }
+        .nav-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white font-display overflow-x-hidden">
+<div class="relative flex h-screen w-full flex-col overflow-x-hidden max-w-[430px] mx-auto bg-background-dark border-x border-white/5 shadow-2xl">
+<div class="flex-1 overflow-y-auto no-scrollbar pb-32">
+<div class="relative">
+<div class="bg-cover bg-center flex flex-col justify-end h-[560px] w-full" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCTpTMfjo-JYQhl1GupmbLqMNhqrCcUZfyMkaQ2NsOkMNPno8WInOPE0BQSe-iPvMQS8v1L5WW_RxCEHdJSlUTc5nat90GKrGXw3TraiOHiQ6EYdYRqrUd8SYNWsoLE80GHKqYqKBWZRp-GQj1OBIsVAjq-QehM0qgYdqnYB1P03Tmp6GKYUgALoJPLa4BDosH_B0jmt07xSr3b1ItnodzbTUp0JHd4ETJXqK9gd05J8te7zl1c1l6sE9dyOp1CZRu1_bXVFxk4oDc");'>
+<div class="absolute inset-0 soft-fade"></div>
+<div class="absolute top-0 left-0 right-0 z-20 flex items-center p-6 justify-between">
+<div class="text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10">
+<span class="material-symbols-outlined text-xl">settings</span>
+</div>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white">
+<span class="material-symbols-outlined text-xl text-white/90">edit</span>
+</button>
+</div>
+</div>
+<div class="relative z-10 flex justify-center gap-1.5 pb-8">
+<div class="w-8 h-1 rounded-full bg-white"></div>
+<div class="w-1.5 h-1 rounded-full bg-white/30"></div>
+<div class="w-1.5 h-1 rounded-full bg-white/30"></div>
+</div>
+</div>
+</div>
+<div class="px-6 -mt-4 relative z-10">
+<div class="flex w-full flex-col gap-1 items-start">
+<div class="flex items-center gap-3">
+<h1 class="text-white text-3xl font-semibold tracking-tight">Kaan, 32</h1>
+<span class="material-symbols-outlined text-primary fill-1">verified</span>
+</div>
+<div class="flex items-center gap-2 text-white/50 text-sm font-light">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Nişantaşı, İstanbul</span>
+</div>
+</div>
+<div class="pt-10">
+<h3 class="text-white/40 text-[10px] font-bold uppercase tracking-[0.25em] mb-3">Hakkında</h3>
+<p class="text-white/90 text-base font-light leading-relaxed">
+                        Mimari ve minimalizm tutkunu. Sessiz lüksü ve rafine detayları tercih ederim. Şehrin gürültüsünden uzak, sakin mekanlar favorim.
+                    </p>
+</div>
+<div class="pt-10 flex flex-col">
+<h3 class="text-white/40 text-[10px] font-bold uppercase tracking-[0.25em] mb-2">Detaylar</h3>
+<div class="flex flex-col">
+<div class="flex items-center justify-between py-4 border-b border-white/5">
+<span class="text-white/40 font-light text-sm">Meslek</span>
+<span class="text-white font-normal">Kreatif Direktör</span>
+</div>
+<div class="flex items-center justify-between py-4 border-b border-white/5">
+<span class="text-white/40 font-light text-sm">Eğitim</span>
+<span class="text-white font-normal">Domus Academy</span>
+</div>
+<div class="flex items-center justify-between py-4 border-b border-white/5">
+<span class="text-white/40 font-light text-sm">Boy</span>
+<span class="text-white font-normal">188 cm</span>
+</div>
+<div class="flex items-center justify-between py-4">
+<span class="text-white/40 font-light text-sm">İlgi Alanları</span>
+<span class="text-white font-normal">Jazz, Minimal Sanat, Mimari</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 mt-12">
+<button class="w-full h-14 bg-white/5 text-white/90 border border-white/10 text-sm font-medium rounded-2xl flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">share</span>
+<span>Profili Paylaş</span>
+</button>
+<button class="w-full h-14 bg-red-500/5 text-red-400 border border-red-500/10 text-sm font-medium rounded-2xl flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">logout</span>
+<span>Çıkış Yap</span>
+</button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 px-6 pb-8 pt-4">
+<div class="nav-blur bg-nav-bg border border-white/10 rounded-[2rem] flex items-center justify-between px-2 py-2 shadow-2xl">
+<a class="flex flex-col items-center justify-center size-14 text-white/40" href="#">
+<span class="material-symbols-outlined text-[28px]">explore</span>
+</a>
+<a class="flex flex-col items-center justify-center size-14 text-white/40" href="#">
+<span class="material-symbols-outlined text-[28px]">chat_bubble</span>
+</a>
+<a class="flex flex-col items-center justify-center size-14 text-white/40" href="#">
+<span class="material-symbols-outlined text-[28px]">favorite</span>
+</a>
+<a class="flex flex-col items-center justify-center size-14 bg-white/10 rounded-full text-white" href="#">
+<span class="material-symbols-outlined text-[28px] fill-1">person</span>
+</a>
+</div>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366F1",
+                        "accent-gold": "#D4AF37",
+                        "charcoal": "#1C1F26",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0F1115",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2.25rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-input {
+            background: rgba(28, 31, 38, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary/30">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl">
+<!-- TopAppBar -->
+<div class="sticky top-0 z-20 flex items-center bg-background-dark/80 backdrop-blur-md px-4 py-3 justify-between border-b border-white/5">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center text-white/70">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-accent-gold/40 ring-offset-2 ring-offset-background-dark" data-alt="Premium profile picture of a young woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCkjq0v9OAhrlux_4BaWjZGGtqMp6IqDg-w8dAy0KLbZQkzpvpn61BpE74KRLR4uZWpF4yW4p_xw3vaVWZzuPieC2aCPwiVZfz2gB0RJIeAQazKRnU2LxoQCOGidYNSHeZi10j-Ags-bAMCpYZkGkeBv7pEXbftOWouHB-sOZJgc7p4parV2mHPCevN1ujNBdJ2A98Mcfiv3zwJUJtMpJyHVxKv4DIzJqtJE5I-TMCQQATZ7LRyWcsQTpN6a-F-e0sI5k5U_BCGlHg");'>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-accent-gold rounded-full border-2 border-background-dark"></div>
+</div>
+<div class="flex flex-col">
+<h2 class="text-white text-base font-bold leading-tight tracking-tight">Selin</h2>
+<span class="text-[11px] text-accent-gold font-medium uppercase tracking-wider">Online</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-white/70 hover:text-white transition-colors">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<button class="text-white/70 hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-6">
+<!-- Date Separator -->
+<div class="flex justify-center">
+<span class="text-[11px] text-white/30 font-semibold uppercase tracking-[0.2em] bg-white/5 px-3 py-1 rounded-full">Bugün</span>
+</div>
+<!-- Received Message -->
+<div class="flex items-end gap-2 max-w-[85%]">
+<div class="flex flex-col gap-1 items-start">
+<div class="text-[15px] font-normal leading-relaxed rounded-xl rounded-bl-none px-4 py-3 bg-charcoal text-white shadow-sm border border-white/5">
+                        Selam! Profilindeki o manzara fotoğrafı gerçekten büyüleyici, neresi orası? 🏔️
+                    </div>
+<p class="text-white/30 text-[10px] ml-1">14:22</p>
+</div>
+</div>
+<!-- Sent Message -->
+<div class="flex items-end gap-2 justify-end self-end max-w-[85%]">
+<div class="flex flex-col gap-1 items-end">
+<div class="text-[15px] font-normal leading-relaxed rounded-xl rounded-br-none px-4 py-3 bg-primary text-white shadow-lg shadow-primary/20">
+                        Teşekkürler! Geçen yaz Kapadokya seyahatimden bir kare. Gün doğumu balondan gerçekten harika görünüyor.
+                    </div>
+<div class="flex items-center gap-1 mr-1">
+<p class="text-white/30 text-[10px]">14:25</p>
+<span class="material-symbols-outlined text-[14px] text-accent-gold" style="font-variation-settings: 'FILL' 1">done_all</span>
+</div>
+</div>
+</div>
+<!-- Received Message -->
+<div class="flex items-end gap-2 max-w-[85%]">
+<div class="flex flex-col gap-1 items-start">
+<div class="text-[15px] font-normal leading-relaxed rounded-xl rounded-bl-none px-4 py-3 bg-charcoal text-white shadow-sm border border-white/5">
+                        Harika bir seçim! Ben de gitmeyi planlıyordum. Hangi mevsimde gitmemi önerirsin?
+                    </div>
+<p class="text-white/30 text-[10px] ml-1">14:26</p>
+</div>
+</div>
+<!-- Sent Message -->
+<div class="flex items-end gap-2 justify-end self-end max-w-[85%]">
+<div class="flex flex-col gap-1 items-end">
+<div class="text-[15px] font-normal leading-relaxed rounded-xl rounded-br-none px-4 py-3 bg-primary text-white shadow-lg shadow-primary/20">
+                        Kesinlikle sonbahar derim! Hava ne çok sıcak ne çok soğuk oluyor, renkler ise tam bir şölen.
+                    </div>
+<div class="flex items-center gap-1 mr-1">
+<p class="text-white/30 text-[10px]">14:28</p>
+<span class="material-symbols-outlined text-[14px] text-accent-gold" style="font-variation-settings: 'FILL' 1">done_all</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Composer / Input Area -->
+<div class="p-4 pb-8 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent">
+<div class="glass-input rounded-full flex items-center px-2 py-2 gap-2">
+<button class="flex items-center justify-center size-10 rounded-full text-accent-gold hover:bg-white/5 transition-all">
+<span class="material-symbols-outlined text-[24px]">add_circle</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder:text-white/30 text-[15px] py-2 px-1" placeholder="Mesajınızı buraya yazın..." type="text"/>
+<button class="flex items-center justify-center size-10 rounded-full bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</div>
+<!-- Safe Area Indicator (iOS) -->
+<div class="h-1 w-32 bg-white/10 rounded-full mx-auto mb-2 shrink-0"></div>
+</div>
+</body></html>

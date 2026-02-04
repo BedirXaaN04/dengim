@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366F1",
+                        "gold": "#D4AF37",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0F1115",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Manrope", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #0F1115;
+        }
+        .poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white antialiased min-h-screen">
+<!-- TopAppBar -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 justify-between border-b border-white/5">
+<div class="text-white flex size-12 shrink-0 items-center cursor-pointer" data-icon="arrow_back_ios">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-white text-lg poppins font-semibold leading-tight tracking-tight flex-1 text-center">Profili Düzenle</h2>
+<div class="flex w-12 items-center justify-end">
+<p class="text-primary text-base font-bold leading-normal tracking-wide cursor-pointer">Bitti</p>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex flex-col w-full max-w-md mx-auto pb-10">
+<!-- ProfileHeader -->
+<div class="flex p-6 @container">
+<div class="flex w-full flex-col gap-6 items-center">
+<div class="relative group">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-36 w-36 border-2 border-white/10" data-alt="Professional studio portrait of a sophisticated person" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCUQiVdbJi-d-evm_q1bkkHKYDEdsYnofMFIrr0Ib9y6UdR_8Zy_WYKX0tLS1_i8IJnBJx0qbfbfFLMEnlo8jZ2f4irEzkrhAf80_Y_4FW0eZJ4CwbWsIKF16IgmE8PXGYK7WZjwao6XigdfsPboxnmdZCp_C6Mle74TnfnLC8-Hit6b81hNpfjPEpQltEwMTtroRDMIne1ZLF0oAykGzIQD7eyDukTaXE5XeKJJfrjSjkxXH0XqcYFiRKktyhrGc9MqFYEByMukEA");'>
+</div>
+<div class="absolute bottom-0 right-0 bg-primary p-2 rounded-full border-4 border-background-dark">
+<span class="material-symbols-outlined text-white text-sm">photo_camera</span>
+</div>
+</div>
+<p class="text-white/60 text-sm font-medium poppins tracking-widest uppercase">Fotoğrafı Güncelle</p>
+</div>
+</div>
+<!-- SectionHeader: Basic Info -->
+<div class="px-6 pt-4">
+<h3 class="text-white/40 text-xs font-bold poppins uppercase tracking-[0.2em] mb-2">Temel Bilgiler</h3>
+</div>
+<!-- Basic Info Fields -->
+<div class="space-y-1 px-2">
+<!-- TextField: Name -->
+<div class="flex flex-wrap items-end gap-4 px-4 py-3">
+<label class="flex flex-col min-w-40 flex-1">
+<p class="text-white/80 text-sm font-medium poppins pb-2">Ad Soyad</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-white/10 bg-white/5 focus:border-primary/50 h-14 placeholder:text-white/20 p-[15px] text-lg font-medium poppins" value="Arda Yılmaz"/>
+</label>
+</div>
+<!-- TextField: Job -->
+<div class="flex flex-wrap items-end gap-4 px-4 py-3">
+<label class="flex flex-col min-w-40 flex-1">
+<p class="text-white/80 text-sm font-medium poppins pb-2">Meslek</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-white/10 bg-white/5 focus:border-primary/50 h-14 placeholder:text-white/20 p-[15px] text-lg font-medium poppins" value="Finans Direktörü"/>
+</label>
+</div>
+<!-- TextField: Education -->
+<div class="flex flex-wrap items-end gap-4 px-4 py-3">
+<label class="flex flex-col min-w-40 flex-1">
+<p class="text-white/80 text-sm font-medium poppins pb-2">Eğitim</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-white/10 bg-white/5 focus:border-primary/50 h-14 placeholder:text-white/20 p-[15px] text-lg font-medium poppins" value="Boğaziçi Üniversitesi, MBA"/>
+</label>
+</div>
+</div>
+<!-- SectionHeader: Interests -->
+<div class="px-6 pt-8 flex justify-between items-end">
+<h3 class="text-white/40 text-xs font-bold poppins uppercase tracking-[0.2em]">İlgi Alanları</h3>
+<button class="text-primary text-sm font-bold poppins">Düzenle</button>
+</div>
+<!-- Selected Tags -->
+<div class="flex flex-wrap gap-2 px-6 py-4">
+<div class="flex items-center gap-1.5 bg-primary px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-[18px]">flight</span>
+<span class="text-white text-sm font-semibold poppins">Seyahat</span>
+</div>
+<div class="flex items-center gap-1.5 bg-primary px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span class="text-white text-sm font-semibold poppins">Finans</span>
+</div>
+<div class="flex items-center gap-1.5 bg-primary px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-[18px]">piano</span>
+<span class="text-white text-sm font-semibold poppins">Jazz</span>
+</div>
+<div class="flex items-center gap-1.5 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-white/40 text-[18px]">sports_tennis</span>
+<span class="text-white/60 text-sm font-medium poppins">Tenis</span>
+</div>
+<div class="flex items-center gap-1.5 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-white/40 text-[18px]">architecture</span>
+<span class="text-white/60 text-sm font-medium poppins">Mimari</span>
+</div>
+</div>
+<!-- Premium Interest Selection Grid (The "Düzenle" content rendered inline for this view) -->
+<div class="px-6 mt-6">
+<div class="bg-white/5 rounded-xl p-6 border border-white/5">
+<p class="text-white/90 text-sm font-semibold poppins mb-6">Premium Seçimler</p>
+<div class="grid grid-cols-2 gap-4">
+<!-- Interest Item -->
+<div class="flex flex-col items-center gap-3 p-4 bg-background-dark/50 border border-gold/30 rounded-xl">
+<div class="size-10 flex items-center justify-center bg-gold/10 rounded-full">
+<span class="material-symbols-outlined text-gold">travel_explore</span>
+</div>
+<span class="text-white text-xs font-bold poppins uppercase tracking-wider">Travel</span>
+</div>
+<!-- Interest Item -->
+<div class="flex flex-col items-center gap-3 p-4 bg-background-dark/50 border border-white/5 rounded-xl">
+<div class="size-10 flex items-center justify-center bg-white/5 rounded-full">
+<span class="material-symbols-outlined text-white/60">theater_comedy</span>
+</div>
+<span class="text-white/60 text-xs font-bold poppins uppercase tracking-wider">Arts</span>
+</div>
+<!-- Interest Item -->
+<div class="flex flex-col items-center gap-3 p-4 bg-background-dark/50 border border-gold/30 rounded-xl">
+<div class="size-10 flex items-center justify-center bg-gold/10 rounded-full">
+<span class="material-symbols-outlined text-gold">restaurant</span>
+</div>
+<span class="text-white text-xs font-bold poppins uppercase tracking-wider">Fine Dining</span>
+</div>
+<!-- Interest Item -->
+<div class="flex flex-col items-center gap-3 p-4 bg-background-dark/50 border border-white/5 rounded-xl">
+<div class="size-10 flex items-center justify-center bg-white/5 rounded-full">
+<span class="material-symbols-outlined text-white/60">sailing</span>
+</div>
+<span class="text-white/60 text-xs font-bold poppins uppercase tracking-wider">Yachting</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Delete Profile Option (Subtle) -->
+<div class="mt-12 px-6 flex justify-center">
+<button class="text-white/20 text-xs font-bold poppins uppercase tracking-widest py-4">Hesabı Dondur veya Sil</button>
+</div>
+</div>
+</body></html>

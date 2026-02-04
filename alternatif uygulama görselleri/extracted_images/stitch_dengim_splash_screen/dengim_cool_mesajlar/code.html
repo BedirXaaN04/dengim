@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f9d406", // Gold for highlights
+                        "indigo-accent": "#6366f1", // Indigo for highlighted nav
+                        "background-dark": "#0F1115", // Deep Dark as requested
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #0F1115;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .nav-active .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }.hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white font-display">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-[430px] mx-auto bg-background-dark border-x border-white/5">
+<div class="sticky top-0 z-50 flex items-center bg-background-dark/80 backdrop-blur-xl px-6 py-5 justify-between">
+<h2 class="text-white text-2xl font-bold tracking-tight">Mesajlar</h2>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-full h-10 w-10 bg-white/5 text-white">
+<span class="material-symbols-outlined text-2xl">search</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto hide-scrollbar px-4 pb-32">
+<div class="flex items-center gap-4 px-2 py-5 mb-2 transition-opacity active:opacity-60">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 border border-white/10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAk28sk0hZ6UkqM4uLSaBkyLHmAEFM4bXwBBEI5_2LAVTqiRL9KghH-J8CoHE4wZoM33ZmCAnHXT0xbKq6fBqyn2-uqbUtRUA0jj-t_dYhm0dZZIAepdrTQNb98NJTZ_O45oJpoKpu8KT_a4ee0Z3kj939wS7eZf9Q9pOo0r6PGuFYyZnVn2P7xURKRu4XvVWaavRwy3meKvFaGkPHptvuhl1EIBnW-TtU8W_i_ij7CqZhDK5-Whao_xNLQ6PfgiuAtUxgjUWsC91Y");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center gap-1">
+<div class="flex justify-between items-center">
+<p class="text-white text-[17px] font-bold leading-none tracking-tight">Aylin Demir</p>
+<p class="text-gray-600 text-[12px] font-medium">14:42</p>
+</div>
+<div class="flex justify-between items-center gap-2">
+<p class="text-gray-400 text-[14px] font-normal leading-tight truncate">Harika bir akşam geçirdim, teşekkürler.</p>
+<div class="size-1.5 rounded-full bg-primary shrink-0"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 px-2 py-5 mb-2 transition-opacity active:opacity-60">
+<div class="shrink-0">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 border border-white/10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAk8EfS4Nx3tvuloaD9IGhVYcswpveaWSHxzRxbGfqQzw122iH0Sqml5HOwxFahp2E9eFVlZdixmapkoeZPOoZs8ggVH0yzotmaKjqu3u8O_uQv2kSpgGryyXBD4ZqGq0PkYzKmwUVDlkom6qfDNeim5YoAHUNQSGYY1-M4884AOkHsTa2JdCG43IEKbbGeDsh3eP2juyjDkLfSiNgRORCMwp_deSVcv2-gERxsRQxU6kopk4T01_u2TnKan9R1_7ourMkshoVn698");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center gap-1">
+<div class="flex justify-between items-center">
+<p class="text-white text-[17px] font-bold leading-none tracking-tight">Caner Özkan</p>
+<p class="text-gray-600 text-[12px] font-medium">12:20</p>
+</div>
+<p class="text-gray-500 text-[14px] font-normal leading-tight truncate">Yarın akşam için rezervasyonu yaptırdım.</p>
+</div>
+</div>
+<div class="flex items-center gap-4 px-2 py-5 mb-2 transition-opacity active:opacity-60">
+<div class="shrink-0">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 border border-white/10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCBv5-zgeLPWW5xZSqhoXX_wA5ZUR77Ji1Wa6nM1db9QiBb37JWOV1Koyq90uqYewjfTi82cUYZQ5kUSStvIMrB1Fp6SkUcZwSgp8Rm1_lyP97mikauCmYJQgbLDhvO7ctqx9dWiUidhUasWzCc64d_zbBJ5x1o_w10NRrV1UMwXGGcxACxFILrcGzQQj_oe0XeshRWCiREx1z94vKF_D2HZkH8pRg5eVpKOAk92lqUh_29Ga6wzn_hEr1D7Ao957GFQ9WDx4QHU58");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center gap-1">
+<div class="flex justify-between items-center">
+<p class="text-white text-[17px] font-bold leading-none tracking-tight">Ece Soylu</p>
+<p class="text-gray-600 text-[12px] font-medium">Dün</p>
+</div>
+<p class="text-gray-500 text-[14px] font-normal leading-tight truncate">Sergi açılışında görüşmek üzere.</p>
+</div>
+</div>
+<div class="flex items-center gap-4 px-2 py-5 mb-2 transition-opacity active:opacity-60">
+<div class="shrink-0">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 border border-white/10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBJDq_zQco9u-p3HS0-IElfp0NVd6Tq1pqxcdNKWl-21M1Cbin4TDcLZzMTAp2lGd9ZfSgsLrBUPXoXgq96Pjs2AvwK6Em4gopVJfUYxWnaofkOL1teqGkfYkumPEDiZdHGn4nov0obAugmO1_S8ofjJbjaAnOonMJjuqPGHRpc4ioNhJ1hClG6FHSpqAxH9JLPPgM6-63__D9jw5FV49jHCSr15_S9uenlo8d-hmM9t6Suo4RRhl0ohtXZRkeCnPgU8oEujGprh-Q");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center gap-1">
+<div class="flex justify-between items-center">
+<p class="text-white text-[17px] font-bold leading-none tracking-tight">Mert Aras</p>
+<p class="text-gray-600 text-[12px] font-medium">Dün</p>
+</div>
+<div class="flex justify-between items-center gap-2">
+<p class="text-gray-400 text-[14px] font-normal leading-tight truncate">O tasarımı çok beğendim.</p>
+<div class="size-1.5 rounded-full bg-primary shrink-0"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 px-2 py-5 mb-2 transition-opacity active:opacity-60">
+<div class="shrink-0">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-16 w-16 border border-white/10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBcE7adVaiOh_Fc63zNefXxYI8PHeH6kOa3uTdQ-nVcPIDNRt_zDAyTTizYmkXV6THJmGfzRXR9wKZpzsPZLUb-ldbXjxs7c6DOwgjFCvnH_UjhhXItG3Jbe0VDcGHROQCRPmuNGJ6qJuqIWSOqB-N_O-4daOcIUfcuTtX-ySFmPm-kMaHnIa5pld8gIMgc2AgkAVRRnDr0_T9302ctvznGS3vStACklxiATNF-bY7LTeQAPsxJAwb-D_UXqZsgETCslSwJiBGlFic");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center gap-1">
+<div class="flex justify-between items-center">
+<p class="text-white text-[17px] font-bold leading-none tracking-tight">Selin Kozak</p>
+<p class="text-gray-600 text-[12px] font-medium">Pzt</p>
+</div>
+<p class="text-gray-500 text-[14px] font-normal leading-tight truncate">Haftaya Paris planı netleşti mi?</p>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-[100] bg-background-dark/90 backdrop-blur-2xl border-t border-white/5 px-6 pb-8 pt-4">
+<div class="flex justify-between items-center">
+<div class="flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined text-gray-500 text-[26px]">explore</span>
+<span class="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Keşfet</span>
+</div>
+<div class="flex flex-col items-center gap-1 cursor-pointer nav-active">
+<span class="material-symbols-outlined text-indigo-accent text-[26px]">chat_bubble</span>
+<span class="text-[10px] font-bold text-indigo-accent uppercase tracking-widest">Mesajlar</span>
+</div>
+<div class="flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined text-gray-500 text-[26px]">favorite</span>
+<span class="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Beğeniler</span>
+</div>
+<div class="flex flex-col items-center gap-1 cursor-pointer">
+<span class="material-symbols-outlined text-gray-500 text-[26px]">person</span>
+<span class="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Profil</span>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

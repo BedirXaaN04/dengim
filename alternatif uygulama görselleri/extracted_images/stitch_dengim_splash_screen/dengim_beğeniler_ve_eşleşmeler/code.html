@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17b0cf",
+                        "accent-gold": "#C5A059",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#0B1214",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gold-dot {
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.5);
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen flex flex-col max-w-md mx-auto relative overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<div class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-6 py-4 flex items-center justify-between border-b border-white/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1">shield_with_heart</span>
+<h1 class="text-lg font-semibold tracking-tight uppercase tracking-[0.1em] text-accent-gold">DENGIM</h1>
+</div>
+<div class="flex gap-4">
+<button class="size-10 flex items-center justify-center rounded-full glass-card">
+<span class="material-symbols-outlined text-xl">tune</span>
+</button>
+</div>
+</div>
+<!-- Main Content Area -->
+<main class="flex-1 pb-24">
+<!-- Section Header: New Matches -->
+<div class="px-6 pt-6 flex justify-between items-end">
+<h3 class="text-xl font-bold tracking-tight">Yeni Eşleşmeler</h3>
+<span class="text-xs font-medium text-primary uppercase tracking-widest">Tümünü Gör</span>
+</div>
+<!-- Story/Match Carousel -->
+<div class="flex w-full overflow-x-auto px-6 py-4 gap-4 no-scrollbar">
+<div class="flex flex-col items-center gap-2 shrink-0">
+<div class="w-16 h-24 rounded-xl glass-card p-0.5 border-primary/40 relative overflow-hidden">
+<div class="w-full h-full bg-cover bg-center rounded-[10px]" data-alt="Portrait of a handsome man smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAN9yShBS0gA1q5_YNPKq5LXR2PcenGFKKTQZnVo5vNVSrG_NYvJLSLS07kq3P-hZsRXL6zfLhgVijGvdrhiXxm8aTAqY3pLexXYCSMSrHNkStrghCIaFm9QysmTnIS_oaY2BkVNOmxGaego8jahTCOYlV1pd0zYxbedtNypx3vS50KLaqIOaG2_W_J9aMCFi_N06HJyqHYWdJIi7nKYgIW9iVOIYAJOvpH98z8T9fU_vJniWxY95q2MLXtosmbTYjX_KpHvuwJKP0");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<p class="text-[11px] font-medium text-white/70">Kerem</p>
+</div>
+<div class="flex flex-col items-center gap-2 shrink-0">
+<div class="w-16 h-24 rounded-xl glass-card p-0.5 border-transparent relative overflow-hidden">
+<div class="w-full h-full bg-cover bg-center rounded-[10px]" data-alt="Portrait of a stylish woman posing" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA8yxzNX51myq0Db3HIFyYdKzx2PjILWJJmQHD_aXwhystnIO1uYjSJ8EfjlclKXrGOiu0wSoqDG7apxj-nXs966lwqqb_McuvZAXdQfvq4aZmJ4_ezJH_RF1hSdIoN2OwiowtsHKhhq0D5FZmaeQibU17Bqo6R072OiWNpj9Pjz6RgY6zcTGURgXWSwj5AQ1qG4C2XXQ-DLBlYmTCtbCTTWZRuFzXlWKYdjokao6cz2jr00LHY99HIiNi6U3OgjkeTtc2pTQgcScE");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<p class="text-[11px] font-medium text-white/70">Aslı</p>
+</div>
+<div class="flex flex-col items-center gap-2 shrink-0">
+<div class="w-16 h-24 rounded-xl glass-card p-0.5 border-transparent relative overflow-hidden">
+<div class="w-full h-full bg-cover bg-center rounded-[10px]" data-alt="Portrait of a man in casual attire" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDZgV4XjJ4Qa0bhXcONR9xqBIgryb0pTkHvEoZU14rKYYet0a5EL2GaZ06betZhrbe0ywTRfq1V7YsV4r2sRD0A3bhnNn6n5pmPMrs3veVh0vTMry0auZ-EQ4RMNSR9TCiqvn7KMSDg3gJgiQAEMQWsXvuJy3zYn9dhjQ41wEgUpD-Com9-4K3KXi4ePSm9jB_tEXU_AKUlJnR43Dfja-LdGqm8qGqOGPdfN7lo-rfbphv4LdirRH76b8CCeSsrIF05yhmx26x0ppI");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<p class="text-[11px] font-medium text-white/70">Mert</p>
+</div>
+<div class="flex flex-col items-center gap-2 shrink-0">
+<div class="w-16 h-24 rounded-xl glass-card p-0.5 border-transparent relative overflow-hidden">
+<div class="w-full h-full bg-cover bg-center rounded-[10px]" data-alt="Portrait of a young woman smiling outdoors" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCZVzt_lci4qqwb7rtyDsNqu59Rn5JYfESzGk2BPqjizdaIuyGsdUX_jJifO-hI6YrY8yBmVNpaYMj2T-uqXkQjBpG07Gri2BhRqzQClUzHH-QDfYklecoRtv3RJs_-e28_We5Kw8r5VzK7kRz8doCIt2l3Q-cdNyEbovBNQ1oha0zsIUNfC5tVoA53BLVWp_lrRd1wBp8F7jvF5BbR8mlnA-pkUEr2CEpSJcAA8IDAVWVYH_NPmM0ETt6i91-7VJ0cPJ2WF-iQ-wk");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<p class="text-[11px] font-medium text-white/70">Ece</p>
+</div>
+<div class="flex flex-col items-center gap-2 shrink-0">
+<div class="w-16 h-24 rounded-xl glass-card p-0.5 border-transparent relative overflow-hidden">
+<div class="w-full h-full bg-cover bg-center rounded-[10px]" data-alt="Close up portrait of a man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAi1R8qFLVZaord96T5cWQTyGB1KFSCQ1ea_fuV-La-TaLNuknPDd21Dl4i3yXyvdco8GxQ5vLjuDurmJ-OPkYmhoeGDelZkVVGByvohy0sbHSIkRx8WwSCGEcHF0BU0dMI1ZXgchn1PIvXJ3AYxUFaWlIaU88oQKFR_erAztniacuxQIszojb6gnIMfGQoHogyhAGFkpBt3AWMiCunP3wPvUapSAiWke3-MWgG10kkpior5ZC1JQ-d_X6dshs-Ep6Sb2WvGkIoOi4");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<p class="text-[11px] font-medium text-white/70">Can</p>
+</div>
+</div>
+<!-- Section Header: Likes -->
+<div class="px-6 pt-6 flex justify-between items-end">
+<h3 class="text-xl font-bold tracking-tight">Seni Beğenenler</h3>
+<div class="flex items-center gap-1.5 bg-accent-gold/10 px-3 py-1 rounded-full border border-accent-gold/20">
+<div class="size-1.5 rounded-full bg-accent-gold gold-dot"></div>
+<span class="text-[10px] font-bold text-accent-gold uppercase tracking-widest">24 Yeni</span>
+</div>
+</div>
+<!-- Image Grid for Likes -->
+<div class="grid grid-cols-2 gap-4 p-6">
+<!-- Like Card 1 -->
+<div class="relative group aspect-[3/4] rounded-2xl overflow-hidden glass-card">
+<div class="absolute inset-0 bg-cover bg-center blur-[10px] opacity-40 scale-110" data-alt="Abstract portrait background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA67yoHAp0NGfkH1NlaBAKvJvKUZmwwgGTOuBF2Nw8eHgpg--h9Clu-lhMKgU4F2VeoOwqWvADmhcvFwbprrXQ9_Y63RCmqVQe828gdOgHrVlVeoZuwXSu1cArGUK7vW7MUgI_lVEvwPTiF-en0D8jy4I5HFO4jk2ZQiILejNx7Jio2vmnFzChx2oKhHpRBXEOI-hyBWeFeY9ve8jeF_nq3b-JU0Kp1-cVl17Vp7WFtMhCl9uuAbR9sSE_GQNjwtpbwZGyjTWc1SUg");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+<!-- Content -->
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<div class="flex justify-between items-center mb-1">
+<p class="text-white text-lg font-bold leading-none">Deniz, 24</p>
+<div class="size-2 rounded-full bg-accent-gold gold-dot"></div>
+</div>
+<div class="flex items-center gap-1 opacity-60">
+<span class="material-symbols-outlined text-[12px]">location_on</span>
+<p class="text-[10px] font-medium uppercase tracking-wider" data-location="İstanbul">Nişantaşı, İstanbul</p>
+</div>
+</div>
+</div>
+<!-- Like Card 2 -->
+<div class="relative group aspect-[3/4] rounded-2xl overflow-hidden glass-card">
+<div class="absolute inset-0 bg-cover bg-center blur-[10px] opacity-40 scale-110" data-alt="Abstract portrait background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuApBOIRAGRftxhKEEFfJQX-v4LUxqQ7dZGfUqyRDKzVLiBntkkO65YglZmNelY72OoXFuxCSld0EKhCc74TVpslODylD31PrUYQY_ubzfaLAF1rc03BL3Jt9MrgmSqVkzg8Tr-Dk-WXx8zo9VXlfSeV9mtVy0zQ9OoCCx-ViobrrQZXczWRY9X_ydNNV1jJ0e8gdgMaOWc7PzY3x_Kwuq9qwQEPoynPKNDGR9Je0oZLuJRgpWuBzmrMZ5W9jlP3oXyKWbrtyMnHhSg");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<div class="flex justify-between items-center mb-1">
+<p class="text-white text-lg font-bold leading-none">Zeynep, 27</p>
+<div class="size-2 rounded-full bg-accent-gold gold-dot"></div>
+</div>
+<div class="flex items-center gap-1 opacity-60">
+<span class="material-symbols-outlined text-[12px]">location_on</span>
+<p class="text-[10px] font-medium uppercase tracking-wider" data-location="İzmir">Alsancak, İzmir</p>
+</div>
+</div>
+</div>
+<!-- Like Card 3 -->
+<div class="relative group aspect-[3/4] rounded-2xl overflow-hidden glass-card">
+<div class="absolute inset-0 bg-cover bg-center blur-[10px] opacity-40 scale-110" data-alt="Abstract portrait background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB43yiSkL7i0buVFoYY25l6erZHPNhL8rEUsRmjf9vH0uh6eT9hX5vutBLMKXHojBpQrJoC85c7NPs460qql23RiSYT49TGtpUjwtkdp0lNqodN5NKvGyI_ED3HsRcFE4dZBcD53Rk68U3Jhn5HU9fbyObqp1lnGvextN5K3oJ6XeH4bUQItBeD26-shiyIo6ovTi3TXo5FzKY4n6Z5kttfH7gbhVRvJDf63PGstU-rDM96ZS7pwBDFvrILN34HWyExMsz9kX59r-8");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<div class="flex justify-between items-center mb-1">
+<p class="text-white text-lg font-bold leading-none">Lara, 25</p>
+<div class="size-2 rounded-full bg-accent-gold gold-dot"></div>
+</div>
+<div class="flex items-center gap-1 opacity-60">
+<span class="material-symbols-outlined text-[12px]">location_on</span>
+<p class="text-[10px] font-medium uppercase tracking-wider" data-location="İstanbul">Bebek, İstanbul</p>
+</div>
+</div>
+</div>
+<!-- Like Card 4 -->
+<div class="relative group aspect-[3/4] rounded-2xl overflow-hidden glass-card">
+<div class="absolute inset-0 bg-cover bg-center blur-[10px] opacity-40 scale-110" data-alt="Abstract portrait background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDh8mljw6kuIYl02M4ljTqnl0kwDFO7BzewpNAwcIj1gOOSpA6BWEIoF-5LYCyxEF87Bn5LPtQULMjhJc5Z8PKGnnY5qxrv_BB8D-e-j07XGXSfNyxknvrlE72uMGrFxKUiwumIDtlw_5xkNx0Qi8bDBvo17O42ck9UepKskJeZhGFqmYKiJSnc2h965UWlSCyq9THf94jap-kjZS_tWhOEsCeeKZjh1causbFJmBGlAO75IzRUBkYmviQ7ZYRyf7jhkcyTmy8FQTM");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<div class="flex justify-between items-center mb-1">
+<p class="text-white text-lg font-bold leading-none">Melis, 28</p>
+</div>
+<div class="flex items-center gap-1 opacity-60">
+<span class="material-symbols-outlined text-[12px]">location_on</span>
+<p class="text-[10px] font-medium uppercase tracking-wider" data-location="Ankara">Çankaya, Ankara</p>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 flex justify-center py-4">
+<button class="w-full py-4 rounded-xl border border-white/10 text-xs font-bold uppercase tracking-[0.2em] text-white/40 hover:text-white/80 transition-all">
+                Daha Fazla Gör
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-white/5 px-6 pb-8 pt-4">
+<div class="flex justify-between items-center">
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-2xl">style</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Keşfet</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1">favorite</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Beğeniler</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-2xl">chat_bubble</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Mesajlar</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-medium uppercase tracking-widest">Profil</span>
+</button>
+</div>
+</nav>
+</body></html>

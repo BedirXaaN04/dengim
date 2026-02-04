@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Poppins:wght@200;300;400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FFD700",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#0F1115",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "poppins": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex min-h-screen w-full flex-col items-center justify-between bg-background-light dark:bg-background-dark overflow-x-hidden pb-12">
+<div class="w-full">
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="w-10"></div>
+<h2 class="text-black dark:text-white text-sm font-light leading-tight tracking-[0.2em] flex-1 text-center font-poppins">DENGIM</h2>
+<div class="w-10 flex justify-end">
+<span class="material-symbols-outlined text-black dark:text-white">close</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-center px-6 w-full max-w-[480px]">
+<div class="mb-12">
+<h1 class="text-black dark:text-white tracking-[0.15em] text-[42px] font-extralight leading-tight text-center font-poppins">DENGIM</h1>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-light leading-normal pt-4 text-center tracking-wide">Ayrıcalıklı bir dünyaya adım atın.</p>
+</div>
+<div class="flex flex-col w-full gap-4">
+<button class="flex items-center justify-between w-full h-14 px-6 rounded-xl bg-primary text-black transition-all active:scale-95 shadow-lg">
+<span class="material-symbols-outlined">call</span>
+<span class="flex-1 text-center font-semibold text-[15px] tracking-wide">Telefon ile Devam Et</span>
+<div class="w-5"></div>
+</button>
+<button class="flex items-center justify-between w-full h-14 px-6 rounded-xl bg-white border border-gray-200 text-black transition-all active:scale-95">
+<img alt="Google" class="w-5 h-5" data-alt="Google logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIpFY5xW9vuMhhC5WkPKi1RcHB2qsB4KhDhrMdDyfmeSKjEUQAidKE4IjGEeGeq7k55G4aHzANPMw2O2htUqwV7S_km4CezGcHh3Yu2rk0-RQo0kgCRenbIJSp29dkEENLCk7rsiHpl35kaEH4LH8gH--gLcCwdgofg5021q-s4BeXtgjskm-lQyQLy2rqsUrstP0rVbvuU8aSWwrr_sO_GMPC3xI1gOxuIyeL2S4Le5S9uzeexvgWnwB9Vl87yylq6_Cn_PobNkE"/>
+<span class="flex-1 text-center font-medium text-[15px] tracking-wide">Google ile Devam Et</span>
+<div class="w-5"></div>
+</button>
+<button class="flex items-center justify-between w-full h-14 px-6 rounded-xl bg-black border border-gray-700 text-white transition-all active:scale-95">
+<span class="material-symbols-outlined">ios</span>
+<span class="flex-1 text-center font-medium text-[15px] tracking-wide">Apple ile Devam Et</span>
+<div class="w-5"></div>
+</button>
+<button class="flex items-center justify-between w-full h-14 px-6 rounded-xl bg-[#1877F2] text-white transition-all active:scale-95">
+<span class="material-symbols-outlined">social_leaderboard</span>
+<span class="flex-1 text-center font-medium text-[15px] tracking-wide">Facebook ile Devam Et</span>
+<div class="w-5"></div>
+</button>
+</div>
+</div>
+<div class="px-8 max-w-[400px]">
+<p class="text-gray-500 dark:text-[#bcb79a]/60 text-[11px] font-light leading-relaxed text-center">
+                Devam ederek 
+                <span class="underline underline-offset-2">Kullanım Koşullarını</span> ve 
+                <span class="underline underline-offset-2">Gizlilik Politikamızı</span> 
+                kabul etmiş olursunuz.
+            </p>
+</div>
+</div>
+</body></html>

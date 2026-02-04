@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ffd900",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#181710",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .story-ring {
+            padding: 2px;
+            background: linear-gradient(45deg, #ffd900, #b8860b, #ffd900);
+            border-radius: 50%;
+        }
+        .inner-border {
+            border: 2px solid #181710;
+            border-radius: 50%;
+        }
+        .premium-glow {
+            box-shadow: 0 0 15px rgba(255, 217, 0, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+<!-- Top Navigation Bar -->
+<div class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto">
+<div class="flex size-10 shrink-0 items-center justify-start text-primary">
+<span class="material-symbols-outlined text-[28px]">sort</span>
+</div>
+<h2 class="text-xl font-bold tracking-[-0.03em] flex-1 text-center font-display">DENGIM</h2>
+<div class="flex size-10 items-center justify-end relative">
+<span class="material-symbols-outlined text-[26px]">notifications</span>
+<div class="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Stories Tray Container -->
+<div class="w-full overflow-x-auto no-scrollbar py-6 px-4">
+<div class="flex flex-row items-start gap-4 min-w-max">
+<!-- Add Story -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-dashed border-zinc-700 hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-zinc-500 group-hover:text-primary">add</span>
+</div>
+<p class="text-[11px] font-medium tracking-tight opacity-70">Hikaye Ekle</p>
+</div>
+<!-- Active Story 1 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer">
+<div class="story-ring premium-glow">
+<div class="inner-border">
+<div class="w-[58px] h-[58px] bg-center bg-no-repeat bg-cover rounded-full" data-alt="Elegant woman portrait with soft lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAFNF_OP4YU8N4K7UBKkJp9uWmjVN8rggvb8oRJ74mrpVlPUn5-SNqwPEcM_bYlNZZCeWyCjmeI-iAfWbe5XszQ35AynEGXzX2Ce9PVV8x5Vkyhz01ryQEtjDLqB3NqS91vwpukxwYJJJ4tmldq-vC2co5hjERrEOPn4afSJe7WZVvl5kZPG0TUy30fbvSNqBx9X-5jAUBseUPoxKjH0JQ5886maABKcbjQEguhZtEUO5t-CMOraiEgDlzKLcqVE6ItQJvApRbJcyQ");'>
+</div>
+</div>
+</div>
+<p class="text-[11px] font-medium tracking-tight">Selina</p>
+</div>
+<!-- Active Story 2 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer">
+<div class="story-ring premium-glow">
+<div class="inner-border">
+<div class="w-[58px] h-[58px] bg-center bg-no-repeat bg-cover rounded-full" data-alt="Modern man in high-end studio portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBtk7IEN10zPIZ8irAVTJu_ynYnROu2KAcQCYkN4xlUnMhTnF4BXALjCUv5I1k__mK8PuaW64ckNd_BWRuyGXqk17LJ242QMZ3IWQp_nrM6QUDPFnCV9DDjInOQTXy-VEEXkvC7EswfqYhoyAhKRErRF2MLLXnKzjTxu8hSDT2lTjlBo7FvxNPKA8am4UPu49og-SYymcOZHbSGINBjNd8URiVYM0x4qA6U1p3kaTwJ8NPTB5utNfmsbSjs48-_PTscP466L2WwZpU");'>
+</div>
+</div>
+</div>
+<p class="text-[11px] font-medium tracking-tight">Marcus</p>
+</div>
+<!-- Active Story 3 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer">
+<div class="story-ring premium-glow">
+<div class="inner-border">
+<div class="w-[58px] h-[58px] bg-center bg-no-repeat bg-cover rounded-full" data-alt="Sophisticated woman with designer accessories" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBW66KGbMaYAPH-9AcOzQYYI3Lt86NI2mKhBAfDsEdbJeZ3a3YtcbLWCL1Ok2jXSJ3a2qTRz4PMaO351OR3rQenbG0lpelROB5vbf33m6LxANP2O4Wsy4YVh2A4EwPsOL7Kfu2lz1INB3G6PVZNJGE2KFIWjDUi1Wi34KGsszlIO-si6IWrZP5KSgWr1EEwruJO5tyIxIgl0PlDjRslpvZN4vjwzrDwK5WVIFyEgwSPbUerp7e16qD0AZNFB9Eiw7bzZl_04GKUscA");'>
+</div>
+</div>
+</div>
+<p class="text-[11px] font-medium tracking-tight">Elena</p>
+</div>
+<!-- Active Story 4 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer">
+<div class="story-ring premium-glow">
+<div class="inner-border">
+<div class="w-[58px] h-[58px] bg-center bg-no-repeat bg-cover rounded-full" data-alt="Man in luxury watch and suit" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA7tvXo4eL7j4J7GApGdKwpW70P69W-1rh-kKUoMGoKAcwjaooA8AzNzz-bRbK1K-DM0YDzV_B-MrJ5BtNoL0sJ80ioS7USZ55dYFkNN-mnKRDOv-5bqKmwAZJu5G8tX_W8RbKONGvry_gq1uoPgdNwtgzSQuY0NE14CVYYG1VKzN_yWsgA4asO79S8KxcYs_SgpYopfjcaH56Tic7atvP_ZJ2D2m8aL9MVBnyrBNpP5HsxDvce_HvnfHe8wimH7OjgfjotB8iiM3k");'>
+</div>
+</div>
+</div>
+<p class="text-[11px] font-medium tracking-tight">Julian</p>
+</div>
+<!-- Active Story 5 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer">
+<div class="story-ring premium-glow">
+<div class="inner-border">
+<div class="w-[58px] h-[58px] bg-center bg-no-repeat bg-cover rounded-full" data-alt="Artistic portrait of a blonde woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB5Z-1WQlZ3pxZ28ZbCXER58JtSlsjvPDs892SRwK8dg-LnXcAGHdKXaj4DdoXo9HFdu3Wo_3FhRgB73ACrzlp4Ovj5dy68B7QJvUCI2aKXbyghyMOIUQp3kojSFeJrBYliFqchxcaMOtljNTy9bO88HLe4KjssDUyiPUfNPEg3gvqRz7ZOcdJOqxgBs2n9WbWBg8gG_2qIn59kVl7j-3kYYikJ-p8dlXx6DyYQ8h1-0PbTlzwEuwqVFtcGB1TW80FX-JsZHmk40Lk");'>
+</div>
+</div>
+</div>
+<p class="text-[11px] font-medium tracking-tight">Sophie</p>
+</div>
+</div>
+</div>
+<!-- Content Sections -->
+<div class="max-w-md mx-auto px-4 pb-24">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold font-display tracking-tight">Keşfet</h3>
+<span class="material-symbols-outlined text-primary">tune</span>
+</div>
+<!-- Featured Card 1 -->
+<div class="mb-6 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl overflow-hidden shadow-2xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5">
+<div class="w-full bg-center bg-no-repeat aspect-[4/5] bg-cover relative" data-alt="Woman in elegant black evening dress" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCdywj4XqRF06mtUjsC9Qdi6AdpRltw7lmImf1JqLKyxXnOEETGysoM0HgKr9h_T8N9vQ6JHccVVXj8GdP0Q1qX7tamrCxdLSiDuayUvjHEZ3_7pGkELSRCYJudl0njvj8WxTWI8xBprune9HebbLU0yTHtQKLUCjP7-zBg-CR2lI0w11Q94KV2eNtCx23tcEhQI65vxb3-dZVQbwlb1_g2LmAG8f7kp41elEhGZOLtsZyYyavpD_hjujOOTnPCHZHyhVGmRx-MQdM");'>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+<div class="flex justify-between items-end">
+<div class="text-white">
+<h4 class="text-2xl font-bold leading-none mb-1">Victoria, 26</h4>
+<p class="text-sm opacity-80 font-medium">Paris • Kreatif Direktör</p>
+</div>
+<button class="bg-primary text-background-dark w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined font-bold">favorite</span>
+</button>
+</div>
+</div>
+<div class="absolute top-4 left-4">
+<span class="bg-black/30 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-full border border-white/20 uppercase tracking-widest">Premium</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Premium Event Card -->
+<div class="mb-6 @container">
+<div class="p-6 rounded-xl bg-gradient-to-br from-zinc-800 to-background-dark border border-primary/20 flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div>
+<h4 class="text-primary text-sm font-bold uppercase tracking-[0.2em] mb-1">Özel Etkinlikler</h4>
+<p class="text-white text-lg font-bold">Altın Rooftop Gecesi</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl">event_seat</span>
+</div>
+<p class="text-zinc-400 text-sm leading-relaxed">Sadece Premium üyeler için tasarlanmış, İstanbul'un en seçkin noktasında küratörlü bir buluşma deneyimi.</p>
+<div class="flex items-center justify-between mt-2">
+<div class="flex -space-x-3">
+<div class="w-8 h-8 rounded-full border-2 border-zinc-800 bg-cover" data-alt="Attendee avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA3UjITDzJOmUrljg233gesq8ATo9a3kHF4tsv68_iVAO6IneAYhzoIgjdS-nX_FlNKtAvCavPBccHbkjX5U679ysjMY5Ui3hXabZclx_Zg8acgVdJ0zJ8Z9K2soicwm7F07pkdSMIwkaRBZBDRV0QIG8uuuFsuQY_dGesjfC9cKSgu9TnJiCtZi4AIO4a93xd3HWNfqfP1cESrZGsmglFo3ZbW32e-V9HaakvaZxOVGYLkXyzB2r8EiEBGsgA_RfuVPWErdWNBY1Q')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-zinc-800 bg-cover" data-alt="Attendee avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAfxCk9p7fAXNvddjADPEQwo6aF5ED50OEOpavIikc-0nsbgfyd87GW6CQf47FOEh4Zed758zgyVoQWmZ6U9SqFmPdln1DYt3Umhor-RglhgnRTm5mvKpLUvN4g2rhsYCCSmV2oon7-IfRXF4pqD7KwKWJUKON_RZEPQ2f2gG6V6hbNQvlat1Ekpc5-tXn60MZVvZbP9-2sc5KgQxIouVG2g3XqS2dqhWPpJsCNe4VYtGKKIl1PUgN4rZyHgVGLQACXy36_p1xCTOo')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-zinc-800 bg-cover" data-alt="Attendee avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDr325Vus-leJXaI-PhGkyKN9DuBujpNPJL3OTkLRdJ59y3Sz_8Ta4kbJ9M3R6XiMDuKXCrNe-rVLt6oNVVJFKAUIMGtnx6aeFCVOr3EGoUEm_eHNsWbWBDWJl0V8WtND0BIDyc_HfU3CP0c-GyckOdl17sjabsGPeZevfEWKHVugLA-xeVPVVgv1oJl5veUdUbx3kROhWzvJ_8xdvYUfDwkynal7Af1Afdf-Ez8S4R6-2pD6XHUQ0QfQnIEUMEWbjU_1iiiidpBeY')"></div>
+<div class="w-8 h-8 rounded-full border-2 border-zinc-800 bg-zinc-700 flex items-center justify-center text-[10px] text-white">+12</div>
+</div>
+<button class="bg-primary text-background-dark px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider">Detaylar</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Tab Bar -->
+<div class="fixed bottom-0 left-0 right-0 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/5 safe-area-bottom pb-4">
+<div class="flex justify-around items-center p-3 max-w-md mx-auto">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined filled">explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined">chat_bubble</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-zinc-500">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</div>
+</body></html>

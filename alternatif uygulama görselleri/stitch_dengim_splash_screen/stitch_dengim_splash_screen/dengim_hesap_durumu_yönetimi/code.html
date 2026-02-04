@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366F1",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111122",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-hidden">
+<div class="relative flex h-screen w-full flex-col max-w-[430px] mx-auto overflow-y-auto">
+<!-- TopAppBar -->
+<div class="flex items-center bg-transparent p-4 pb-2 justify-between z-10">
+<div class="text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Hesap Durumu</h2>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center px-4">
+<!-- Glassmorphism Container -->
+<div class="glass-card w-full rounded-xl p-6 flex flex-col items-center">
+<!-- HeadlineText -->
+<h1 class="text-white tracking-tight text-[28px] font-bold leading-tight px-4 text-center pb-8 pt-2">
+                    Neden Ayrılıyorsunuz?
+                </h1>
+<!-- ImageGrid (Circular Options) -->
+<div class="grid grid-cols-2 gap-6 w-full max-w-[320px] mb-8">
+<div class="flex flex-col items-center gap-3">
+<div class="bg-cover bg-center flex flex-col items-center rounded-full justify-center w-28 h-28 border-2 border-primary/30" data-alt="Happy couple silhouette in warm golden sunset" style='background-image: linear-gradient(0deg, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuD79RrWL1KOFLRW0DCmKqo99QeUiDTmpIW2Qh70bKTac0T7NdvhKm3CBjPX1U--icPpI20D5qJ2dYpRnQCTM4LLinB9Fm24wX6UsddvyJcYUyls7m2j5fmkFFCb6PxCx4x2kGBBKd8gSQd2cqu71lDHoFr-kQN--3S7ChPWr9JK8r2Wqm45zhEv8YS45CEBPs7_GFRjQcthU2IzEvFwW7_ON_sY3EEzAcP3q9V1QcjYSbk-Q1LTdaaxejOQmDWWminKndr5mS05ou8");'>
+<span class="material-symbols-outlined text-white text-3xl">favorite</span>
+</div>
+<p class="text-white text-sm font-semibold leading-tight text-center">Dengimi Buldum</p>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="bg-cover bg-center flex flex-col items-center rounded-full justify-center w-28 h-28 border-2 border-white/10" data-alt="Quiet nature scene for taking a break" style='background-image: linear-gradient(0deg, rgba(20, 20, 20, 0.5) 0%, rgba(20, 20, 20, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBeeB87rRKunRGnBGYRdWHxi41gHdnfaHDzMC9-uhjIw59rW8jJnMVPNI6oRj5zstCBr3PRJUaq5JusYLHubu5wjY_JEF20CNWpbUvbWGhTrdqq8effETHwe4aY7HgDaWLjMQ8azcsavbLTFfga7_e7OyomsSuEKVzklXE6lsGvK4IrMiRb2wp2aobGQJtfgGiRJ7kdfhEpjPi_L8z0w7LG30fHacYmRCGMpetTaBw1abhynnIcUwn7gzx3Ls09QtueJ1ih90UCSnY");'>
+<span class="material-symbols-outlined text-white text-3xl">coffee</span>
+</div>
+<p class="text-white text-sm font-semibold leading-tight text-center">Mola Veriyorum</p>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="bg-cover bg-center flex flex-col items-center rounded-full justify-center w-28 h-28 border-2 border-white/10" data-alt="Abstract secure shield for privacy" style='background-image: linear-gradient(0deg, rgba(20, 20, 20, 0.5) 0%, rgba(20, 20, 20, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQcfLs41-KYmB28c0YolRg5A2gxcgS9mkVup5m_Dt0B-GPruWNNzZO74TTHrE9vw6vu-pxkR4CooNAKoB1dD_x5UT4TingytjW6LuivA7x7yoNct0e1Ox6ZTYHmvN7MuI-2C0dlgd3vo3-yOAalojG7EZlctrArAkA8rZhT3hv5B0o2DY8Iis9zRqWKGwQCCSnxmsGdRFp0ScgCfALwy5yMMP9DMMuw9QZU8ZQwlgGctMMGSFAlEhZf0UB6cX37wS3dhikCgOU3sY");'>
+<span class="material-symbols-outlined text-white text-3xl">shield_lock</span>
+</div>
+<p class="text-white text-sm font-semibold leading-tight text-center">Gizlilik Endişesi</p>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="bg-cover bg-center flex flex-col items-center rounded-full justify-center w-28 h-28 border-2 border-white/10" data-alt="Abstract technology lines for technical issues" style='background-image: linear-gradient(0deg, rgba(20, 20, 20, 0.5) 0%, rgba(20, 20, 20, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCyXm3VhB24FvSjadkAHeAXqtUp6yP0mUK8E9akqmdzhvV3E0150WQXFKAKcrTRAGMHI3mPBtuUHBvwEJVi0lhmqkWBq2qq9UzbdhhN_8v-Ji10Kc-_uCNLCeidLYs6-oG2W3ywur5n0IUOUvONU61aakDWbrRFzy_iU91uO_JAHbQjPw0qCZCVuV3G6SCYjdw5sUYPKGPjbQGeWty65-rDsmPY8PUKdZmRx9DGWtkAmhMWLpV8Fdq6F0a7Yg72BdJ01WiZpG-9uG4");'>
+<span class="material-symbols-outlined text-white text-3xl">settings_input_component</span>
+</div>
+<p class="text-white text-sm font-semibold leading-tight text-center">Teknik Sorun</p>
+</div>
+</div>
+<!-- SingleButton -->
+<div class="flex w-full px-4 mb-4">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-5 flex-1 bg-primary text-white text-lg font-bold leading-normal tracking-[0.015em] shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+<span class="truncate">Hesabımı Dondur</span>
+</button>
+</div>
+<!-- MetaText -->
+<p class="text-[#9d9db9] text-xs font-medium leading-normal pb-2 pt-1 px-4 text-center underline cursor-pointer hover:text-white transition-colors">
+                    Hesabımı Kalıcı Olarak Sil
+                </p>
+</div>
+</div>
+<!-- Spacer for iOS bottom indicator -->
+<div class="h-8 bg-transparent"></div>
+</div>
+</body></html>

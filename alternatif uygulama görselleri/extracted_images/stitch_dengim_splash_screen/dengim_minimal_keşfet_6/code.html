@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DENGIM Keşfet - Geri Al Özelliği</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;family=Poppins:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3713ec",
+                        "background-dark": "#0F1115",
+                        "muted-gold": "#C5A059",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"],
+                        "poppins": ["Poppins"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(15, 17, 21, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .undo-btn:active {
+            box-shadow: 0 0 15px rgba(55, 19, 236, 0.4);
+            transform: scale(0.95);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30 antialiased overflow-hidden">
+<div class="relative flex h-screen w-full flex-col max-w-md mx-auto border-x border-white/5 bg-background-dark">
+<header class="flex items-center p-6 justify-between z-10 bg-background-dark">
+<div class="text-white/40 flex size-10 shrink-0 items-center">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</div>
+<h1 class="text-white text-sm font-bold leading-tight tracking-[0.4em] flex-1 text-center font-display uppercase">DENGIM</h1>
+<div class="flex size-10 items-center justify-end">
+<button class="flex cursor-pointer items-center justify-center text-white/40">
+<span class="material-symbols-outlined text-2xl">tune</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-4 relative flex flex-col items-center">
+<div class="relative w-full aspect-[4/5] sm:aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCY30IcnXOfzjS5LRdAzW8pGiG9HCVp49DB6VuVaF2v5jzr_IaZNNMvjaO0Sy7SNjAck29oslrTMq1F6f1-UEvLfkJw68P_3heOG1w-yr10xHOt8xk_Vfg4bA0mmQHknsHJ0ODtfNfj1XeAPc4RS1Ib0M1dSReK7WWAx_CP--L_lLuKm4GvVvbpg9NZSXrn7NjTgULDe03UJcU0hTM92BzJm11modsXS5maZyUZStuZGsiSY0l4eQv97_9vNxhfSxluHzzvrdxh_wA");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4 glass-panel rounded-xl p-5 border border-white/5 flex items-center justify-between">
+<div>
+<p class="text-white text-2xl font-poppins font-semibold tracking-tight">Kaan, 42</p>
+<div class="flex items-center gap-1.5 mt-1 opacity-80">
+<span class="material-symbols-outlined text-sm text-primary">location_on</span>
+<p class="text-white text-[10px] font-medium tracking-widest uppercase">Istanbul, Turkey</p>
+</div>
+</div>
+<button class="bg-white/10 hover:bg-white/20 text-white p-2.5 rounded-full transition-colors backdrop-blur-md">
+<span class="material-symbols-outlined text-xl">expand_less</span>
+</button>
+</div>
+</div>
+<div class="w-full py-8 flex-1 flex flex-col justify-center">
+<div class="flex justify-center items-center gap-6">
+<button class="undo-btn w-10 h-10 rounded-full border border-muted-gold/40 flex items-center justify-center text-muted-gold/70 hover:text-muted-gold transition-all duration-300">
+<span class="material-symbols-outlined text-lg">undo</span>
+</button>
+<button class="w-16 h-16 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center text-white/50 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-3xl">close</span>
+</button>
+<button class="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/20 transition-all shadow-[0_0_30px_rgba(55,19,236,0.15)]">
+<span class="material-symbols-outlined text-4xl active-icon">favorite</span>
+</button>
+<button class="w-16 h-16 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center text-white/50 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined text-3xl">star</span>
+</button>
+</div>
+</div>
+</main>
+<nav class="flex justify-between items-center border-t border-white/5 bg-background-dark/80 backdrop-blur-xl px-8 pb-10 pt-4">
+<a class="flex flex-col items-center justify-center gap-1 text-primary group" href="#">
+<span class="material-symbols-outlined text-2xl active-icon">explore</span>
+<span class="text-[10px] font-semibold tracking-tighter uppercase opacity-80">Keşfet</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-white/20 hover:text-white/40 transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl">chat_bubble</span>
+<span class="text-[10px] font-semibold tracking-tighter uppercase">Mesajlar</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-white/20 hover:text-white/40 transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl">favorite_border</span>
+<span class="text-[10px] font-semibold tracking-tighter uppercase">Beğeniler</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-white/20 hover:text-white/40 transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-semibold tracking-tighter uppercase">Profil</span>
+</a>
+</nav>
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/10 rounded-full"></div>
+</div>
+
+</body></html>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "12239103870",
+    "project_id": "dengim-kim",
+    "storage_bucket": "dengim-kim.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12239103870:android:3345843a607fbd6121f52f",
+        "android_client_info": {
+          "package_name": "dengim.kim"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlCLMEbzY45Ff3Lrj22EspoyNO1O3qFfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

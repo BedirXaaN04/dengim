@@ -1,0 +1,659 @@
+import 'dart:math';
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:confetti/confetti.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../core/theme/app_colors.dart';
+import '../auth/models/user_profile.dart';
+import '../auth/services/auth_service.dart';
+import '../chats/services/chat_service.dart';
+import '../chats/models/chat_models.dart';
+import '../chats/chats_screen.dart'; // ChatDetailScreen burada tanımlı olduğu için
+import 'package:firebase_auth/firebase_auth.dart';
+import 'widgets/filter_bottom_sheet.dart';
+
+/// Keşfet Ekranı - Tinder tarzı Swipe Kartlar
+class DiscoverScreen extends StatefulWidget {
+  const DiscoverScreen({super.key});
+
+  @override
+  State<DiscoverScreen> createState() => _DiscoverScreenState();
+}
+
+class _DiscoverScreenState extends State<DiscoverScreen> {
+  final CardSwiperController _cardController = CardSwiperController();
+  final ConfettiController _confettiController = ConfettiController(
+    duration: const Duration(seconds: 2),
+  );
+  
+  FilterSettings _filterSettings = FilterSettings();
+  List<UserProfile> _users = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+  }
+
+  Future<void> _loadUsers() async {
+    try {
+      final usersData = await AuthService().getUsersToMatch();
+      setState(() {
+        _users = usersData.map((data) => UserProfile.fromMap(data)).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error loading users: $e");
+      setState(() => _isLoading = false);
+    }
+  }
+
+  // final List<UserProfile> _users = UserProfile.getMockUsers(); // Removed
+  bool _showMatch = false;
+  UserProfile? _matchedUser;
+
+  @override
+  void dispose() {
+    _cardController.dispose();
+    _confettiController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> _onSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) async {
+    HapticFeedback.mediumImpact();
+    
+    final targetUser = _users[previousIndex];
+    final isLike = direction == CardSwiperDirection.right || direction == CardSwiperDirection.top;
+    
+    // Firestore'da kaydet
+    final isMatch = await AuthService().swipeUser(targetUser.uid, isLike);
+    
+    if (isMatch) {
+      _showMatchAnimation(targetUser);
+    }
+    
+    return true; 
+  }
+
+  void _showMatchAnimation(UserProfile user) {
+    HapticFeedback.heavyImpact();
+    setState(() {
+      _matchedUser = user;
+      _showMatch = true;
+    });
+    _confettiController.play();
+  }
+
+  void _dismissMatch() {
+    setState(() {
+      _showMatch = false;
+      _matchedUser = null;
+    });
+  }
+
+  void _onLike() {
+    HapticFeedback.mediumImpact();
+    _cardController.swipe(CardSwiperDirection.right);
+  }
+
+  void _onDislike() {
+    HapticFeedback.lightImpact();
+    _cardController.swipe(CardSwiperDirection.left);
+  }
+
+  void _onSuperLike() {
+    HapticFeedback.heavyImpact();
+    _cardController.swipe(CardSwiperDirection.top);
+  }
+
+  void _onUndo() {
+    HapticFeedback.lightImpact();
+    _cardController.undo();
+  }
+
+  void _showFilters() {
+    showFilterBottomSheet(
+      context,
+      currentSettings: _filterSettings,
+      onApply: (settings) {
+        setState(() {
+          _filterSettings = settings;
+        });
+        // Filtering logic would happen here (reload users with filters)
+        _loadUsers();
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.scaffold,
+      body: Stack(
+        children: [
+          // Ana içerik
+          Column(
+            children: [
+              // Üst bar (Dengim Tasarımı)
+              _buildTopBar(),
+
+              // Hikaye Alanı (Yeni)
+              _buildStoriesTray(),
+              
+              const SizedBox(height: 8),
+
+              // Kart alanı
+              Expanded(
+                child: _isLoading 
+                    ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                    : _users.isEmpty
+                        ? _buildEmptyState()
+                        // Kart Swiper (Mevcut Logic)
+                    : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: CardSwiper(
+                          controller: _cardController,
+                          cardsCount: _users.length,
+                          numberOfCardsDisplayed: 3,
+                          backCardOffset: const Offset(0, 30),
+                          padding: EdgeInsets.zero,
+                          onSwipe: _onSwipe,
+                          allowedSwipeDirection: const AllowedSwipeDirection.only(
+                            left: true,
+                            right: true,
+                            up: true,
+                          ),
+                          cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                            return _buildUserCard(_users[index], percentThresholdX.toDouble(), percentThresholdY.toDouble());
+                          },
+                        ),
+                    ),
+              ),
+              
+              // Alt aksiyon butonları
+              _buildActionButtons(),
+              
+              const SizedBox(height: 100), 
+            ],
+          ),
+          
+          // Eşleşme overlay
+          if (_showMatch) _buildMatchOverlay(),
+          
+          // Konfeti
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              particleDrag: 0.05,
+              emissionFrequency: 0.05,
+              numberOfParticles: 30,
+              gravity: 0.2,
+              colors: const [
+                AppColors.primary,
+                AppColors.secondary,
+                AppColors.success,
+                Colors.pink,
+                Colors.purple,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopBar() {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.scaffold.withOpacity(0.8),
+          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Sol: Menü (HTML tasarımı gibi)
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+              },
+              child: Icon(Icons.menu_rounded, color: Colors.white.withOpacity(0.4), size: 24),
+            ),
+            
+            // Orta: DENGIM (Luxury style)
+            Text(
+              'DENGIM',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 4.0,
+                color: Colors.white,
+              ),
+            ),
+            
+            // Sağ: Filtre (HTML tasarımı gibi)
+            GestureDetector(
+              onTap: _showFilters,
+              child: const Icon(Icons.tune_rounded, color: AppColors.primary, size: 24),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Hikaye Tepsisi (HTML stili Luxury Tray)
+  Widget _buildStoriesTray() {
+    return Container(
+      height: 110,
+      padding: const EdgeInsets.only(top: 16),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: 8,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            // Ekle Butonu
+            return Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Column(
+                children: [
+                  Container(
+                    width: 65,
+                    height: 65,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    ),
+                    child: const Icon(Icons.add, color: AppColors.primary, size: 24),
+                  ),
+                  const SizedBox(height: 8),
+                  Text('SİZ', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white24, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                ],
+              ),
+            );
+          }
+          
+          final names = ['SELINA', 'MARCUS', 'ELENA', 'KAAN', 'AYLIN', 'CANER', 'MELIS'];
+          final name = names[(index - 1) % names.length];
+          
+          return Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(2.5),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: AppColors.goldGradient,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.scaffold, width: 2),
+                    ),
+                    child: CircleAvatar(
+                      radius: 28,
+                      backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=$name'),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  name, 
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10, 
+                    color: Colors.white60, 
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  )
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Yeni Kart Tasarımı (Glassmorphism)
+  Widget _buildUserCard(UserProfile user, double percentX, double percentY) {
+    final showLike = percentX > 0.2;
+    final showNope = percentX < -0.2;
+
+    return AspectRatio(
+      aspectRatio: 3.8 / 5,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(40),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 40,
+              offset: const Offset(0, 20),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(40),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Fotoğraf
+              Image.network(
+                user.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: AppColors.surface,
+                  child: const Icon(Icons.person, size: 80, color: Colors.white10),
+                ),
+              ),
+
+              // Üst Gradient (Overlay)
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.center,
+                    colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+                  ),
+                ),
+              ),
+
+              // Aktif Durum
+              Positioned(
+                top: 24,
+                right: 24,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF10B981), shape: BoxShape.circle)),
+                      const SizedBox(width: 8),
+                      Text('AKTİF', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1.0)),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Alt Panel (Glassmorphism)
+              Positioned(
+                bottom: 24,
+                left: 24,
+                right: 24,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: Colors.white.withOpacity(0.1)),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                '${user.name}, ${user.age}',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.verified, color: AppColors.primary, size: 22),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(Icons.architecture, color: Colors.white.withOpacity(0.5), size: 16),
+                              const SizedBox(width: 8),
+                              Text(
+                                (user.job ?? 'Kreatif Direktör').toUpperCase(),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white.withOpacity(0.5),
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Swipe Etiketleri
+              if (showLike) Positioned(top: 60, left: 30, child: _buildSwipeLabel('LIKE', AppColors.success, percentX.abs())),
+              if (showNope) Positioned(top: 60, right: 30, child: _buildSwipeLabel('NOPE', AppColors.error, percentX.abs())),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildCircleButton(
+            onTap: _onUndo,
+            size: 40,
+            icon: Icons.undo,
+            color: AppColors.secondary.withOpacity(0.7),
+            borderColor: AppColors.secondary.withOpacity(0.4),
+            bgColor: Colors.transparent,
+          ),
+          const SizedBox(width: 24),
+          _buildCircleButton(
+            onTap: _onDislike,
+            size: 56,
+            icon: Icons.close,
+            color: Colors.white.withOpacity(0.5),
+            borderColor: Colors.white.withOpacity(0.1),
+            bgColor: Colors.white.withOpacity(0.03),
+          ),
+          const SizedBox(width: 24),
+          _buildCircleButton(
+            onTap: _onLike,
+            size: 80,
+            icon: Icons.favorite,
+            iconSize: 36,
+            color: AppColors.primary,
+            borderColor: AppColors.primary.withOpacity(0.3),
+            bgColor: AppColors.primary.withOpacity(0.1),
+            hasShadow: true,
+          ),
+          const SizedBox(width: 24),
+          _buildCircleButton(
+            onTap: _onSuperLike,
+            size: 56,
+            icon: Icons.star,
+            color: Colors.white.withOpacity(0.5),
+            borderColor: Colors.white.withOpacity(0.1),
+            bgColor: Colors.white.withOpacity(0.03),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCircleButton({
+    required VoidCallback onTap,
+    required double size,
+    required IconData icon,
+    required Color color,
+    Color? borderColor,
+    Color? bgColor,
+    double? iconSize,
+    bool hasShadow = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: bgColor ?? Colors.transparent,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: borderColor ?? Colors.transparent,
+            width: 1,
+          ),
+          boxShadow: hasShadow
+              ? [
+                  BoxShadow(
+                    color: color.withOpacity(0.15),
+                    blurRadius: 30,
+                    spreadRadius: 0,
+                  )
+                ]
+              : null,
+        ),
+        child: Icon(
+          icon,
+          color: color,
+          size: iconSize ?? (size * 0.45),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwipeLabel(String text, Color color, double opacity) {
+    return Transform.rotate(
+      angle: text == 'NOPE' ? 0.3 : text == 'LIKE' ? -0.3 : 0,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: color.withOpacity(opacity.clamp(0.0, 1.0)), width: 3),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: color.withOpacity(opacity.clamp(0.0, 1.0)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.person_search_outlined, size: 80, color: Colors.white.withOpacity(0.1)),
+          const SizedBox(height: 24),
+          Text(
+            "Yakındaki tüm profilleri gördün!",
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white30,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: () => _loadUsers(),
+            child: Text("Tekrar dene", style: GoogleFonts.plusJakartaSans(color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMatchOverlay() {
+    if (_matchedUser == null) return const SizedBox.shrink();
+    return Positioned.fill(
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: Colors.black.withOpacity(0.9),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "EŞLEŞTİNİZ!",
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 42,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primary,
+                    letterSpacing: 5.0,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Artık ${_matchedUser?.name} ile konuşabilirsin",
+                  style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 13),
+                ),
+                const SizedBox(height: 60),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(radius: 60, backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=me')),
+                    const SizedBox(width: 24),
+                    const Icon(Icons.favorite_rounded, color: AppColors.primary, size: 40),
+                    const SizedBox(width: 24),
+                    CircleAvatar(radius: 60, backgroundImage: NetworkImage(_matchedUser!.imageUrl)),
+                  ],
+                ),
+                const SizedBox(height: 80),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: ElevatedButton(
+                    onPressed: _dismissMatch,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: Text("MESAJ GÖNDER", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, letterSpacing: 1.0)),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _dismissMatch,
+                  child: Text("ŞİMDİ DEĞİL", style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12, letterSpacing: 1.0)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+

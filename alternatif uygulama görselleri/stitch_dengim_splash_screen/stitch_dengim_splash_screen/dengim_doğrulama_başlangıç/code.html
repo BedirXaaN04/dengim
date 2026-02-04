@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FFD700",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#0F1115",
+                        "indigo-lines": "#4F46E5"
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "poppins": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0F1115;
+        }
+        .face-scan-container {
+            position: relative;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4F46E5, transparent);
+            top: 50%;
+            opacity: 0.5;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white antialiased">
+<div class="relative flex h-screen w-full flex-col bg-background-dark group/design-root overflow-x-hidden max-w-md mx-auto">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-dark p-4 pb-2 justify-between">
+<div class="text-white flex size-12 shrink-0 items-center cursor-pointer" data-icon="ArrowLeft">
+<span class="material-symbols-outlined text-[28px]">arrow_back_ios</span>
+</div>
+<div class="flex-1"></div>
+</div>
+<!-- Illustration Section (Modified HeaderImage style) -->
+<div class="@container px-6 py-4">
+<div class="relative w-full aspect-square max-h-[340px] flex items-center justify-center overflow-hidden rounded-xl border border-white/5 bg-gradient-to-b from-indigo-lines/5 to-transparent">
+<!-- High-end minimalist face scan illustration placeholder -->
+<div class="relative w-48 h-64 border-[1px] border-indigo-lines/30 rounded-full flex items-center justify-center">
+<div class="absolute inset-4 border-[0.5px] border-indigo-lines/20 rounded-full"></div>
+<div class="absolute inset-10 border-[0.5px] border-indigo-lines/10 rounded-full"></div>
+<!-- Geometric thin lines representing scan points -->
+<div class="absolute top-1/4 left-1/4 w-1 h-1 bg-indigo-lines rounded-full"></div>
+<div class="absolute top-1/3 right-1/4 w-1 h-1 bg-indigo-lines rounded-full"></div>
+<div class="absolute bottom-1/3 left-1/3 w-1 h-1 bg-indigo-lines rounded-full"></div>
+<span class="material-symbols-outlined text-indigo-lines/40 text-8xl font-thin">face_6</span>
+<!-- Scan line effect -->
+<div class="absolute w-full h-[1px] bg-indigo-lines/60 top-1/2 shadow-[0_0_15px_rgba(79,70,229,0.5)]"></div>
+</div>
+</div>
+</div>
+<!-- HeadlineText -->
+<div class="flex flex-col items-center px-6 pt-8 pb-2">
+<h1 class="text-white font-poppins tracking-tight text-[32px] font-bold leading-tight text-center">
+                Profilini Doğrula
+            </h1>
+</div>
+<!-- BodyText -->
+<div class="flex flex-col items-center px-8 pb-8">
+<p class="text-gray-400 text-base font-normal leading-relaxed text-center max-w-[320px]">
+                DENGIM topluluğunun güvenliğini sağlamak ve daha fazla prestijli eşleşme yakalamak için kimliğini doğrula. Sadece birkaç saniye sürer.
+            </p>
+</div>
+<!-- Benefits List (Custom Component for context) -->
+<div class="flex flex-col gap-4 px-8 mb-auto">
+<div class="flex items-center gap-3 text-white/80">
+<span class="material-symbols-outlined text-primary text-xl">verified</span>
+<span class="text-sm font-medium">Doğrulanmış rozeti al</span>
+</div>
+<div class="flex items-center gap-3 text-white/80">
+<span class="material-symbols-outlined text-primary text-xl">security</span>
+<span class="text-sm font-medium">Güvenilir bir profil oluştur</span>
+</div>
+<div class="flex items-center gap-3 text-white/80">
+<span class="material-symbols-outlined text-primary text-xl">trending_up</span>
+<span class="text-sm font-medium">%80 daha fazla etkileşim</span>
+</div>
+</div>
+<!-- SingleButton -->
+<div class="flex px-6 py-8">
+<button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-5 bg-primary text-black text-lg font-bold leading-normal tracking-wide shadow-lg shadow-primary/10">
+<span class="truncate">Şimdi Doğrula</span>
+</button>
+</div>
+<!-- Bottom Spacer -->
+<div class="h-8 bg-background-dark"></div>
+</div>
+</body></html>

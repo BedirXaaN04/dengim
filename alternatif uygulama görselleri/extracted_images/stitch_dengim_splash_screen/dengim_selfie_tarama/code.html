@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#750ac2",
+              "background-light": "#f7f5f8",
+              "background-dark": "#0a070c",
+              "luxury-gold": "#FFD700",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-effect {
+            background: rgba(27, 16, 34, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .camera-overlay {
+            background: radial-gradient(circle 160px at center, transparent 99%, rgba(10, 7, 12, 0.85) 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-hidden h-screen">
+<div class="relative flex h-full w-full flex-col overflow-hidden">
+<!-- Top App Bar -->
+<div class="flex items-center p-4 z-20">
+<div class="flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined text-white cursor-pointer">arrow_back_ios</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">Selfie Doğrulama</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex items-center justify-center rounded-full size-10 bg-white/10 text-white">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</div>
+<!-- Camera Interface -->
+<div class="relative flex-1 flex flex-col items-center justify-center">
+<!-- Simulated Camera Feed Background -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-center bg-cover" data-alt="Blurred profile of a person in front of a neutral studio background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYlUDHw37nxC0wMGFT6RTOdrij--V2VIxUfMg8Z9mjiUdOmIphqCMi9HZ33x14tNRybwjDskARQXJ3no96LA5nHeXNXkXpEJnhdryLaWyCnHZ4jai3vfmPaDbcvgkaZWybsAMa9MIXJV2qej3zMSfbbq7hfos1h20v8_T8z6MhXri6b4a7hAP3CL_i2UtN6zzgvLK4YG6AstbMBE_-pnmJrHz48C9hZEhNu8ntu7-5z7Cg9c0XhgUovP4jdIy5Ailb48kMK1Y7QV0');">
+</div>
+<!-- Dark Overlay with Hole -->
+<div class="absolute inset-0 camera-overlay"></div>
+</div>
+<!-- Glowing Ring -->
+<div class="relative z-10 size-[320px] rounded-full border-2 border-luxury-gold shadow-[0_0_25px_rgba(255,215,0,0.4)] flex items-center justify-center">
+<!-- Status Indicator -->
+<div class="absolute -top-4 bg-luxury-gold px-4 py-1 rounded-full text-background-dark text-[10px] font-bold tracking-widest uppercase">
+                    AI Aktif
+                </div>
+</div>
+<!-- Bottom UI Area -->
+<div class="mt-auto w-full px-6 pb-12 z-20 flex flex-col items-center gap-8">
+<!-- Instruction Card (Glassmorphism) -->
+<div class="glass-effect w-full max-w-md p-6 rounded-xl flex flex-col items-center text-center gap-2">
+<p class="text-white text-xl font-semibold leading-tight">Lütfen başını belirtilen alana yerleştir ve gülümse</p>
+<p class="text-white/60 text-sm">DENGIM AI kimliğini saniyeler içinde doğrulayacak.</p>
+</div>
+<!-- Controls -->
+<div class="flex items-center justify-center gap-10">
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white/10 text-white">
+<span class="material-symbols-outlined">image</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-20 bg-primary shadow-lg shadow-primary/40 border-4 border-white/20">
+<span class="material-symbols-outlined text-4xl text-white">photo_camera</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white/10 text-white">
+<span class="material-symbols-outlined">cached</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Navigation Bar (iOS indicator style) -->
+<div class="h-8 w-full flex justify-center items-end pb-2">
+<div class="w-32 h-1.5 bg-white/20 rounded-full"></div>
+</div>
+</div>
+</body></html>

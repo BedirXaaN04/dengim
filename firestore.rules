@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Yardımcı Fonksiyonlar
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Kullanıcı Profilleri
+    match /users/{userId} {
+      allow read: if isAuthenticated(); // Herkes her profili görebilir (MVP için)
+      allow create: if isAuthenticated() && isOwner(userId); // Sadece kendi profilini oluştur
+      allow update: if isAuthenticated() && isOwner(userId); // Sadece kendi profilini güncelle
+      allow delete: if isAuthenticated() && isOwner(userId); // Sadece kendi profilini sil (Hesap silme)
+      
+      // Kullanıcının alt koleksiyonları (swipes)
+      match /swipes/{targetId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+    }
+
+    // Eşleşmeler (Matches)
+    match /matches/{matchId} {
+      // Sadece eşleşmeye dahil olan kullanıcılar okuyabilir
+      allow read: if isAuthenticated() && 
+                 (request.auth.uid in resource.data.userIds);
+      
+      // Eşleşme oluşturma: Sunucu taraflı tetikleyici (Function) tercih edilir ama
+      // client-side yapıyorsak sadece geçerli veriye izin ver.
+      allow create: if isAuthenticated(); 
+    }
+
+    // Sohbetler (Conversations)
+    match /conversations/{conversationId} {
+      // Sohbetin katılımcısıysan oku
+      allow read: if isAuthenticated() && (request.auth.uid in resource.data.userIds);
+      
+      // Sohbet oluşturma: Sadece 2 kişi olmalı ve biri sen olmalısın
+      allow create: if isAuthenticated() && 
+                   request.resource.data.userIds.size() == 2 &&
+                   (request.auth.uid in request.resource.data.userIds);
+      
+      // Güncelleme (Son mesaj vb.): Katılımcıysan
+      allow update: if isAuthenticated() && (request.auth.uid in resource.data.userIds);
+
+      // Mesajlar Alt Koleksiyonu
+      match /messages/{messageId} {
+        allow read: if isAuthenticated(); // Parent kuralı yeterli olmalı ama açık olsun
+        // Mesaj gönderme: Gönderen ID'si sen olmalısın
+        allow create: if isAuthenticated() && 
+                     request.resource.data.senderId == request.auth.uid;
+      }
+    }
+    
+    // Varsayılan: Her şeyi reddet
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
