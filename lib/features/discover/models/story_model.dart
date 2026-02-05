@@ -8,6 +8,8 @@ class Story {
   final String imageUrl;
   final DateTime createdAt;
   final List<String> viewers;
+  final bool isPremium;
+  final bool isVerified;
 
   Story({
     required this.id,
@@ -17,6 +19,8 @@ class Story {
     required this.imageUrl,
     required this.createdAt,
     this.viewers = const [],
+    this.isPremium = false,
+    this.isVerified = false,
   });
 
   bool get isExpired => DateTime.now().difference(createdAt).inHours >= 24;
@@ -30,6 +34,8 @@ class Story {
       'imageUrl': imageUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'viewers': viewers,
+      'isPremium': isPremium,
+      'isVerified': isVerified,
     };
   }
 
@@ -42,8 +48,11 @@ class Story {
       imageUrl: map['imageUrl'] ?? '',
       createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
       viewers: List<String>.from(map['viewers'] ?? []),
+      isPremium: map['isPremium'] ?? false,
+      isVerified: map['isVerified'] ?? false,
     );
   }
+
 }
 
 class UserStories {

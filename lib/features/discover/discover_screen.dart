@@ -151,7 +151,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           const SnackBar(content: Text('Hikayen yükleniyor...'), duration: Duration(seconds: 2))
         );
         
-        await storyProvider.uploadStory(image, user.name, user.imageUrl);
+        await storyProvider.uploadStory(
+          image, 
+          user.name, 
+          user.imageUrl,
+          isPremium: user.isPremium,
+          isVerified: user.isVerified,
+        );
+
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

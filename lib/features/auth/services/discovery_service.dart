@@ -202,6 +202,21 @@ class DiscoveryService {
       LogService.e("Error fetching active users", e);
       return [];
     }
+  Stream<List<String>> getMatchedUserIdsStream() {
+    final user = _currentUser;
+    if (user == null) return Stream.value([]);
+
+    return _firestore
+        .collection('matches')
+        .where('userIds', arrayContains: user.uid)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            List userIds = doc['userIds'];
+            return userIds.firstWhere((id) => id != user.uid, orElse: () => '') as String;
+          }).where((id) => id.isNotEmpty).toList();
+        });
   }
 }
+
 

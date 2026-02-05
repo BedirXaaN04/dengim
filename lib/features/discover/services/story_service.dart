@@ -14,7 +14,13 @@ class StoryService {
 
   User? get _currentUser => _auth.currentUser;
 
-  Future<void> uploadStory(XFile file, String userName, String userAvatar) async {
+  Future<void> uploadStory(
+    XFile file, 
+    String userName, 
+    String userAvatar, {
+    bool isPremium = false,
+    bool isVerified = false,
+  }) async {
     final user = _currentUser;
     if (user == null) return;
 
@@ -35,6 +41,8 @@ class StoryService {
         'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
         'viewers': [],
+        'isPremium': isPremium,
+        'isVerified': isVerified,
       });
 
       LogService.i("Story uploaded successfully.");
@@ -44,8 +52,9 @@ class StoryService {
     }
   }
 
-  Stream<List<UserStories>> getActiveStories() {
+  Stream<List<UserStories>> getActiveStories(List<String> matchIds) {
     final twentyFourHoursAgo = DateTime.now().subtract(const Duration(hours: 24));
+    final currentUserId = _currentUser?.uid;
     
     return _firestore
         .collection('stories')
@@ -57,10 +66,22 @@ class StoryService {
           
           for (var doc in snapshot.docs) {
             final story = Story.fromMap(doc.data(), doc.id);
-            if (!groupedStories.containsKey(story.userId)) {
-              groupedStories[story.userId] = [];
+            
+            // Visibility Filter:
+            // 1. My own stories
+            // 2. Stories from matches (mutual followers)
+            // 3. Showcase stories (Premium or Verified)
+            final bool isVisible = story.userId == currentUserId || 
+                                   matchIds.contains(story.userId) || 
+                                   story.isPremium || 
+                                   story.isVerified;
+
+            if (isVisible) {
+              if (!groupedStories.containsKey(story.userId)) {
+                groupedStories[story.userId] = [];
+              }
+              groupedStories[story.userId]!.add(story);
             }
-            groupedStories[story.userId]!.add(story);
           }
 
           return groupedStories.entries.map((entry) {
@@ -74,6 +95,7 @@ class StoryService {
           }).toList();
         });
   }
+
 
   Future<void> viewStory(String storyId) async {
     final uid = _currentUser?.uid;
