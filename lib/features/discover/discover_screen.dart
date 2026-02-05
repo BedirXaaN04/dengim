@@ -20,6 +20,10 @@ import 'package:provider/provider.dart';
 import '../../core/providers/discovery_provider.dart';
 import '../../core/utils/log_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../core/providers/story_provider.dart';
+import '../../core/providers/user_provider.dart';
+import 'story_viewer_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -131,21 +135,55 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
+  Future<void> _pickAndUploadStory() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+    
+    if (image != null && mounted) {
+      try {
+        final userProvider = context.read<UserProvider>();
+        final storyProvider = context.read<StoryProvider>();
+        
+        final user = userProvider.currentUser;
+        if (user == null) return;
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Hikayen yükleniyor...'), duration: Duration(seconds: 2))
+        );
+        
+        await storyProvider.uploadStory(image, user.name, user.imageUrl);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Hikaye paylaşıldı! 🎉'))
+          );
+        }
+      } catch (e) {
+        LogService.e("Story upload error in UI", e);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Yükleme başarısız oldu.'))
+          );
+        }
+      }
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
-      body: Consumer<DiscoveryProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<DiscoveryProvider, StoryProvider>(
+        builder: (context, provider, storyProvider, child) {
           return Stack(
             children: [
               Column(
                 children: [
                   _buildTopBar(),
-                  _buildStoriesTray(provider.activeUsers),
+                  _buildStoriesTray(storyProvider.activeStories),
                   const SizedBox(height: 8),
-
                   Expanded(
                     child: provider.isLoading 
                         ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
@@ -175,6 +213,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   const SizedBox(height: 100), 
                 ],
               ),
+              
+              if (storyProvider.isUploading)
+                Container(
+                  color: Colors.black45,
+                  child: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                ),
+
               if (_showMatch) _buildMatchOverlay(),
               Align(
                 alignment: Alignment.topCenter,
@@ -190,6 +235,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       ),
     );
   }
+
 
   Widget _buildTopBar() {
     return SafeArea(
@@ -233,7 +279,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Widget _buildStoriesTray(List<UserProfile> activeUsers) {
+  Widget _buildStoriesTray(List<UserStories> activeStories) {
     return Container(
       height: 110,
       padding: const EdgeInsets.only(top: 16),
@@ -241,7 +287,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: activeUsers.length + 1,
+        itemCount: activeStories.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             // Ekle Butonu
@@ -249,15 +295,18 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               padding: const EdgeInsets.only(right: 20),
               child: Column(
                 children: [
-                  Container(
-                    width: 65,
-                    height: 65,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  GestureDetector(
+                    onTap: _pickAndUploadStory,
+                    child: Container(
+                      width: 65,
+                      height: 65,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withOpacity(0.08)),
+                      ),
+                      child: const Icon(Icons.add, color: AppColors.primary, size: 24),
                     ),
-                    child: const Icon(Icons.add, color: AppColors.primary, size: 24),
                   ),
                   const SizedBox(height: 8),
                   Text('SİZ', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white24, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
@@ -266,31 +315,41 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             );
           }
           
-          final user = activeUsers[index - 1];
-          final name = user.name.toUpperCase();
+          final userStories = activeStories[index - 1];
+          final name = userStories.userName.toUpperCase();
           
           return Padding(
             padding: const EdgeInsets.only(right: 20),
             child: Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(2.5),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: AppColors.goldGradient,
-                  ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StoryViewerScreen(userStories: userStories),
+                      ),
+                    );
+                  },
                   child: Container(
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.all(2.5),
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.scaffold, width: 2),
+                      gradient: AppColors.goldGradient,
                     ),
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: user.imageUrl,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: AppColors.surface),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.scaffold, width: 2),
+                      ),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: userStories.userAvatar,
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(color: AppColors.surface),
+                        ),
                       ),
                     ),
                   ),
@@ -300,7 +359,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   name.length > 8 ? '${name.substring(0, 7)}..' : name, 
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 10, 
-                    color: user.isOnline ? Colors.white : Colors.white60, 
+                    color: Colors.white, 
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
                   )
@@ -312,6 +371,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       ),
     );
   }
+
+
 
 
   // Yeni Kart Tasarımı (Glassmorphism)

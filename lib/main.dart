@@ -21,7 +21,9 @@ import 'core/providers/chat_provider.dart';
 import 'core/providers/connectivity_provider.dart';
 import 'core/providers/likes_provider.dart';
 import 'core/providers/map_provider.dart';
+import 'core/providers/story_provider.dart';
 import 'core/utils/log_service.dart';
+
 import 'features/auth/services/profile_service.dart';
 
 void main() async {
@@ -69,6 +71,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => LikesProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),
+        ChangeNotifierProvider(create: (_) => StoryProvider()),
       ],
       child: const DengimApp(),
     ),
