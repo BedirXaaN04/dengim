@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
+
 
 class PurchaseService {
   // RevenueCat API Keys (Kullanıcı burayı değiştirmeli)

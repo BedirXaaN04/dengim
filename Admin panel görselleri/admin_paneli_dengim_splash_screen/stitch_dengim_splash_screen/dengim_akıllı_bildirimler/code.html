@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#dabb0b",
+              "background-light": "#f8f8f5",
+              "background-dark": "#221f10",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(52, 48, 24, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(218, 187, 11, 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white antialiased">
+<div class="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto overflow-x-hidden border-x border-primary/10">
+<!-- TopAppBar -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-4 justify-between border-b border-white/5">
+<div class="text-white flex size-10 shrink-0 items-center justify-center cursor-pointer" data-icon="arrow_back_ios">
+<span class="material-symbols-outlined text-primary">arrow_back_ios</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">DENGIM Akıllı Bildirimler</h2>
+</div>
+<div class="flex flex-col gap-2 overflow-y-auto pb-10">
+<!-- Hero Card: Smart Notification Mode -->
+<div class="p-4 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-2xl glass-card overflow-hidden">
+<div class="w-full bg-center bg-no-repeat aspect-[16/9] bg-cover relative" data-alt="Abstract golden silk waves background texture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDF9nFOOFZRNDLTbW71DwbH95pgAcXz5t4ATjNeiGgPv-46q-l3Geru59cb8aHADUi_fRFmke2H0eIpLVe5GDdhdysLrIuU5G6yt_hF2ofrSvbZdIXXIPkDL2XL4_fsUzqTNxBV9R87Za6st8At8xNBP57naC-q_LoB_2Za6upGBGXaU9z44uNy8PPAtKCzi82H-TuDSj7QBeu1S_Jg_YOHTSGk02HJAxD5tBcvg0CdUCN_6GioW6Uobe2HIT619CjQXlNPs4WFaZQ");'>
+<div class="absolute inset-0 bg-gradient-to-t from-[#343018] to-transparent opacity-60"></div>
+<div class="absolute bottom-4 left-4 right-4">
+<span class="bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border border-primary/30">Premium Feature</span>
+</div>
+</div>
+<div class="flex w-full flex-col items-stretch justify-center gap-1 p-5">
+<p class="text-white text-xl font-bold leading-tight tracking-tight">Akıllı Bildirim Modu</p>
+<div class="flex flex-col gap-4 mt-2">
+<p class="text-[#cbc290] text-sm font-normal leading-relaxed">
+                                Sadece VIP eşleşmeler ve direkt mesajlar için anlık bildirim alırsınız. Sessiz lüksün ve dijital huzurun keyfini çıkarın.
+                            </p>
+<div class="flex items-center justify-between">
+<span class="text-xs text-white/50 italic">Sessiz lüks modu aktif</span>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary text-background-dark text-sm font-bold shadow-lg shadow-primary/20">
+<span class="truncate">Aktif</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Controls -->
+<div class="px-4 pt-4">
+<h3 class="text-primary/70 text-xs font-bold leading-tight tracking-[0.2em] uppercase">SES VE TİTREŞİM</h3>
+</div>
+<!-- List Item: Custom Sounds -->
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12 border border-primary/20">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-semibold leading-normal line-clamp-1">Özel Bildirim Sesleri</p>
+<p class="text-[#cbc290]/70 text-xs font-normal leading-normal line-clamp-2">VIP bildirimleri için altın tonlu sesler</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all duration-300">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- List Item: Haptic Feedback -->
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12 border border-primary/20">
+<span class="material-symbols-outlined" data-icon="vibration">vibration</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-semibold leading-normal line-clamp-1">Haptik Geri Bildirim</p>
+<p class="text-[#cbc290]/70 text-xs font-normal leading-normal line-clamp-2">Zarif ve hafif titreşim patternleri</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all duration-300">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Section: Privacy -->
+<div class="px-4 pt-6">
+<h3 class="text-primary/70 text-xs font-bold leading-tight tracking-[0.2em] uppercase">GİZLİLİK VE ÖNİZLEME</h3>
+</div>
+<!-- List Item: Hide Sender -->
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12 border border-primary/20">
+<span class="material-symbols-outlined" data-icon="visibility_off">visibility_off</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-semibold leading-normal line-clamp-1">Göndereni Gizle</p>
+<p class="text-[#cbc290]/70 text-xs font-normal leading-normal line-clamp-2">Kilit ekranında isimleri gösterme</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all duration-300">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- List Item: Subtle Alerts -->
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12 border border-primary/20">
+<span class="material-symbols-outlined" data-icon="blur_on">blur_on</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-semibold leading-normal line-clamp-1">Zarif Uyarılar</p>
+<p class="text-[#cbc290]/70 text-xs font-normal leading-normal line-clamp-2">Ekran parlamasını minimumda tutar</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all duration-300">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Footer Message -->
+<div class="p-8 text-center">
+<p class="text-[#cbc290]/40 text-[11px] leading-relaxed uppercase tracking-widest">
+                    DENGIM Elite Experience — V.2.4.0
+                </p>
+</div>
+</div>
+</div>
+</body></html>

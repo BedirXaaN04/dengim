@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/models/user_profile.dart';
-import '../auth/services/auth_service.dart';
 import '../payment/premium_offer_screen.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/likes_provider.dart';
-import '../../core/utils/log_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
+
 
 class LikesScreen extends StatefulWidget {
   const LikesScreen({super.key});

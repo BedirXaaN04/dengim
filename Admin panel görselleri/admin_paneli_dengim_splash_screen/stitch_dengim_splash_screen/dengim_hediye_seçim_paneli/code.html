@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ffd900",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#0F1115",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Poppins", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="text-white flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined cursor-pointer">close</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center font-display">Zarif Bir Jest Yap</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-transparent text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</div>
+<!-- Section Title -->
+<div class="px-4 pt-6 pb-2">
+<h3 class="text-white tracking-tight text-2xl font-bold leading-tight">Özel Koleksiyon</h3>
+<p class="text-gray-400 text-sm mt-1">İlginizi seçkin bir hediye ile belli edin.</p>
+</div>
+<!-- ImageGrid (Gifts) -->
+<div class="grid grid-cols-2 gap-4 p-4">
+<div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl border border-white/5 bg-[#1A1D23] flex items-center justify-center relative overflow-hidden" data-alt="Minimalist 3D golden rose on dark background">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<span class="material-symbols-outlined text-primary !text-6xl opacity-90">local_florist</span>
+</div>
+<div>
+<p class="text-white text-base font-medium leading-normal">Altın Gül</p>
+<p class="text-primary text-sm font-semibold leading-normal">50 Credits</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl border border-white/5 bg-[#1A1D23] flex items-center justify-center relative overflow-hidden" data-alt="Elegant 3D champagne bottle and glass">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<span class="material-symbols-outlined text-primary !text-6xl opacity-90">liquor</span>
+</div>
+<div>
+<p class="text-white text-base font-medium leading-normal">Şampanya</p>
+<p class="text-primary text-sm font-semibold leading-normal">120 Credits</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl border border-white/5 bg-[#1A1D23] flex items-center justify-center relative overflow-hidden border-primary/30" data-alt="Premium silver invitation card with glow">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<span class="material-symbols-outlined text-primary !text-6xl opacity-90">mail</span>
+</div>
+<div>
+<p class="text-white text-base font-medium leading-normal">Özel Davetiye</p>
+<p class="text-primary text-sm font-semibold leading-normal">200 Credits</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl border border-white/5 bg-[#1A1D23] flex items-center justify-center relative overflow-hidden" data-alt="Luxury 3D diamond ring shimmering">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<span class="material-symbols-outlined text-primary !text-6xl opacity-90">diamond</span>
+</div>
+<div>
+<p class="text-white text-base font-medium leading-normal">Elmas Yüzük</p>
+<p class="text-primary text-sm font-semibold leading-normal">500 Credits</p>
+</div>
+</div>
+</div>
+<!-- Bottom Preview Overlay (Simulated tap state) -->
+<div class="flex flex-col justify-end items-stretch bg-black/60 fixed inset-0 z-20">
+<div class="flex flex-col items-stretch bg-background-dark rounded-t-xl glass-morphism">
+<!-- BottomSheetHandle -->
+<button class="flex h-8 w-full items-center justify-center">
+<div class="h-1.5 w-12 rounded-full bg-white/20"></div>
+</button>
+<div class="px-4 pb-8">
+<!-- HeadlineText -->
+<div class="flex items-center gap-4 mb-6">
+<div class="size-16 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center" data-alt="Preview of the selected virtual invitation gift">
+<span class="material-symbols-outlined text-primary !text-3xl">mail</span>
+</div>
+<div>
+<h3 class="text-white text-xl font-bold leading-tight">Hediye Önizleme</h3>
+<p class="text-gray-400 text-sm">Özel Davetiye • 200 Credits</p>
+</div>
+</div>
+<!-- TextField -->
+<div class="flex flex-col gap-2 mb-6">
+<label class="flex flex-col w-full">
+<p class="text-white text-base font-medium leading-normal pb-2">Mesaj Ekle</p>
+<textarea class="form-input flex w-full resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-white/10 bg-white/5 placeholder:text-gray-500 min-h-24 p-4 text-base font-normal leading-normal" placeholder="Kişisel bir not bırakın..."></textarea>
+</label>
+</div>
+<!-- Action Button -->
+<button class="w-full bg-primary py-4 rounded-xl text-background-dark font-bold text-lg flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
+<span>Gönder</span>
+<span class="material-symbols-outlined !text-xl">send</span>
+</button>
+<p class="text-center text-gray-500 text-xs mt-4">Bakiyeniz: 1,450 Credits</p>
+</div>
+</div>
+</div>
+</div>
+</body></html>

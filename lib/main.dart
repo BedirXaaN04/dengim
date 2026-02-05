@@ -9,7 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'features/auth/login_screen.dart';
-import 'features/auth/services/auth_service.dart';
+import 'core/utils/error_handler.dart';
 import 'features/create_profile/create_profile_screen.dart';
 import 'core/widgets/responsive_center_wrapper.dart'; // Web Wrapper
 import 'core/widgets/network_wrapper.dart'; // Network Wrapper
@@ -25,9 +25,13 @@ import 'core/providers/story_provider.dart';
 import 'core/utils/log_service.dart';
 
 import 'features/auth/services/profile_service.dart';
+import 'core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Global error handling
+  ErrorHandler.initialize();
   
   if (!kIsWeb) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -54,6 +58,11 @@ void main() async {
         : null,
     );
     LogService.i("Firebase initialized successfully.");
+
+    // Bildirim servisini başlat
+    if (!kIsWeb) {
+       await NotificationService.initialize();
+    }
     
     if (kIsWeb) {
       FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);

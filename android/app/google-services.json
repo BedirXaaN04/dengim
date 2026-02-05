@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "12239103870",
+    "firebase_url": "https://dengim-kim-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "dengim-kim",
     "storage_bucket": "dengim-kim.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "dengim.kim"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "12239103870-pbntj0evbr233f22mm443a4r4veds6bh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dengim.kim",
+            "certificate_hash": "1ce1a7b8cfc757daad6340393eadb5cb2f2a5759"
+          }
+        },
+        {
+          "client_id": "12239103870-nmqifbprc2t9pgtj68ar6efpl5mnrc0e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAlCLMEbzY45Ff3Lrj22EspoyNO1O3qFfs"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12239103870-nmqifbprc2t9pgtj68ar6efpl5mnrc0e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

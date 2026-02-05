@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366F1",
+                        "accent-gold": "#FFD700",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0F1115",
+                        "card-dark": "#1A1D24",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full max-w-[430px] mx-auto flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-6 pb-4 justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80 dark:bg-opacity-80">
+<div class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full bg-black/5 dark:bg-white/5" data-icon="arrow_back_ios">
+<span class="material-symbols-outlined !text-[20px]">arrow_back_ios</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-semibold leading-tight tracking-tight flex-1 text-center pr-10">Bildirim Tercihleri</h2>
+</div>
+<div class="px-2">
+<!-- Section: Eşleşmeler & Beğeniler -->
+<h2 class="text-slate-900 dark:text-white text-[20px] font-semibold leading-tight tracking-tight px-4 pb-2 pt-6">Eşleşmeler &amp; Beğeniler</h2>
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between border-b border-black/5 dark:border-white/5">
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Yeni Eşleşmeler</p>
+<p class="text-slate-500 dark:text-[#9292c9] text-xs font-normal leading-normal">Biriyle eşleştiğinizde anında haber ver</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 dark:bg-[#232348] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between border-b border-black/5 dark:border-white/5">
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Beğeniler</p>
+<p class="text-slate-500 dark:text-[#9292c9] text-xs font-normal leading-normal">Profilinizi beğenen seçkin üyeleri görün</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 dark:bg-[#232348] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-accent-gold flex items-center justify-center rounded-xl bg-accent-gold/10 shrink-0 size-12" data-icon="stars">
+<span class="material-symbols-outlined">stars</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">VIP Bildirimleri</p>
+<p class="text-slate-500 dark:text-[#9292c9] text-xs font-normal leading-normal">Öncelikli üyelerden gelen etkileşimler</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 dark:bg-[#232348] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Section: Mesajlar -->
+<h2 class="text-slate-900 dark:text-white text-[20px] font-semibold leading-tight tracking-tight px-4 pb-2 pt-8">Mesajlar</h2>
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between border-b border-black/5 dark:border-white/5">
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Yeni Mesajlar</p>
+<p class="text-slate-500 dark:text-[#9292c9] text-xs font-normal leading-normal">Gelen kutunuza düşen her mesaj için</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 dark:bg-[#232348] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Section: Uygulama Güncellemeleri -->
+<h2 class="text-slate-900 dark:text-white text-[20px] font-semibold leading-tight tracking-tight px-4 pb-2 pt-8">Uygulama Güncellemeleri</h2>
+<div class="flex items-center gap-4 px-4 min-h-[80px] py-2 justify-between">
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Dengim Duyuruları</p>
+<p class="text-slate-500 dark:text-[#9292c9] text-xs font-normal leading-normal">Özel etkinlikler ve uygulama yenilikleri</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-200 dark:bg-[#232348] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Section: Sessiz Saatler -->
+<div class="mt-10 mx-4 mb-10 p-6 rounded-2xl bg-card-dark border border-white/5 shadow-2xl">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">notifications_off</span>
+<h2 class="text-white text-lg font-semibold">Sessiz Saatler</h2>
+</div>
+<label class="relative flex h-[24px] w-[42px] cursor-pointer items-center rounded-full border-none bg-[#232348] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[20px] rounded-full bg-white"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<p class="text-[#9292c9] text-xs mb-6 font-normal">Belirlenen saatler arasında bildirimler sessize alınır.</p>
+<div class="flex items-center justify-between gap-4">
+<div class="flex-1 flex flex-col items-center bg-black/20 p-4 rounded-xl border border-white/5">
+<span class="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Başlangıç</span>
+<span class="text-white text-2xl font-light">23:00</span>
+</div>
+<div class="w-8 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/20">arrow_forward</span>
+</div>
+<div class="flex-1 flex flex-col items-center bg-black/20 p-4 rounded-xl border border-white/5">
+<span class="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Bitiş</span>
+<span class="text-white text-2xl font-light">08:00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Safe Area -->
+<div class="h-8 bg-background-light dark:bg-background-dark"></div>
+</div>
+</body></html>

@@ -1,16 +1,15 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/services/auth_service.dart';
 import '../auth/login_screen.dart';
-import '../auth/models/user_profile.dart';
 import 'settings_screen.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/user_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

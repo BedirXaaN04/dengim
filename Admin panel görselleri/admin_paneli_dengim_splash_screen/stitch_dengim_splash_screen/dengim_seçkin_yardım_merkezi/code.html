@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#ffd900",
+              "background-light": "#f8f8f5",
+              "background-dark": "#0F1115",
+              "luxury-gold": "#FFD700",
+              "luxury-indigo": "#6366F1",
+            },
+            fontFamily: {
+              "display": ["Poppins", "Manrope", "sans-serif"],
+              "body": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .frosted-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark max-w-[430px] mx-auto overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center px-4 pt-6 pb-2 justify-between">
+<div class="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</div>
+<h2 class="text-white text-lg font-semibold font-display leading-tight tracking-tight flex-1 text-center pr-10 uppercase tracking-widest">Yardım Merkezi</h2>
+</div>
+<!-- SearchBar with Frosted Glass -->
+<div class="px-4 py-6">
+<label class="flex flex-col min-w-40 h-14 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full frosted-glass overflow-hidden">
+<div class="text-luxury-gold/70 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-white focus:outline-0 focus:ring-0 border-none bg-transparent focus:border-none h-full placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal" placeholder="Nasıl yardımcı olabiliriz?" value=""/>
+</div>
+</label>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto pb-32">
+<!-- Section: Hesap -->
+<div class="px-4">
+<h2 class="text-white text-[24px] font-display font-bold leading-tight tracking-tight pb-3 pt-5 border-b border-white/5 mb-4 uppercase tracking-wider">Hesap</h2>
+<div class="flex flex-col gap-2">
+<details class="flex flex-col rounded-xl frosted-glass px-4 py-2 group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3">
+<p class="text-white/90 text-[15px] font-medium leading-normal">Profilimi nasıl güncellerim?</p>
+<span class="material-symbols-outlined text-luxury-gold group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-gray-400 text-sm font-normal leading-relaxed pb-4 pt-2">
+                            Profilinizi düzenlemek için ana ekrandaki profil simgesine dokunun ve 'Düzenle' seçeneğini belirleyin. Burada fotoğraflarınızı, biyografinizi ve ilgi alanlarınızı güncelleyebilirsiniz.
+                        </p>
+</details>
+<details class="flex flex-col rounded-xl frosted-glass px-4 py-2 group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3">
+<p class="text-white/90 text-[15px] font-medium leading-normal">Üyeliğimi nasıl dondurabilirim?</p>
+<span class="material-symbols-outlined text-luxury-gold group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-gray-400 text-sm font-normal leading-relaxed pb-4 pt-2">
+                            Hesap ayarlarına gidin ve 'Hesabımı Dondur' seçeneğini bulun. Bu işlem profilinizi diğer üyelerden gizler ancak istediğiniz zaman geri dönebilirsiniz.
+                        </p>
+</details>
+</div>
+</div>
+<!-- Section: Güvenlik -->
+<div class="px-4 mt-8">
+<h2 class="text-white text-[24px] font-display font-bold leading-tight tracking-tight pb-3 pt-5 border-b border-white/5 mb-4 uppercase tracking-wider">Güvenlik</h2>
+<div class="flex flex-col gap-2">
+<details class="flex flex-col rounded-xl frosted-glass px-4 py-2 group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3">
+<p class="text-white/90 text-[15px] font-medium leading-normal">Kullanıcı bildirme ve engelleme</p>
+<span class="material-symbols-outlined text-luxury-gold group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-gray-400 text-sm font-normal leading-relaxed pb-4 pt-2">
+                            DENGIM topluluk kurallarını ihlal eden bir profil ile karşılaşırsanız, profilin sağ üst köşesindeki üç noktaya dokunarak 'Bildir' veya 'Engelle' seçeneğini kullanabilirsiniz.
+                        </p>
+</details>
+<details class="flex flex-col rounded-xl frosted-glass px-4 py-2 group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3">
+<p class="text-white/90 text-[15px] font-medium leading-normal">Veri gizliliği politikası</p>
+<span class="material-symbols-outlined text-luxury-gold group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-gray-400 text-sm font-normal leading-relaxed pb-4 pt-2">
+                            Verileriniz en yüksek güvenlik standartlarıyla korunur. Detaylı bilgi için Gizlilik Politikamızı her zaman inceleyebilirsiniz.
+                        </p>
+</details>
+</div>
+</div>
+<!-- Section: Premium -->
+<div class="px-4 mt-8">
+<h2 class="text-white text-[24px] font-display font-bold leading-tight tracking-tight pb-3 pt-5 border-b border-white/5 mb-4 uppercase tracking-wider text-luxury-gold">Premium</h2>
+<div class="flex flex-col gap-2">
+<details class="flex flex-col rounded-xl frosted-glass px-4 py-2 group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3">
+<p class="text-white/90 text-[15px] font-medium leading-normal">DENGIM Elite ayrıcalıkları nelerdir?</p>
+<span class="material-symbols-outlined text-luxury-gold group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-gray-400 text-sm font-normal leading-relaxed pb-4 pt-2">
+                            Elite üyeler sınırsız beğeni, gizli mod, öncelikli eşleşme ve her ay 1 adet ücretsiz profil öne çıkarma hakkına sahip olur.
+                        </p>
+</details>
+<details class="flex flex-col rounded-xl frosted-glass px-4 py-2 group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3">
+<p class="text-white/90 text-[15px] font-medium leading-normal">Abonelik iptali</p>
+<span class="material-symbols-outlined text-luxury-gold group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-gray-400 text-sm font-normal leading-relaxed pb-4 pt-2">
+                            App Store ayarlarınızdan aboneliklerinizi yönetebilir ve dilediğiniz zaman iptal işlemini gerçekleştirebilirsiniz.
+                        </p>
+</details>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Support Button -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto p-6 bg-gradient-to-t from-background-dark via-background-dark/90 to-transparent">
+<button class="w-full h-14 border border-luxury-indigo text-luxury-indigo font-display font-semibold rounded-xl flex items-center justify-center gap-3 hover:bg-luxury-indigo/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+                Müşteri Temsilcisine Bağlan
+            </button>
+</div>
+</div>
+</body></html>

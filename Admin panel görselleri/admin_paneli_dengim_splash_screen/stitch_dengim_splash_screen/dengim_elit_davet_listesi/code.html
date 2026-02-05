@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#ffd900",
+              "background-light": "#f8f8f5",
+              "background-dark": "#0F1115",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-[430px] mx-auto overflow-x-hidden border-x border-white/5 shadow-2xl">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50">
+<div class="text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12 font-display uppercase tracking-widest">DENGIM ELİT</h2>
+</div>
+<!-- HeadlineText -->
+<div class="px-4 pt-8">
+<h3 class="text-white tracking-light text-3xl font-extrabold leading-tight text-center pb-2 pt-5 font-display">Ağınızı Seçkinleştirin</h3>
+</div>
+<!-- BodyText -->
+<div class="px-8">
+<p class="text-white/60 text-sm font-light leading-relaxed pb-6 pt-1 text-center font-display">DENGIM kalitesini korumak için sadece vizyoner ve seçkin kişileri davet edin. Her davet topluluğun ruhunu şekillendirir.</p>
+</div>
+<!-- ProgressBar Card -->
+<div class="px-4 mb-6">
+<div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+<div class="flex flex-col gap-4">
+<div class="flex gap-6 justify-between items-end">
+<div class="flex flex-col">
+<span class="text-[10px] text-primary uppercase tracking-[0.2em] font-bold mb-1">Mevcut Durum</span>
+<p class="text-white text-lg font-bold leading-none">Hedef: 3 Davet = Gold Rozeti</p>
+</div>
+<p class="text-primary text-xl font-bold leading-none">1/3</p>
+</div>
+<div class="rounded-full bg-white/10 h-3 overflow-hidden">
+<div class="h-full rounded-full bg-primary shadow-[0_0_15px_rgba(255,217,0,0.5)]" style="width: 33.33%;"></div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">stars</span>
+<p class="text-white/40 text-xs font-medium leading-normal">Gold Rozet kazanmanıza 2 davet kaldı</p>
+</div>
+</div>
+</div>
+</div>
+<!-- SectionHeader -->
+<div class="px-4 pb-2 pt-4 flex justify-between items-center">
+<h3 class="text-white text-base font-bold leading-tight tracking-tight font-display uppercase tracking-widest">Rehber Önerileri</h3>
+<span class="text-xs text-white/40 font-medium">142 Kişi</span>
+</div>
+<!-- Contact List -->
+<div class="flex flex-col px-4 gap-3 mb-10">
+<!-- Contact Item 1 -->
+<div class="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:bg-white/[0.06] transition-all">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 flex items-center justify-center border border-white/10 text-primary font-bold">
+                        MK
+                    </div>
+<div class="flex flex-col">
+<p class="text-white font-semibold text-sm">Murat Kara</p>
+<p class="text-white/40 text-xs">+90 532 ••• •• 45</p>
+</div>
+</div>
+<button class="bg-primary text-black px-5 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform">
+                    Davet Et
+                </button>
+</div>
+<!-- Contact Item 2 -->
+<div class="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:bg-white/[0.06] transition-all">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 flex items-center justify-center border border-white/10 text-primary font-bold">
+                        SY
+                    </div>
+<div class="flex flex-col">
+<p class="text-white font-semibold text-sm">Selin Yılmaz</p>
+<p class="text-white/40 text-xs">+90 544 ••• •• 12</p>
+</div>
+</div>
+<button class="bg-primary text-black px-5 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform">
+                    Davet Et
+                </button>
+</div>
+<!-- Contact Item 3 -->
+<div class="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:bg-white/[0.06] transition-all">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 flex items-center justify-center border border-white/10 text-primary font-bold">
+                        AE
+                    </div>
+<div class="flex flex-col">
+<p class="text-white font-semibold text-sm">Arda Erdem</p>
+<p class="text-white/40 text-xs">+90 530 ••• •• 89</p>
+</div>
+</div>
+<button class="bg-primary text-black px-5 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform">
+                    Davet Et
+                </button>
+</div>
+<!-- Contact Item 4 -->
+<div class="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:bg-white/[0.06] transition-all">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 flex items-center justify-center border border-white/10 text-primary font-bold">
+                        DA
+                    </div>
+<div class="flex flex-col">
+<p class="text-white font-semibold text-sm">Derin Aksoy</p>
+<p class="text-white/40 text-xs">+90 555 ••• •• 77</p>
+</div>
+</div>
+<button class="bg-primary text-black px-5 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform">
+                    Davet Et
+                </button>
+</div>
+<!-- Contact Item 5 -->
+<div class="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5 hover:bg-white/[0.06] transition-all">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 flex items-center justify-center border border-white/10 text-primary font-bold">
+                        CO
+                    </div>
+<div class="flex flex-col">
+<p class="text-white font-semibold text-sm">Can Özkan</p>
+<p class="text-white/40 text-xs">+90 532 ••• •• 01</p>
+</div>
+</div>
+<button class="bg-primary text-black px-5 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform">
+                    Davet Et
+                </button>
+</div>
+</div>
+<!-- Sticky Bottom Search/Invite -->
+<div class="mt-auto p-4 bg-gradient-to-t from-background-dark via-background-dark to-transparent sticky bottom-0">
+<div class="bg-white/10 border border-white/20 rounded-full flex items-center px-4 py-3 gap-3 backdrop-blur-md">
+<span class="material-symbols-outlined text-white/40">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm text-white placeholder-white/40 w-full" placeholder="Rehberde ara..." type="text"/>
+</div>
+</div>
+</div>
+</body></html>

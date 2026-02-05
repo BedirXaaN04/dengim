@@ -2,11 +2,22 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_handler.dart';
 import '../auth/services/auth_service.dart';
 import '../auth/login_screen.dart';
+import 'blocked_users_screen.dart';
+import 'package:provider/provider.dart';
+import '../../core/providers/user_provider.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,63 +41,99 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionHeader("HESAP"),
-            _buildSettingItem(context, "E-posta Adresi", Icons.email_outlined, trailing: "user@example.com"),
-            _buildSettingItem(context, "Telefon Numarası", Icons.phone_outlined),
-            _buildSettingItem(context, "Şifre ve Güvenlik", Icons.lock_outline),
-            
-            const SizedBox(height: 32),
-            _buildSectionHeader("UYGULAMA"),
-            _buildSettingItem(context, "Bildirimler", Icons.notifications_none),
-            _buildSettingItem(context, "Gizlilik ve Güvenlik", Icons.privacy_tip_outlined),
-            _buildSettingItem(context, "Dil Seçeneği", Icons.language, trailing: "Türkçe"),
-            
-            const SizedBox(height: 32),
-            _buildSectionHeader("HUKUKİ"),
-            _buildSettingItem(context, "Kullanım Koşulları", Icons.description_outlined),
-            _buildSettingItem(context, "Gizlilik Politikası", Icons.policy_outlined),
-            
-            const SizedBox(height: 48),
-            
-            // Delete Account Button
-            GestureDetector(
-              onTap: () => _showDeleteConfirmation(context),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.error.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.error.withOpacity(0.2)),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader("HESAP"),
+                _buildSettingItem(context, "E-posta Adresi", Icons.email_outlined, trailing: "user@example.com"),
+                _buildSettingItem(context, "Telefon Numarası", Icons.phone_outlined),
+                _buildSettingItem(context, "Şifre ve Güvenlik", Icons.lock_outline),
+                
+                const SizedBox(height: 32),
+                _buildSectionHeader("GİZLİLİK"),
+                _buildSettingItem(
+                  context, 
+                  "Engellenen Kullanıcılar", 
+                  Icons.block,
+                  onTap: () => Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (_) => const BlockedUsersScreen()),
+                  ),
                 ),
-                child: Center(
-                  child: Text(
-                    "HESABIMI SİL",
-                    style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.error,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                      fontSize: 14,
+                _buildSettingItem(context, "Gizlilik ve Güvenlik", Icons.privacy_tip_outlined),
+                
+                const SizedBox(height: 32),
+                _buildSectionHeader("UYGULAMA"),
+                _buildSettingItem(context, "Bildirimler", Icons.notifications_none),
+                _buildSettingItem(context, "Dil Seçeneği", Icons.language, trailing: "Türkçe"),
+                
+                const SizedBox(height: 32),
+                _buildSectionHeader("HUKUKİ"),
+                _buildSettingItem(context, "Kullanım Koşulları", Icons.description_outlined),
+                _buildSettingItem(context, "Gizlilik Politikası", Icons.policy_outlined),
+                
+                const SizedBox(height: 48),
+                
+                // Delete Account Button
+                GestureDetector(
+                  onTap: () => _showDeleteConfirmation(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.error.withOpacity(0.2)),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "HESABIMI SİL",
+                        style: GoogleFonts.plusJakartaSans(
+                          color: AppColors.error,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
                 ),
+                
+                const SizedBox(height: 16),
+                 Center(
+                  child: Text(
+                    "v1.0.0 (Build 100)",
+                    style: GoogleFonts.plusJakartaSans(color: Colors.white24, fontSize: 12),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+          
+          // Loading overlay
+          if (_isDeleting)
+            Container(
+              color: Colors.black.withOpacity(0.7),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(color: AppColors.error),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Hesap siliniyor...',
+                      style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
-            
-            const SizedBox(height: 16),
-             Center(
-              child: Text(
-                "v1.0.0 (Build 100)",
-                style: GoogleFonts.plusJakartaSans(color: Colors.white24, fontSize: 12),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -106,33 +153,41 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingItem(BuildContext context, String title, IconData icon, {String? trailing}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white70, size: 20),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              title,
-              style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
+  Widget _buildSettingItem(
+    BuildContext context, 
+    String title, 
+    IconData icon, 
+    {String? trailing, VoidCallback? onTap}
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.03),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white70, size: 20),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
+              ),
             ),
-          ),
-          if (trailing != null)
-            Text(
-              trailing,
-              style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12),
-            )
-          else
-            const Icon(Icons.arrow_forward_ios, color: Colors.white24, size: 14),
-        ],
+            if (trailing != null)
+              Text(
+                trailing,
+                style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12),
+              )
+            else
+              const Icon(Icons.arrow_forward_ios, color: Colors.white24, size: 14),
+          ],
+        ),
       ),
     );
   }
@@ -142,43 +197,69 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1F2937),
-        title: const Text("Hesabını Sil?", style: TextStyle(color: Colors.white)),
-        content: const Text(
-          "Bu işlem geri alınamaz. Profilin, eşleşmelerin ve mesajların kalıcı olarak silinecektir.",
-          style: TextStyle(color: Colors.white70),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_rounded, color: AppColors.error, size: 28),
+            const SizedBox(width: 12),
+            const Text("Hesabını Sil?", style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Bu işlem geri alınamaz!\n",
+              style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "• Profilin kalıcı olarak silinecek\n• Tüm eşleşmelerin kaybolacak\n• Mesaj geçmişin silinecek\n• Tüm veriler kaldırılacak",
+              style: TextStyle(color: Colors.white.withOpacity(0.7), height: 1.6),
+            ),
+          ],
         ),
         actions: [
           TextButton(
             child: const Text("İptal", style: TextStyle(color: Colors.white54)),
             onPressed: () => Navigator.pop(context),
           ),
-          TextButton(
-            child: const Text("Evet, Sil", style: TextStyle(color: AppColors.error)),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
             onPressed: () async {
               Navigator.pop(context); // Dialog kapa
-              await _deleteAccount(context);
+              await _deleteAccount();
             },
+            child: const Text("Evet, Sil"),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _deleteAccount(BuildContext context) async {
-    // Loading gösterilebilir
+  Future<void> _deleteAccount() async {
+    setState(() => _isDeleting = true);
+    
     try {
       await AuthService().deleteAccount();
-      if (context.mounted) {
+      
+      if (mounted) {
+        // Provider'ı temizle
+        context.read<UserProvider>().clearUser();
+        
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (c) => const LoginScreen()),
           (route) => false,
         );
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Hata: $e")),
-        );
+      if (mounted) {
+        setState(() => _isDeleting = false);
+        ErrorHandler.showError(context, "Hesap silinemedi: $e");
       }
     }
   }

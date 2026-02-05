@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ffd900",
+                        "indigo-custom": "#6366F1",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#0F1115",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50 border-b border-white/10">
+<div class="text-white flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined text-2xl">close</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">DENGIM Görsel Duyuru</h2>
+<div class="flex w-12 items-center justify-end">
+<p class="text-primary text-base font-bold leading-normal tracking-tight shrink-0">Yayınla</p>
+</div>
+</div>
+<!-- Tabs -->
+<div class="pb-3 bg-background-light dark:bg-background-dark">
+<div class="flex border-b border-white/10 px-4 gap-8 justify-center">
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-white pb-[13px] pt-4" href="#">
+<p class="text-white text-sm font-bold leading-normal">Pop-up</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-white/50 pb-[13px] pt-4" href="#">
+<p class="text-white/50 text-sm font-bold leading-normal">DENGIM Story</p>
+</a>
+</div>
+</div>
+<div class="flex flex-col px-4 space-y-6 pb-24">
+<!-- Preview Section (Glassmorphism) -->
+<div class="mt-4">
+<div class="relative w-full aspect-[9/16] max-w-[280px] mx-auto rounded-3xl overflow-hidden border border-white/20 glass shadow-2xl">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60" data-alt="Luxury abstract background with gold and dark silk textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0p5BNpbVaywCOWw86yHGHS5VFzLYyaEU5j4rRfx85lroU3muUENIcasePswElzAD9Cer9iVBrU4n4vsXz2XxIkjptICxC5liBV5Dupf9JdkVZ0vNMfDWs9jBZgUprPNCgLXNiu61DL_5Z7fUNFd6p7ShNyh8ekj-gAHJWYS6ic7CkEO3EpetZcBbY1b3TDNB-HtLO9xnNdrjbLNm6WfHAzsTcDZzlOJSUPyIC2PVqSjiElGc8GyNFkTEt4TgO_LcDBD0j9heuDI4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-10 left-6 right-6">
+<span class="inline-block px-2 py-1 bg-primary text-black text-[10px] font-black rounded mb-2 uppercase tracking-widest">Premium</span>
+<h4 class="text-2xl font-bold text-white mb-2 leading-none">Özel Davet: Gala Gecesi</h4>
+<p class="text-xs text-white/70 leading-relaxed">Sadece seçkin üyelerimiz için hazırlanan bu eşsiz geceye davetlisiniz.</p>
+<button class="mt-6 w-full py-3 bg-white text-black text-sm font-bold rounded-xl">Detayları Gör</button>
+</div>
+</div>
+<p class="text-center text-white/40 text-xs mt-4">Önizleme Kartı</p>
+</div>
+<!-- SectionHeader -->
+<div class="pt-4">
+<h3 class="text-white text-lg font-bold leading-tight tracking-tight">Arka Plan Görseli</h3>
+</div>
+<!-- EmptyState / Upload -->
+<div class="flex flex-col">
+<div class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-white/20 bg-white/5 px-6 py-10">
+<div class="flex max-w-[480px] flex-col items-center gap-2">
+<span class="material-symbols-outlined text-4xl text-primary/60 mb-2">cloud_upload</span>
+<p class="text-white text-lg font-bold leading-tight text-center">Görsel Yükle</p>
+<p class="text-white/50 text-sm font-normal leading-normal text-center">4K çözünürlükte, dikey format önerilir (1080x1920)</p>
+</div>
+<button class="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-11 px-6 bg-white/10 text-white text-sm font-bold hover:bg-white/20 transition-all border border-white/10">
+<span class="truncate">Görsel Seç</span>
+</button>
+</div>
+</div>
+<!-- SectionHeader: Editor -->
+<div class="pt-4">
+<h3 class="text-white text-lg font-bold leading-tight tracking-tight">İçerik Düzenleyici</h3>
+</div>
+<!-- Text Settings -->
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-white/70">Başlık Metni</label>
+<input class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:ring-primary focus:border-primary" placeholder="Gala Gecesi..." type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-bold text-white/70">Yazı Rengi Teması</label>
+<div class="flex gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl border-2 border-primary bg-primary/10 text-primary">
+<div class="size-4 rounded-full bg-primary"></div>
+<span class="text-xs font-bold uppercase tracking-wider">Gold Premium</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl border border-white/10 bg-white/5 text-indigo-custom">
+<div class="size-4 rounded-full bg-indigo-custom"></div>
+<span class="text-xs font-bold uppercase tracking-wider">Indigo Night</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Scheduling Tool -->
+<div class="pt-4">
+<h3 class="text-white text-lg font-bold leading-tight tracking-tight mb-4">Planlama</h3>
+<div class="glass rounded-2xl p-4 space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+<div class="flex-1">
+<p class="text-[10px] text-white/40 uppercase font-black">Başlangıç Tarihi</p>
+<p class="text-sm text-white">24 Haziran 2024, 09:00</p>
+</div>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+<div class="h-px bg-white/10"></div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">event_busy</span>
+<div class="flex-1">
+<p class="text-[10px] text-white/40 uppercase font-black">Bitiş Tarihi</p>
+<p class="text-sm text-white">01 Temmuz 2024, 23:59</p>
+</div>
+<span class="material-symbols-outlined text-white/20">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Action Bar (Mobile Sticky) -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-background-dark/80 backdrop-blur-lg border-t border-white/10 flex gap-4">
+<button class="flex-1 h-14 rounded-2xl bg-white/5 border border-white/10 text-white font-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">visibility</span>
+                Önizle
+            </button>
+<button class="flex-[2] h-14 rounded-2xl bg-primary text-black font-extrabold text-lg shadow-[0_0_20px_rgba(255,217,0,0.3)]">
+                Şimdi Planla
+            </button>
+</div>
+</div>
+</body></html>

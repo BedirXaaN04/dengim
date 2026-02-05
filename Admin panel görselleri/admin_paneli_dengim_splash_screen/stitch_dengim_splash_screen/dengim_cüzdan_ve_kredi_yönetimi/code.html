@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ffd900",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#0F1115",
+                        "card-dark": "rgba(255, 255, 255, 0.05)",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "poppins": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gold {
+            color: #FFD700;
+        }
+        .border-gold {
+            border-color: #FFD700;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex min-h-screen w-full flex-col max-w-[480px] mx-auto overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-transparent p-4 pb-2 justify-between">
+<div class="text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Cüzdan</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex cursor-pointer items-center justify-center rounded-xl h-12 bg-transparent text-white p-0">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+<!-- Wallet Card (Glassmorphism) -->
+<div class="p-4">
+<div class="glass-card flex flex-col items-stretch justify-end rounded-xl pt-12 pb-6 px-6 shadow-2xl relative overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-10 -left-10 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+<div class="flex flex-col gap-1 relative z-10">
+<p class="text-white/60 text-xs font-medium uppercase tracking-widest">Dengim Cüzdan</p>
+<p class="text-white text-sm font-normal leading-normal mt-4">Kredi Bakiyesi</p>
+<div class="flex items-baseline gap-2">
+<p class="text-gold font-poppins tracking-tight text-4xl font-bold leading-tight">1,250</p>
+<p class="text-gold/80 text-lg font-medium">Kredi</p>
+</div>
+</div>
+<div class="mt-8 flex justify-between items-center relative z-10">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-background-dark bg-zinc-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-xs text-primary">stars</span>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-background-dark bg-zinc-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-xs text-primary">redeem</span>
+</div>
+</div>
+<span class="text-white/40 text-[10px] font-mono tracking-tighter uppercase">Premium Member</span>
+</div>
+</div>
+</div>
+<!-- Section Header -->
+<div class="px-4 pt-6 pb-2">
+<h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Kredi Paketleri</h3>
+<p class="text-white/40 text-xs mt-1 font-medium">Size özel fırsatları keşfedin</p>
+</div>
+<!-- ImageGrid (Credit Packages) -->
+<div class="grid grid-cols-2 gap-4 p-4">
+<!-- Package 1 -->
+<div class="glass-card flex flex-col gap-4 p-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent">
+<div class="w-full aspect-square bg-indigo-900/20 rounded-lg flex items-center justify-center group">
+<div class="text-primary opacity-80 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined !text-5xl">toll</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-bold leading-tight">100 Kredi</p>
+<p class="text-white/60 text-sm font-medium">₺199.00</p>
+</div>
+<button class="w-full py-2 border border-primary/50 text-primary rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-primary/10 transition-colors">
+                    Satın Al
+                </button>
+</div>
+<!-- Package 2 -->
+<div class="glass-card flex flex-col gap-4 p-4 rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+<div class="w-full aspect-square bg-primary/10 rounded-lg flex items-center justify-center relative overflow-hidden">
+<div class="absolute top-2 right-2 bg-primary text-background-dark text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Popüler</div>
+<div class="text-primary">
+<span class="material-symbols-outlined !text-5xl">diamond</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-bold leading-tight">500 Kredi</p>
+<p class="text-white/60 text-sm font-medium">₺899.00</p>
+</div>
+<button class="w-full py-2 bg-primary text-background-dark rounded-lg text-sm font-bold uppercase tracking-wider">
+                    Satın Al
+                </button>
+</div>
+<!-- Package 3 -->
+<div class="glass-card flex flex-col gap-4 p-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent">
+<div class="w-full aspect-square bg-indigo-900/20 rounded-lg flex items-center justify-center">
+<div class="text-primary opacity-80">
+<span class="material-symbols-outlined !text-5xl">crown</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-bold leading-tight">1000 Kredi</p>
+<p class="text-white/60 text-sm font-medium">₺1,699.00</p>
+</div>
+<button class="w-full py-2 border border-primary/50 text-primary rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-primary/10 transition-colors">
+                    Satın Al
+                </button>
+</div>
+<!-- Package 4 -->
+<div class="glass-card flex flex-col gap-4 p-4 rounded-xl border border-white/5 bg-gradient-to-br from-white/5 to-transparent">
+<div class="w-full aspect-square bg-indigo-900/20 rounded-lg flex items-center justify-center">
+<div class="text-primary opacity-80">
+<span class="material-symbols-outlined !text-5xl">stars</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-bold leading-tight">2500 Kredi</p>
+<p class="text-white/60 text-sm font-medium">₺3,499.00</p>
+</div>
+<button class="w-full py-2 border border-primary/50 text-primary rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-primary/10 transition-colors">
+                    Satın Al
+                </button>
+</div>
+</div>
+<!-- Recent Transactions -->
+<div class="px-4 pt-4 pb-2">
+<h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Son İşlemler</h3>
+</div>
+<div class="flex flex-col p-4 gap-4">
+<!-- Transaction Item -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+<span class="material-symbols-outlined">card_giftcard</span>
+</div>
+<div>
+<p class="text-white text-sm font-bold">Hediye Gönderildi</p>
+<p class="text-white/40 text-xs">24 Haz, 14:20</p>
+</div>
+</div>
+<p class="text-red-400 font-bold">-50</p>
+</div>
+<!-- Transaction Item -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">workspace_premium</span>
+</div>
+<div>
+<p class="text-white text-sm font-bold">VIP Özellik Etkinleştirme</p>
+<p class="text-white/40 text-xs">22 Haz, 09:15</p>
+</div>
+</div>
+<p class="text-red-400 font-bold">-250</p>
+</div>
+<!-- Transaction Item -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<div>
+<p class="text-white text-sm font-bold">Kredi Yükleme</p>
+<p class="text-white/40 text-xs">20 Haz, 18:45</p>
+</div>
+</div>
+<p class="text-green-400 font-bold">+500</p>
+</div>
+</div>
+<div class="h-20 bg-background-dark"></div>
+</div>
+</body></html>

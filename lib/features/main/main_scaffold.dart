@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/services/notification_service.dart';
 import '../discover/discover_screen.dart';
 import '../map/map_screen.dart';
 import '../chats/chats_screen.dart';
@@ -18,6 +19,13 @@ class MainScaffold extends StatefulWidget {
 
 class _MainScaffoldState extends State<MainScaffold> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // FCM Token güncelle
+    NotificationService.updateToken();
+  }
 
   // Ekranlar listesi
   final List<Widget> _screens = const [

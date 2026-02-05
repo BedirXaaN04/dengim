@@ -4,17 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../core/theme/app_colors.dart';
 import 'models/nearby_user.dart';
 import 'widgets/nearby_users_list.dart';
-import '../auth/services/auth_service.dart';
-import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
 import '../../core/providers/map_provider.dart';
-import '../../core/utils/log_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});

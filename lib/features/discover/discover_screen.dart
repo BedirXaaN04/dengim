@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,17 +7,11 @@ import 'package:confetti/confetti.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/models/user_profile.dart';
-import '../auth/services/auth_service.dart';
-import '../chats/services/chat_service.dart';
-import '../chats/models/chat_models.dart';
-import '../chats/chats_screen.dart'; // ChatDetailScreen burada tanımlı olduğu için
-import 'package:firebase_auth/firebase_auth.dart';
 import 'widgets/filter_bottom_sheet.dart';
 
 /// Keşfet Ekranı - Tinder tarzı Swipe Kartlar
 import 'package:provider/provider.dart';
 import '../../core/providers/discovery_provider.dart';
-import '../../core/utils/log_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/providers/story_provider.dart';
 import '../../core/providers/user_provider.dart';

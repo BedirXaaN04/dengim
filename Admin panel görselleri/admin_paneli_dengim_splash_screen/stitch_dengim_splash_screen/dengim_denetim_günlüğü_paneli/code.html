@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DENGIM Denetim Günlüğü Paneli</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ecb613",
+                        "background-light": "#f8f8f6",
+                        "background-dark": "#0F1115",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0F1115;
+        }
+        .glass-header {
+            background: rgba(15, 17, 21, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(236, 182, 19, 0.1);
+        }
+        .suspicious-glow {
+            box-shadow: 0 0 15px rgba(236, 182, 19, 0.15);
+            border: 1px solid rgba(236, 182, 19, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen">
+<div class="sticky top-0 z-50 glass-header">
+<div class="flex items-center p-4 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight">DENGIM Denetim</h2>
+<p class="text-[10px] text-primary uppercase tracking-[0.2em] font-semibold">Güvenlik Paneli</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex size-10 items-center justify-center rounded-full bg-white/5 text-primary border border-white/10">
+<span class="material-symbols-outlined">shield_lock</span>
+</button>
+</div>
+</div>
+</div>
+<div class="px-4 pt-6 pb-2">
+<label class="flex flex-col min-w-40 h-14 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full border border-white/10 bg-[#1A1D23] focus-within:border-primary/50 transition-colors">
+<div class="text-primary flex items-center justify-center pl-4">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 text-white placeholder:text-gray-500 px-4 text-base font-normal" placeholder="Yönetici veya işlem ara..." value=""/>
+<div class="flex items-center pr-4 text-gray-500">
+<span class="material-symbols-outlined text-sm">tune</span>
+</div>
+</div>
+</label>
+</div>
+<div class="flex gap-3 px-4 py-4 overflow-x-auto no-scrollbar">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-5 text-black font-semibold text-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span>Bugün</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#1A1D23] border border-white/10 px-5 text-gray-300 font-medium text-sm transition-transform active:scale-95">
+<span>Son 7 Gün</span>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#1A1D23] border border-white/10 px-5 text-gray-300 font-medium text-sm transition-transform active:scale-95">
+<span>İşlem Türü</span>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+<div class="px-4 mt-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-white text-base font-bold tracking-tight">Kritik Aktiviteler</h3>
+<span class="text-[10px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase">Canlı</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-[#1A1D23] p-4 border border-white/5 suspicious-glow">
+<div class="flex flex-[2_2_0px] flex-col justify-between">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<p class="text-primary text-[11px] font-bold uppercase tracking-wider">Şüpheli Giriş Denemesi</p>
+</div>
+<p class="text-white text-base font-semibold leading-tight">Çoklu Başarısız Giriş</p>
+<div class="mt-1 space-y-0.5">
+<p class="text-gray-400 text-xs">Hedef: @user_premium_99</p>
+<p class="text-gray-400 text-xs font-mono">IP: 185.122.45.10</p>
+<p class="text-gray-500 text-[10px] mt-1">Bugün, 14:22 • Berlin, DE</p>
+</div>
+</div>
+<button class="flex items-center justify-center rounded-lg h-9 px-4 bg-primary text-black gap-2 text-xs font-bold mt-4 transition-all hover:bg-white active:scale-95">
+<span class="truncate uppercase tracking-tighter">İncele &amp; Engelle</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="w-24 bg-center bg-no-repeat bg-cover rounded-lg flex-none border border-white/10" data-alt="Security map visualization showing threat location" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA95bppk-you96k-j1s-UgdWzu_D1m5NBYNzJPrMxRZLlfLuMwXsC_BteHn7BupzY7N9vVJOpq9QjbGvOe1tirqRQ5w6JB33e-I8BxAr3dNv38gHxmiSLpNQxc3UmlpiiKOalXg34BDO5vddaozWQtM0hILOxvjJzUTJml8svehJABZedUH-X8VzAtDfDU2G5HhPXFXlERobJ-yNfmNNU2QRGeh_psYy1c3kryzMIEqmM8IQSXVmT1WwBUifCLdO4-_hF804l8baJY");'></div>
+</div>
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-[#1A1D23] p-4 border border-white/5">
+<div class="flex flex-[2_2_0px] flex-col justify-between">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<p class="text-blue-400 text-[11px] font-bold uppercase tracking-wider">Yönetici İşlemi</p>
+</div>
+<p class="text-white text-base font-semibold leading-tight">Kullanıcı Yasaklandı</p>
+<div class="mt-1 space-y-0.5">
+<p class="text-gray-400 text-xs">Yönetici: Ahmet Yılmaz</p>
+<p class="text-gray-400 text-xs">Neden: Topluluk Kuralları İhlali</p>
+<p class="text-gray-500 text-[10px] mt-1">Bugün, 13:45 • Panel v2.4</p>
+</div>
+</div>
+<button class="flex items-center justify-center rounded-lg h-9 px-4 bg-white/5 border border-white/10 text-white gap-2 text-xs font-bold mt-4 transition-all hover:bg-white/10 active:scale-95">
+<span class="truncate uppercase tracking-tighter">Log Detayı</span>
+<span class="material-symbols-outlined text-sm">info</span>
+</button>
+</div>
+<div class="w-24 bg-center bg-no-repeat bg-cover rounded-lg flex-none border border-white/10 flex items-center justify-center bg-[#242933]" data-alt="User profile avatar placeholder">
+<span class="material-symbols-outlined text-gray-600 text-3xl">person_off</span>
+</div>
+</div>
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-[#1A1D23] p-4 border border-white/5">
+<div class="flex flex-[2_2_0px] flex-col justify-between">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<p class="text-green-400 text-[11px] font-bold uppercase tracking-wider">Sistem Ayarları</p>
+</div>
+<p class="text-white text-base font-semibold leading-tight">API Anahtarı Güncellendi</p>
+<div class="mt-1 space-y-0.5">
+<p class="text-gray-400 text-xs">Yönetici: Selin Kaya</p>
+<p class="text-gray-400 text-xs">Modül: Ödeme Sistemleri</p>
+<p class="text-gray-500 text-[10px] mt-1">Dün, 23:10 • Terminal Access</p>
+</div>
+</div>
+<button class="flex items-center justify-center rounded-lg h-9 px-4 bg-white/5 border border-white/10 text-white gap-2 text-xs font-bold mt-4 transition-all hover:bg-white/10 active:scale-95">
+<span class="truncate uppercase tracking-tighter">Değişiklikleri Gör</span>
+<span class="material-symbols-outlined text-sm">history</span>
+</button>
+</div>
+<div class="w-24 bg-center bg-no-repeat bg-cover rounded-lg flex-none border border-white/10 flex items-center justify-center bg-[#242933]" data-alt="Abstract code or API icon">
+<span class="material-symbols-outlined text-gray-600 text-3xl">key_visualizer</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-24"></div>
+<div class="fixed bottom-0 left-0 right-0 glass-header border-t border-white/10 px-6 py-4 flex justify-between items-center z-50">
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold">Loglar</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-gray-500">
+<span class="material-symbols-outlined">security</span>
+<span class="text-[10px] font-bold">Güvenlik</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-gray-500">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-bold">Adminler</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-gray-500">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Ayarlar</span>
+</div>
+</div>
+</body></html>

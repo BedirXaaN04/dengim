@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DENGIM Profil ve Gizlilik Ayarları</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#6366f1",
+              "background-light": "#f6f6f8",
+              "background-dark": "#0F1115",
+              "accent-red": "#451a1a",
+              "text-muted": "#94a3b8",
+            },
+            fontFamily: {
+              "display": ["Poppins", "Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full max-w-md mx-auto flex-col overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
+<div aria-label="Geri" class="text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</div>
+<h2 class="text-white text-lg font-semibold leading-tight tracking-tight flex-1 text-center pr-12">Profil ve Gizlilik Ayarları</h2>
+</div>
+<!-- Spacer -->
+<div class="h-4"></div>
+<!-- Section: Hesap Ayarları -->
+<div class="px-4">
+<h3 class="text-white text-base font-semibold leading-tight tracking-wide pb-4 pt-4 uppercase opacity-60">Hesap Ayarları</h3>
+</div>
+<!-- ListItem: Phone Number -->
+<div class="flex items-center gap-4 bg-background-light dark:bg-background-dark px-4 min-h-[72px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-medium leading-normal line-clamp-1">Telefon Numarası</p>
+<p class="text-text-muted text-sm font-normal leading-normal line-clamp-2">+90 532 *** ** 88</p>
+</div>
+</div>
+<div class="shrink-0">
+<div class="text-text-muted flex size-7 items-center justify-center">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- ListItem: Email + Gold Status -->
+<div class="flex items-center gap-4 bg-background-light dark:bg-background-dark px-4 min-h-[72px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-12">
+<span class="material-symbols-outlined">alternate_email</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-medium leading-normal line-clamp-1">E-posta</p>
+<p class="text-text-muted text-sm font-normal leading-normal line-clamp-2">premium@dengim.com</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="px-3 py-1 bg-amber-500/20 text-amber-500 text-xs font-bold rounded-full uppercase tracking-wider">Gold Durumu</span>
+</div>
+</div>
+<div class="h-8"></div>
+<!-- Section: Gizlilik -->
+<div class="px-4">
+<h3 class="text-white text-base font-semibold leading-tight tracking-wide pb-4 pt-4 uppercase opacity-60">Gizlilik</h3>
+</div>
+<!-- Toggle Item: Profilimi Gizle -->
+<div class="flex items-center gap-4 bg-background-light dark:bg-background-dark px-4 min-h-[72px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-white/80 flex items-center justify-center rounded-xl bg-white/5 shrink-0 size-12">
+<span class="material-symbols-outlined">visibility_off</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-medium leading-normal">Profilimi Gizle</p>
+<p class="text-text-muted text-xs font-normal">Sadece eşleştiğin kişiler görebilir</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Toggle Item: Son Görülmeyi Kapat -->
+<div class="flex items-center gap-4 bg-background-light dark:bg-background-dark px-4 min-h-[72px] py-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-4">
+<div class="text-white/80 flex items-center justify-center rounded-xl bg-white/5 shrink-0 size-12">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-medium leading-normal">Son Görülmeyi Kapat</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Toggle Item: Mesafe Bilgisini Gizle -->
+<div class="flex items-center gap-4 bg-background-light dark:bg-background-dark px-4 min-h-[72px] py-2 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-white/80 flex items-center justify-center rounded-xl bg-white/5 shrink-0 size-12">
+<span class="material-symbols-outlined">near_me_disabled</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-white text-base font-medium leading-normal">Mesafe Bilgisini Gizle</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<div class="mt-auto pt-12 pb-10 flex flex-col items-center gap-6">
+<button class="text-text-muted hover:text-white transition-colors text-sm font-semibold tracking-wide flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">logout</span>
+                ÇIKIŞ YAP
+            </button>
+<button class="text-red-500/70 hover:text-red-500 transition-colors text-xs font-medium bg-accent-red/20 px-4 py-2 rounded-full">
+                Hesabı Sil
+            </button>
+<p class="text-white/20 text-[10px] font-medium uppercase tracking-[0.2em]">DENGIM Premium v2.4.1</p>
+</div>
+</div>
+</body></html>

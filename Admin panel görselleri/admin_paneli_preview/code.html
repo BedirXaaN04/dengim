@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>DENGIM Admin & VIP Platform</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ecb613",
+                        "background-light": "#f8f8f6",
+                        "background-dark": "#0F1115",
+                        "surface-dark": "#1a160d",
+                        "accent-indigo": "#6366f1",
+                        "border-dark": "#483f23",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "inter": ["Inter", "sans-serif"],
+                        "poppins": ["Poppins", "sans-serif"],
+                        "jakarta": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Manrope', sans-serif; transition: background-color 0.3s; }
+        .glass {
+            background: rgba(34, 29, 16, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(236, 182, 19, 0.1);
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+    <div id="root"></div>
+
+    <!-- React and Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+        // --- Shared Components ---
+        const BottomNav = ({ active }) => {
+            const navigate = useNavigate();
+            return (
+                <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-gray-200 dark:border-white/5 px-6 py-3 flex justify-between items-center z-50">
+                    <button onClick={() => navigate('/')} className={`flex flex-col items-center gap-1 ${active === 'home' ? 'text-primary' : 'text-slate-500'}`}>
+                        <span className="material-symbols-outlined">dashboard</span>
+                        <span className="text-[10px] font-medium">Panel</span>
+                    </button>
+                    <button onClick={() => navigate('/analytics')} className={`flex flex-col items-center gap-1 ${active === 'analytics' ? 'text-primary' : 'text-slate-500'}`}>
+                        <span className="material-symbols-outlined">analytics</span>
+                        <span className="text-[10px] font-medium">Analiz</span>
+                    </button>
+                    <button onClick={() => navigate('/users')} className={`flex flex-col items-center gap-1 ${active === 'users' ? 'text-primary' : 'text-slate-500'}`}>
+                        <span className="material-symbols-outlined">group</span>
+                        <span className="text-[10px] font-medium">Üyeler</span>
+                    </button>
+                    <button onClick={() => navigate('/settings')} className={`flex flex-col items-center gap-1 ${active === 'settings' ? 'text-primary' : 'text-slate-500'}`}>
+                        <span className="material-symbols-outlined">settings</span>
+                        <span className="text-[10px] font-medium">Ayarlar</span>
+                    </button>
+                </nav>
+            );
+        };
+
+        // --- Screen 1: Admin Dashboard ---
+        const Dashboard = () => {
+            const [drawerOpen, setDrawerOpen] = useState(false);
+            const navigate = useNavigate();
+
+            return (
+                <div className="flex flex-col min-h-screen">
+                    <header className="sticky top-0 z-40 w-full bg-background-light dark:bg-background-dark border-b border-primary/10 px-4 py-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-primary cursor-pointer" onClick={() => setDrawerOpen(true)}>menu</span>
+                            <h1 className="text-lg font-bold tracking-tight text-primary">DENGIM <span className="text-slate-900 dark:text-white font-medium">Admin</span></h1>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <button className="relative p-2 text-slate-400 hover:text-primary transition-colors" onClick={() => navigate('/notifications')}>
+                                <span className="material-symbols-outlined">notifications</span>
+                                <span className="absolute top-2 right-2 flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                </span>
+                            </button>
+                            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold text-xs cursor-pointer" onClick={() => navigate('/profile')}>AD</div>
+                        </div>
+                    </header>
+                    
+                    <div className="flex flex-1 overflow-hidden">
+                        <aside className="hidden md:flex w-64 flex-col bg-surface-dark border-r border-primary/10 p-4">
+                            <nav className="space-y-2">
+                                <Link to="/" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary border border-primary/20">
+                                    <span className="material-symbols-outlined">dashboard</span>
+                                    <span className="font-semibold">Dashboard</span>
+                                </Link>
+                                <Link to="/users" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-all">
+                                    <span className="material-symbols-outlined">group</span>
+                                    <span>Users</span>
+                                </Link>
+                                <Link to="/moderation" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-all">
+                                    <span className="material-symbols-outlined">verified_user</span>
+                                    <span>Moderation</span>
+                                </Link>
+                                <Link to="/wallet" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-all">
+                                    <span className="material-symbols-outlined">payments</span>
+                                    <span>Financials</span>
+                                </Link>
+                            </nav>
+                        </aside>
+
+                        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-24">
+                            <div className="mb-6">
+                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">At a Glance</h2>
+                                <p className="text-slate-400 text-sm">Real-time performance metrics for DENGIM platform.</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                                <div className="glass p-6 rounded-xl flex flex-col gap-1 border-l-4 border-l-primary">
+                                    <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Users</p>
+                                    <div className="flex items-end justify-between">
+                                        <h3 className="text-3xl font-bold">125,482</h3>
+                                        <span className="text-emerald-400 text-sm font-medium flex items-center"><span className="material-symbols-outlined text-sm">trending_up</span> 12%</span>
+                                    </div>
+                                </div>
+                                <div className="glass p-6 rounded-xl flex flex-col gap-1 border-l-4 border-l-primary" onClick={() => navigate('/live-support')} className="cursor-pointer glass p-6 rounded-xl flex flex-col gap-1 border-l-4 border-l-primary">
+                                    <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Active Support</p>
+                                    <div className="flex items-end justify-between">
+                                        <h3 className="text-3xl font-bold">12</h3>
+                                        <span className="text-emerald-400 text-sm font-medium flex items-center"><span className="material-symbols-outlined text-sm">chat</span> Live</span>
+                                    </div>
+                                </div>
+                                <div className="glass p-6 rounded-xl flex flex-col gap-1 border-l-4 border-l-accent-indigo" onClick={() => navigate('/financial-kpi')} className="cursor-pointer glass p-6 rounded-xl flex flex-col gap-1 border-l-4 border-l-accent-indigo">
+                                    <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">MRR</p>
+                                    <div className="flex items-end justify-between">
+                                        <h3 className="text-3xl font-bold">$124.5k</h3>
+                                        <span className="text-rose-400 text-sm font-medium flex items-center"><span className="material-symbols-outlined text-sm">trending_down</span> 2%</span>
+                                    </div>
+                                </div>
+                                <div className="glass p-6 rounded-xl flex flex-col gap-1 border-l-4 border-l-primary" onClick={() => navigate('/moderation')} className="cursor-pointer glass p-6 rounded-xl flex flex-col gap-1 border-l-4 border-l-primary">
+                                    <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Pending Verif.</p>
+                                    <div className="flex items-end justify-between">
+                                        <h3 className="text-3xl font-bold">84</h3>
+                                        <span className="text-emerald-400 text-sm font-medium flex items-center"><span className="material-symbols-outlined text-sm">trending_up</span> 20%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="lg:col-span-2 glass rounded-xl p-6">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div>
+                                            <h3 className="text-lg font-bold">Growth Trends</h3>
+                                            <p className="text-slate-400 text-sm">User acquisitions vs Revenue</p>
+                                        </div>
+                                        <select className="bg-background-dark border border-primary/20 text-slate-300 text-xs rounded-lg px-2 py-1 focus:ring-primary">
+                                            <option>Last 30 Days</option>
+                                            <option>Last 6 Months</option>
+                                        </select>
+                                    </div>
+                                    <div className="w-full h-64 relative">
+                                        <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 500 200">
+                                            <defs>
+                                                <linearGradient id="goldGradient" x1="0" x2="0" y1="0" y2="1">
+                                                    <stop offset="0%" stopColor="#ecb613" stopOpacity="0.3"></stop>
+                                                    <stop offset="100%" stopColor="#ecb613" stopOpacity="0"></stop>
+                                                </linearGradient>
+                                            </defs>
+                                            <path d="M0,150 Q50,120 100,130 T200,90 T300,110 T400,50 T500,70" fill="none" stroke="#ecb613" strokeWidth="3"></path>
+                                            <path d="M0,150 Q50,120 100,130 T200,90 T300,110 T400,50 T500,70 L500,200 L0,200 Z" fill="url(#goldGradient)"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div className="glass rounded-xl p-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-lg font-bold">Real-time Alerts</h3>
+                                        <span className="bg-rose-500/20 text-rose-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Live</span>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="flex gap-4 p-3 rounded-lg bg-white/5 border border-white/5 cursor-pointer" onClick={() => navigate('/audit-log')}>
+                                            <div className="h-10 w-10 shrink-0 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-500">
+                                                <span className="material-symbols-outlined text-sm">report</span>
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="text-sm font-semibold truncate">Profile Reported</p>
+                                                <p className="text-[10px] text-primary mt-1">2 mins ago</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4 p-3 rounded-lg bg-white/5 border border-white/5">
+                                            <div className="h-10 w-10 shrink-0 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500">
+                                                <span className="material-symbols-outlined text-sm">verified</span>
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="text-sm font-semibold truncate">New VIP Sub</p>
+                                                <p className="text-[10px] text-primary mt-1">15 mins ago</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className="w-full mt-6 py-2 border border-primary/20 text-primary text-xs font-bold rounded-lg hover:bg-primary hover:text-background-dark transition-all" onClick={() => navigate('/audit-log')}>
+                                        View All Activity
+                                    </button>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+
+                    {/* Mobile Navigation Drawer Overlay */}
+                    {drawerOpen && (
+                        <div className="fixed inset-0 z-[60] bg-black/60 transition-opacity" onClick={() => setDrawerOpen(false)}>
+                            <div className="absolute left-0 top-0 h-full w-4/5 max-w-xs bg-background-dark p-6 flex flex-col gap-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-xl font-bold text-primary">DENGIM Admin</h2>
+                                    <button className="material-symbols-outlined text-slate-400" onClick={() => setDrawerOpen(false)}>close</button>
+                                </div>
+                                <ul className="flex flex-col gap-2">
+                                    <li onClick={() => {navigate('/'); setDrawerOpen(false)}} className="flex h-12 items-center gap-4 rounded-lg px-4 bg-primary text-background-dark font-bold cursor-pointer"><span className="material-symbols-outlined">dashboard</span> Dashboard</li>
+                                    <li onClick={() => {navigate('/users'); setDrawerOpen(false)}} className="flex h-12 items-center gap-4 rounded-lg px-4 text-slate-400 cursor-pointer"><span className="material-symbols-outlined">group</span> Users</li>
+                                    <li onClick={() => {navigate('/moderation'); setDrawerOpen(false)}} className="flex h-12 items-center gap-4 rounded-lg px-4 text-slate-400 cursor-pointer"><span className="material-symbols-outlined">verified_user</span> Moderation</li>
+                                    <li onClick={() => {navigate('/audit-log'); setDrawerOpen(false)}} className="flex h-12 items-center gap-4 rounded-lg px-4 text-slate-400 cursor-pointer"><span className="material-symbols-outlined">security</span> Audit Log</li>
+                                    <li onClick={() => {navigate('/broadcast'); setDrawerOpen(false)}} className="flex h-12 items-center gap-4 rounded-lg px-4 text-slate-400 cursor-pointer"><span className="material-symbols-outlined">campaign</span> Broadcast</li>
+                                </ul>
+                                <div className="mt-auto pt-6 border-t border-primary/10">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-background-dark font-bold">AD</div>
+                                        <div>
+                                            <p className="text-sm font-bold leading-none">Admin User</p>
+                                            <p className="text-xs text-slate-400 mt-1">Super Admin</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <BottomNav active="home" />
+                </div>
+            );
+        };
+
+        // --- Screen 2: User Management ---
+        const UserManagement = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white min-h-screen pb-20">
+                    <header className="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-border-dark p-4">
+                        <div className="flex items-center justify-between max-w-5xl mx-auto w-full">
+                            <div className="flex items-center gap-3">
+                                <div className="text-primary flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                                    <span className="material-symbols-outlined">admin_panel_settings</span>
+                                </div>
+                                <h2 className="text-lg font-extrabold tracking-tight">Kullanıcı Yönetimi</h2>
+                            </div>
+                            <div className="flex gap-2">
+                                <button className="flex size-10 items-center justify-center rounded-full bg-gray-100 dark:bg-surface-dark text-gray-600 dark:text-gray-300" onClick={() => navigate('/notifications')}>
+                                    <span className="material-symbols-outlined">notifications</span>
+                                </button>
+                                <div className="size-10 rounded-full bg-primary flex items-center justify-center text-black font-bold">AD</div>
+                            </div>
+                        </div>
+                    </header>
+                    <main className="max-w-5xl mx-auto p-4">
+                        <div className="mb-4">
+                            <div className="flex w-full items-stretch rounded-xl h-14 bg-white dark:bg-surface-dark border border-gray-200 dark:border-border-dark shadow-sm overflow-hidden">
+                                <div className="text-primary flex items-center justify-center pl-4"><span className="material-symbols-outlined">search</span></div>
+                                <input className="flex w-full border-none bg-transparent focus:ring-0 text-base placeholder:text-gray-400 px-4" placeholder="Kullanıcı adı, e-posta veya ID ile ara..."/>
+                            </div>
+                        </div>
+                        <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide py-2">
+                            <button className="flex h-10 shrink-0 items-center justify-center rounded-full bg-primary text-black px-6 font-semibold text-sm">Tümü</button>
+                            <button className="flex h-10 shrink-0 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-border-dark px-4 text-sm font-medium">Yaş <span className="material-symbols-outlined text-sm ml-1">expand_more</span></button>
+                            <button className="flex h-10 shrink-0 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-border-dark px-4 text-sm font-medium">Cinsiyet <span className="material-symbols-outlined text-sm ml-1">expand_more</span></button>
+                            <button className="flex h-10 shrink-0 items-center justify-center rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-border-dark px-4 text-sm font-medium text-red-500">Şikayetler <span className="material-symbols-outlined text-sm ml-1">warning</span></button>
+                        </div>
+
+                        <h3 className="text-lg font-bold mb-4">Onay Bekleyenler (Selfie)</h3>
+                        <div className="flex overflow-x-auto gap-4 scrollbar-hide mb-8">
+                            {[
+                                { name: "Emirhan T.", tier: "Premium Plus", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBCtMNQQJnmT2kntwws1z7t-loVsCUE9WTyZjG51NoaMDpCE4V2fSmHyJRKJv7rAh2RItxg5iaYy3SgjbnXnLpnBERgg3um5s2L71kKvFE8tCsNOBmFKz2LXwDWj3fPuMZTrgUnWkVt-2rrO0M7BytWPHMx5YLcotqR6IcWSeAj7WChDThw3RDB7HBEHC7HZpPv0wx34qE7jZj8l3AL4zlzxuRGpVBryoYzmaHEBK_IW5rFd1ajNFBSdYrmHKBxyFqOfeIL_eXJh9o" },
+                                { name: "Melis A.", tier: "Altın Üye", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAV_CwB_twN0B3Yo113DvDjjPewnAA5hR8soeL9qpnDYz9syyPNbbpSP5io2WMihjnQrY5Z08sYRbeeVXJtgSw2OHxV6tK6Gxj6hKk5CSFKV7PrnQsT9uwtvpiZr-8j2ZBTwbjQhwF_JUGVrQk_jVGh4_C9d-doMHN3dXVvyiO478uoiB_Cx0pRL0wxw4Aw-L5hGZoB-bmCOXrya6hb5R6hamS9enO3Vxhm2hZIDVgiDM3zMGX_GtoWCyX1g7d5F105ksWWUDJQfxQ" }
+                            ].map((user, i) => (
+                                <div key={i} className="flex flex-col gap-3 min-w-[160px] bg-white dark:bg-surface-dark p-2 rounded-xl border-2 border-primary shadow-[0_0_15px_rgba(236,182,19,0.2)]">
+                                    <div className="w-full aspect-[3/4] bg-center bg-cover rounded-lg relative" style={{backgroundImage: `url(${user.img})`}}>
+                                        <div className="absolute top-2 right-2 bg-primary text-black text-[10px] font-bold px-2 py-1 rounded-full uppercase">Acil</div>
+                                    </div>
+                                    <div className="px-1">
+                                        <p className="font-bold text-sm truncate">{user.name}</p>
+                                        <p className="text-primary text-[11px] font-semibold uppercase tracking-wider">{user.tier}</p>
+                                    </div>
+                                    <button onClick={() => navigate('/moderation')} className="w-full py-2 bg-primary text-black text-xs font-bold rounded-lg">ŞİMDİ İNCELE</button>
+                                </div>
+                            ))}
+                        </div>
+
+                        <h3 className="text-lg font-bold mb-4">Kullanıcı Listesi</h3>
+                        <div className="space-y-3">
+                            {[
+                                { name: "Can Demir", id: "#82910", loc: "İstanbul", tier: "Gold Tier", status: "Aktif", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBkS81f_hE2yzRDP4gvrMv_2gQ1ZkoVDNT2G0fkGOsZnXaczftqHxjaNOrY-qJZq3VBbOlLVo_4MgE4flCGDHCGVjUB5QhleGqpHZpm0Fc5zM4ZP8IoW88ZwaWTWOSfznYUPZi4vb5SnrXthhS5QG85sm24JV4PDsCRWGPeFiiR_zKUhX19bDomHPqqJTKvukYVXK85ONz9jNrMOb9dPgNlpPkfhZnGzQ8a2YxiYxdwZ5cV_yrSIbFr8JqCXA8sX6K_J8PGVVyyL4M" },
+                                { name: "Selin Kaya", id: "#77412", loc: "Ankara", tier: "Standart", status: "3 Şikayet", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAuosKbT-8yVD7pcMKROy6G8TZuLoYcsAIjm3q2hnxm4Pl-XauVJJZ_3iZ3H8R-_QZ_cDO0Vis_EdJTYCpqKfCZDHNsr2RaDh3RSgZMb1ar-AEJy6YqnHx1beG4eER6aGouIzSECMpDDWNpaFwDZqlcXIwvTBxG0N3qTwd0khq9IT2SPPzXKe_yMRKMnbWE2UmQRlkNmJ6js50F7hldkpIz19y0AtWNMv8Y9Z4ZtTiyRUpqWsxg7D75aGQmt-bU41dNm8dbbC_w5f8" }
+                            ].map((user, i) => (
+                                <div key={i} className="bg-white dark:bg-surface-dark rounded-xl p-4 border border-gray-200 dark:border-border-dark shadow-sm">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-12 rounded-full bg-cover bg-center border-2 border-primary" style={{backgroundImage: `url(${user.img})`}}></div>
+                                            <div>
+                                                <h4 className="font-bold text-base flex items-center gap-1">
+                                                    {user.name} {user.tier.includes('Gold') && <span className="material-symbols-outlined text-blue-400 text-sm">verified</span>}
+                                                </h4>
+                                                <p className="text-gray-500 dark:text-gray-400 text-xs">ID: {user.id} | {user.loc}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="bg-primary/20 text-primary text-[10px] font-extrabold px-2 py-1 rounded uppercase">{user.tier}</span>
+                                            <span className={`${user.status.includes('Şikayet') ? 'text-red-500' : 'text-green-500'} text-[10px] font-medium mt-1 italic`}>{user.status}</span>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-4 gap-2 border-t border-gray-100 dark:border-border-dark pt-3">
+                                        <button className="flex flex-col items-center gap-1 text-gray-500"><span className="material-symbols-outlined text-lg">visibility</span><span className="text-[10px] font-semibold">Gör</span></button>
+                                        <button className="flex flex-col items-center gap-1 text-gray-500"><span className="material-symbols-outlined text-lg">edit</span><span className="text-[10px] font-semibold">Düzenle</span></button>
+                                        <button className="flex flex-col items-center gap-1 text-primary"><span className="material-symbols-outlined text-lg">verified_user</span><span className="text-[10px] font-semibold">Doğrula</span></button>
+                                        <button className="flex flex-col items-center gap-1 text-red-500"><span className="material-symbols-outlined text-lg">block</span><span className="text-[10px] font-semibold">Askıya Al</span></button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </main>
+                    <BottomNav active="users" />
+                </div>
+            );
+        };
+
+        // --- Screen 3 & 4: Moderation ---
+        const Moderation = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen pb-20">
+                    <header className="flex items-center p-4 border-b border-white/5 sticky top-0 bg-background-dark z-10">
+                        <div className="text-white flex size-12 items-center cursor-pointer" onClick={() => navigate(-1)}><span className="material-symbols-outlined">arrow_back</span></div>
+                        <h2 className="text-lg font-bold flex-1 text-center">DENGIM Moderasyon</h2>
+                        <div className="flex w-12 justify-end"><span className="material-symbols-outlined">tune</span></div>
+                    </header>
+                    
+                    <div className="flex border-b border-white/10 px-4 gap-8">
+                        <button className="border-b-[3px] border-primary pb-[13px] pt-4 text-sm font-bold">Aktif Raporlar</button>
+                        <button className="text-white/50 pb-[13px] pt-4 text-sm font-bold">Geçmiş</button>
+                        <button className="text-white/50 pb-[13px] pt-4 text-sm font-bold" onClick={() => navigate('/moderation-batch')}>Toplu Onay</button>
+                    </div>
+
+                    <div className="p-4">
+                        <h3 className="text-lg font-bold py-4">Yüksek Öncelikli Raporlar</h3>
+                        <div className="space-y-4">
+                            <div className="flex gap-4 rounded-xl bg-white/5 border border-white/10 p-4 shadow-lg">
+                                <div className="flex flex-[2] flex-col gap-4">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="size-2 rounded-full bg-red-500"></span>
+                                            <p className="text-red-500 text-xs font-bold uppercase">Taciz Bildirimi</p>
+                                        </div>
+                                        <p className="text-base font-bold">Uygunsuz Mesajlaşma</p>
+                                        <p className="text-white/60 text-sm">@selin_v vs @mert_k</p>
+                                    </div>
+                                    <button className="flex items-center justify-center rounded-lg h-8 px-4 bg-primary text-background-dark text-sm font-bold w-fit">
+                                        İncele <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
+                                    </button>
+                                </div>
+                                <div className="w-24 h-24 bg-center bg-cover rounded-lg" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD9W7qx2SduJFcNU5af_3Rpsg8kfC34cQI3l2fp-KBPNNWD8HCtVi-1ygxrspKlX01frvvp8VfNC3X9e7vd31ksKfVFw0LutboTuadFayW9IBubRNDCBqKvMVfUi8AIlrZgxkRJVet9MMQkHOt8rIQoVN6J9BbxmHUh9Jr_GTTSRvPXuhmdD7cWwdZQyBSFxyF2P9IHLHT_cNLYtrDad9AMaS-_X58YAp_G-Q6MWbDrxg4uTBoEmACDioNLnyVMGEHYJjXOFPCz7es")'}}></div>
+                            </div>
+                        </div>
+
+                        <h3 className="text-lg font-bold py-6">Karşılaştırmalı Onay</h3>
+                        <div className="flex gap-2 mb-6">
+                            <div className="flex-1 text-center">
+                                <div className="aspect-[3/4] rounded-xl bg-cover bg-center border border-white/20 mb-2" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCqvvV5JkAe8xIibNbYvBOFFvW3zbMzXymSkY9ySODv1FbW4DCI6tg1l77T6QLVp1-8jVdOB9csnjVSLDNod9-ED7h-9SwfGRRAMBZJRikKdBofZgrXISSV2UXhUwGNjBr8gB6g2ZjvHP7n5E2_0TpiZc0KS9v0dj-lT2vcPdQed3cOUMTpmRgC3-VKM5Sg_qYoslkB33xUYoUSisINj5Ho_YAZarHlG-D-pGYVhK1TsK2ECUKTNFCtZZ9BAL4GyzG1gVp-UX_F31Y")'}}></div>
+                                <p className="text-[10px] font-bold text-white/50">PROFİL FOTOĞRAFI</p>
+                            </div>
+                            <div className="flex-1 text-center">
+                                <div className="aspect-[3/4] rounded-xl bg-cover bg-center border-2 border-primary mb-2" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDUlFeCMEW2rsDcBFk0irOYix053h_ZUa_wABJcPYUB0nr5kU2oV1l7_3QP0FW3TlPDEMMlsfk9wVHY75zhC4N2eXC3JMRRJ3UTaZ-PWRfR6qk0HwP-vdZ3qKxzugtbSIugyNjGb6lDNBMyWb9r5TkSb7xanOZxKtLeE0Gh0SnV925SYegOvp7fYqIzgfZrm4nnKNORH4hdC8U9b21WXII0Z4ZmIm5TC9ppdWwnesSYVbyunTlbZx2sEc6PuJ2u3339zE0BrYsu0YQ")'}}></div>
+                                <p className="text-[10px] font-bold text-primary">CANLI SELFIE</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <button className="h-14 rounded-xl bg-primary text-background-dark font-extrabold flex items-center justify-center gap-2"><span className="material-symbols-outlined">check_circle</span> ONAYLA</button>
+                            <button className="h-14 rounded-xl bg-white/10 border border-white/20 font-extrabold flex items-center justify-center gap-2"><span className="material-symbols-outlined">cancel</span> REDDET</button>
+                            <button className="col-span-2 h-14 rounded-xl bg-red-600/20 border border-red-600/50 text-red-500 font-extrabold flex items-center justify-center gap-2"><span className="material-symbols-outlined">gavel</span> HESABI YASAKLA</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const BatchModeration = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="flex items-center p-4 border-b border-white/10 sticky top-0 bg-background-dark z-50">
+                        <div className="text-white flex size-12 items-center cursor-pointer" onClick={() => navigate(-1)}><span className="material-symbols-outlined">arrow_back_ios</span></div>
+                        <h2 className="text-lg font-bold flex-1 text-center">Batch Moderation</h2>
+                        <div className="flex w-12 justify-end"><span className="material-symbols-outlined">settings</span></div>
+                    </header>
+                    <div className="p-4 bg-background-dark">
+                        <div className="flex justify-between items-center mb-4">
+                            <p className="text-base font-medium">Daily Moderation Goal</p>
+                            <p className="text-primary text-sm font-bold">130 / 200</p>
+                        </div>
+                        <div className="rounded-full bg-white/10 overflow-hidden h-2 mb-2">
+                            <div className="h-full rounded-full bg-primary" style={{width: '65%'}}></div>
+                        </div>
+                        <p className="text-white/60 text-[10px] uppercase tracking-widest">Performance: High Efficiency</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 p-4 pb-24">
+                        {[
+                            { name: "Selim, 28", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDuR5nVaci-wp62UzxFKWjVxUHD0zLczUEKRe2bGVF6PG3zPoKtOAu1SomIYPmeIBDaQ4q2otwUAsOF8quMxQ5-PNXxU8WOXIN50w38goT8fVfFRfgexTo9cT2YbMj4Kr6rss8SEmcl27N2oXSYs4OybHO4XackSVM8WIX_sdSsJ4HyEjIyZrsWIOyP5_vr4OdAbb6yY1px8Od07vmxp-6jRX-HslOr1gcZ_w3PWRQGgR6EKER4nnkvWGNBScrMrZRjSjHxGUiVQGY" },
+                            { name: "Derya, 24", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDVBlLGLd58BC5iQZsNWJuRBWZtf5tFn9OsZwytPgJ7-auBSYcHrL9Ft-yEYHXMyW5p_j4tWYi6vBpcvf1vJ4gtY342AqhRM7YIhPqpzkYLvA3RiAhRYVxQe-PHXwXBtxTEzaIIwUsaNSY_SRYHD3ZlC5jHSFfZnNO4gJ9LVJIAcIoFF_xpUuWxuwHXork9St4-aMTa0vqNafG6V67cU9kO16yTAJE0Ud3CUdLdeFpyN6zHmrKzB9Xps3oQhXTQPQZ_Zyen9245Tyo" },
+                            { name: "Caner, 31", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCAH3kBqPklpmxJCgW-7pN3VAw1c7l2HsCUFyt2y6r9Tu008p2hnP9yrRc9Bc5gIFMIdEtMgFI70NXSDqb5esOldOIL7AKPgjDF-28M59AGRys150K_CSBE-lPTGIH76BJy0fDo_ftTLdXsKhTMU_lwpyUODZHy2qIjTPZquGJpW9l5OEW1hAdNX2VftU8Oe7I7x-ZkuQiEAB1T9cxApR_80FfxUbk3ZgDwSkKou3WCgBdRPRwwubPPaHv0WosWbDs7eRodj4Yat30" },
+                            { name: "Merve, 26", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCXt4Zt2omtppQDTc8mET-iiaVVYUJE9o7B6OsTG-96FXeq5oDe7stPZAOadPwI2JfFbdPdPDhIGe5eYyMR-kO7IjbhtnFIClaYkL4rJYXbzzpXC5MyGliQ4IdXKnJp__BmkuPLqQcQ1BDTwDGkYSGuayaxAS02Rbg0tDzW2ZO_jvJbuRQKsP6C5tnX30JRA78JdI26whrkEijUAqwll0313pOUa1lLa9S--ls1BrDLlq8HC_LJGVCl5v2VzGwyiwkFP-DusBpRQkI" }
+                        ].map((user, i) => (
+                            <div key={i} className="relative group aspect-[3/4] rounded-xl overflow-hidden bg-cover bg-center border border-white/10" style={{backgroundImage: `url(${user.img})`}}>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                <div className="absolute bottom-3 left-3">
+                                    <p className="text-white text-sm font-bold">{user.name}</p>
+                                </div>
+                                <div className="absolute inset-0 flex flex-col justify-center items-center gap-3 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button className="bg-primary text-black px-6 py-2 rounded-full font-bold text-xs uppercase">Verify</button>
+                                    <button className="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold text-xs uppercase">Flag</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-background-dark/90 backdrop-blur-md border-t border-white/10 flex gap-3 z-50">
+                        <button className="flex-1 bg-white/10 text-white h-12 rounded-xl font-bold flex items-center justify-center gap-2 text-sm"><span className="material-symbols-outlined text-sm">select_all</span> Select All</button>
+                        <button className="flex-1 bg-primary text-black h-12 rounded-xl font-bold flex items-center justify-center gap-2 text-sm"><span className="material-symbols-outlined text-sm">verified_user</span> Verify Selected</button>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Screen 5: Financial KPI ---
+        const FinancialKPI = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen pb-20">
+                    <header className="flex items-center bg-midnight/50 backdrop-blur-md sticky top-0 z-50 p-4 border-b border-white/10 justify-between">
+                        <span className="material-symbols-outlined text-primary cursor-pointer" onClick={() => navigate('/')}>menu</span>
+                        <h2 className="text-lg font-bold flex-1 px-3">DENGIM VIP Panel</h2>
+                        <div className="flex gap-3">
+                            <button className="w-10 h-10 rounded-full bg-white/5 text-primary border border-primary/20 flex items-center justify-center"><span className="material-symbols-outlined">download</span></button>
+                            <button className="w-10 h-10 rounded-full bg-primary text-black flex items-center justify-center"><span className="material-symbols-outlined">person</span></button>
+                        </div>
+                    </header>
+                    <main className="p-4 max-w-md mx-auto">
+                        <div className="flex justify-between items-end mb-6">
+                            <div>
+                                <p className="text-primary/70 text-xs font-bold uppercase tracking-widest">Premium Analytics</p>
+                                <h3 className="text-2xl font-extrabold">Financial KPIs</h3>
+                            </div>
+                            <div className="flex gap-2">
+                                <button className="px-3 py-1 text-[10px] font-bold border border-primary/30 text-primary rounded-full uppercase">PDF</button>
+                                <button className="px-3 py-1 text-[10px] font-bold border border-primary/30 text-primary rounded-full uppercase">CSV</button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 mb-8">
+                            <div className="glass-card p-5 rounded-xl">
+                                <p className="text-slate-400 text-xs uppercase tracking-wider">MRR</p>
+                                <p className="text-primary text-2xl font-bold">$124.5k</p>
+                                <div className="flex items-center gap-1 text-[#0bda20] text-[11px] font-bold mt-1"><span className="material-symbols-outlined text-sm">trending_up</span> +12%</div>
+                            </div>
+                            <div className="glass-card p-5 rounded-xl">
+                                <p className="text-slate-400 text-xs uppercase tracking-wider">Revenue</p>
+                                <p className="text-primary text-2xl font-bold">$892.1k</p>
+                                <div className="flex items-center gap-1 text-[#0bda20] text-[11px] font-bold mt-1"><span className="material-symbols-outlined text-sm">trending_up</span> +8%</div>
+                            </div>
+                            <div className="glass-card p-5 rounded-xl">
+                                <p className="text-slate-400 text-xs uppercase tracking-wider">ARPU</p>
+                                <p className="text-primary text-2xl font-bold">$42.00</p>
+                                <div className="flex items-center gap-1 text-red-500 text-[11px] font-bold mt-1"><span className="material-symbols-outlined text-sm">trending_down</span> -2%</div>
+                            </div>
+                            <div className="glass-card p-5 rounded-xl">
+                                <p className="text-slate-400 text-xs uppercase tracking-wider">Churn</p>
+                                <p className="text-primary text-2xl font-bold">2.4%</p>
+                                <div className="flex items-center gap-1 text-[#0bda20] text-[11px] font-bold mt-1"><span className="material-symbols-outlined text-sm">arrow_downward</span> 0.5%</div>
+                            </div>
+                        </div>
+                        <h2 className="text-xl font-bold mb-4">Revenue Growth</h2>
+                        <div className="glass-card p-5 rounded-xl border-indigo-custom/20 mb-8">
+                            <div className="flex justify-between items-start mb-4">
+                                <div><p className="text-accent-indigo text-sm font-bold uppercase">Monthly Trend</p><p className="text-3xl font-bold">$58,210</p></div>
+                                <span className="bg-accent-indigo/20 text-accent-indigo px-2 py-1 text-[10px] font-bold rounded-lg">+15.2%</span>
+                            </div>
+                            <div className="h-40 w-full bg-gradient-to-t from-accent-indigo/10 to-transparent rounded-lg border-b-2 border-accent-indigo"></div>
+                        </div>
+                        <h2 className="text-xl font-bold mb-4">Recent VIP Transactions</h2>
+                        <div className="glass-card rounded-xl overflow-hidden mb-12">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-white/5 text-slate-400 text-[10px] uppercase font-bold">
+                                    <tr><th className="px-4 py-3">User</th><th className="px-4 py-3">Plan</th><th className="px-4 py-3 text-right">Amount</th></tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    <tr><td className="px-4 py-4 font-medium">Kerem A.</td><td className="px-4 py-4 text-slate-400">12m VIP</td><td className="px-4 py-4 text-right font-bold text-primary">$199.00</td></tr>
+                                    <tr><td className="px-4 py-4 font-medium">Leyla S.</td><td className="px-4 py-4 text-slate-400">6m VIP</td><td className="px-4 py-4 text-right font-bold text-primary">$119.00</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        // --- Screen 6: Analytics Detail ---
+        const Analytics = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen pb-24">
+                    <header className="sticky top-0 z-50 flex items-center bg-background-dark/95 backdrop-blur-md p-4 border-b border-white/5 justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-primary cursor-pointer" onClick={() => navigate(-1)}>arrow_back</span>
+                            <h2 className="text-lg font-bold tracking-tight">DENGIM Analiz</h2>
+                        </div>
+                        <div className="flex gap-2">
+                            <button className="size-10 rounded-lg bg-white/5 flex items-center justify-center"><span className="material-symbols-outlined">calendar_today</span></button>
+                            <button className="size-10 rounded-lg bg-white/5 flex items-center justify-center"><span className="material-symbols-outlined">more_vert</span></button>
+                        </div>
+                    </header>
+                    <main className="max-w-md mx-auto p-4">
+                        <div className="pt-2 pb-2">
+                            <h3 className="text-2xl font-bold">Abonelik Dağılımı</h3>
+                            <p className="text-slate-400 text-sm mt-1">Premium VIP segmentleri ve kullanıcı eğilimleri</p>
+                        </div>
+                        <div className="py-6 flex justify-center relative">
+                            <div className="w-64 h-64 rounded-full border-[20px] border-slate-800 flex items-center justify-center relative">
+                                <svg className="absolute inset-0 w-full h-full -rotate-90">
+                                    <circle cx="128" cy="128" fill="transparent" r="114" stroke="#ecb613" strokeDasharray="715" strokeDashoffset="357" strokeWidth="20"></circle>
+                                </svg>
+                                <div className="text-center">
+                                    <p className="text-slate-400 text-xs uppercase tracking-widest font-semibold">Toplam</p>
+                                    <p className="text-3xl font-bold">12,482</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 mb-6">
+                            <div className="glass-card p-3 rounded-xl text-center border-l-4 border-primary"><p className="text-[10px] text-slate-400 font-bold uppercase mb-1">12 Ay</p><p className="font-bold">50%</p></div>
+                            <div className="glass-card p-3 rounded-xl text-center border-l-4 border-accent-indigo"><p className="text-[10px] text-slate-400 font-bold uppercase mb-1">6 Ay</p><p className="font-bold">25%</p></div>
+                            <div className="glass-card p-3 rounded-xl text-center border-l-4 border-slate-600"><p className="text-[10px] text-slate-400 font-bold uppercase mb-1">1 Ay</p><p className="font-bold">15%</p></div>
+                        </div>
+                        <h3 className="text-lg font-bold py-4">Operasyonel Özet</h3>
+                        <div className="space-y-3">
+                            <div className="glass-card flex items-center justify-between p-4 rounded-xl">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary"><span className="material-symbols-outlined">autorenew</span></div>
+                                    <div><p className="font-bold text-sm">Beklenen Yenilemeler</p><p className="text-slate-400 text-xs">Önümüzdeki 48 Saat</p></div>
+                                </div>
+                                <div className="text-right"><p className="font-bold">1,240</p><p className="text-emerald-500 text-[10px] font-bold">88% Oran</p></div>
+                            </div>
+                        </div>
+                    </main>
+                    <BottomNav active="analytics" />
+                </div>
+            );
+        };
+
+        // --- Screen 7: System Settings ---
+        const SystemSettings = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen pb-24">
+                    <header className="flex items-center p-4 border-b border-white/5 sticky top-0 bg-background-dark z-50">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back</span>
+                        <h2 className="text-lg font-bold flex-1 text-center">DENGIM Sistem ve Yetki</h2>
+                        <span className="material-symbols-outlined">settings_suggest</span>
+                    </header>
+                    <div className="p-4">
+                        <div className="flex gap-3 mb-6 overflow-x-auto scrollbar-hide">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-[#1e1933] rounded-xl border border-primary/20">
+                                <div className="size-2 rounded-full bg-emerald-500"></div><span className="text-xs font-medium uppercase tracking-wider">Sunucu: Aktif</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-2 bg-[#1e1933] rounded-xl border border-primary/20">
+                                <div className="size-2 rounded-full bg-emerald-500"></div><span className="text-xs font-medium uppercase tracking-wider">DB: Stabil</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold">Rol Yönetimi</h2>
+                            <button className="bg-primary text-background-dark p-2 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined">add</span></button>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="bg-[#1e1933] p-5 rounded-xl border border-white/10 shadow-lg">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2"><span className="material-symbols-outlined text-primary">gavel</span><p className="text-lg font-bold">Moderator</p></div>
+                                        <p className="text-slate-400 text-sm">İçerik denetimi ve kullanıcı yönetimi yetkileri.</p>
+                                    </div>
+                                    <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined text-primary text-3xl">verified_user</span></div>
+                                </div>
+                                <button className="w-full h-10 bg-white/5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 border border-white/10"><span className="material-symbols-outlined text-[20px]">edit</span> Yetkileri Düzenle</button>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav active="settings" />
+                </div>
+            );
+        };
+
+        // --- Screen 8: Audit Log ---
+        const AuditLog = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen pb-24">
+                    <header className="glass p-4 sticky top-0 z-50 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-primary cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios</span>
+                            <div>
+                                <h2 className="text-lg font-bold leading-tight">DENGIM Denetim</h2>
+                                <p className="text-[10px] text-primary uppercase tracking-widest">Güvenlik Paneli</p>
+                            </div>
+                        </div>
+                        <button className="size-10 rounded-full bg-white/5 text-primary border border-white/10 flex items-center justify-center"><span className="material-symbols-outlined">shield_lock</span></button>
+                    </header>
+                    <div className="p-4 space-y-4">
+                        <div className="flex w-full items-stretch rounded-xl h-14 bg-[#1A1D23] border border-white/10 overflow-hidden">
+                            <div className="text-primary flex items-center justify-center pl-4"><span className="material-symbols-outlined">search</span></div>
+                            <input className="flex-1 bg-transparent border-none focus:ring-0 text-white px-4 text-sm" placeholder="Yönetici veya işlem ara..."/>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold">Kritik Aktiviteler</h3>
+                            <span className="text-[10px] bg-red-500/20 text-red-500 px-2 py-0.5 rounded-full font-bold uppercase">Canlı</span>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="bg-[#1A1D23] p-4 rounded-xl border border-white/5 border-l-4 border-l-primary shadow-lg shadow-primary/5">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                    <p className="text-primary text-[11px] font-bold uppercase">Şüpheli Giriş Denemesi</p>
+                                </div>
+                                <p className="text-lg font-semibold leading-tight mb-2">Çoklu Başarısız Giriş</p>
+                                <p className="text-gray-400 text-xs">Hedef: @user_premium_99 • IP: 185.122.45.10</p>
+                                <p className="text-gray-500 text-[10px] mt-2">Bugün, 14:22 • Berlin, DE</p>
+                                <button className="w-full bg-primary text-black py-2 rounded-lg text-xs font-bold mt-4 uppercase">İncele & Engelle</button>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav active="settings" />
+                </div>
+            );
+        };
+
+        // --- Screen 9 & 10: Live Support & Support Hub ---
+        const SupportHub = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen flex flex-col">
+                    <header className="flex items-center p-4 border-b border-white/10 sticky top-0 bg-background-dark z-50">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate('/')}>menu</span>
+                        <h2 className="text-lg font-bold flex-1 px-4">DENGIM Canlı Destek</h2>
+                        <span className="material-symbols-outlined">notifications</span>
+                    </header>
+                    <div className="flex overflow-x-auto gap-3 p-4 scrollbar-hide">
+                        <div className="flex-1 min-w-[120px] bg-white/5 border border-white/10 p-4 rounded-xl">
+                            <p className="text-white/60 text-xs uppercase tracking-wider">Aktif Sohbet</p>
+                            <p className="text-2xl font-bold">18</p>
+                        </div>
+                        <div className="flex-1 min-w-[120px] bg-white/5 border border-primary/40 p-4 rounded-xl border-l-4 border-l-primary">
+                            <p className="text-white/60 text-xs uppercase tracking-wider">Bekleme</p>
+                            <p className="text-2xl font-bold">42sn</p>
+                        </div>
+                    </div>
+                    <div className="p-4 space-y-4 flex-1 pb-24">
+                        <h3 className="text-base font-bold">Aktif Kuyruk (6)</h3>
+                        <div className="bg-white/5 rounded-xl border-l-4 border-primary overflow-hidden shadow-lg cursor-pointer" onClick={() => navigate('/support-chat')}>
+                            <div className="p-4">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="size-12 rounded-full border-2 border-primary p-0.5 overflow-hidden">
+                                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAllvFp46toH6tb08_Tkqmqn2OY-OTFcsyOioz9B2Y4hR5BLtVKihni_Qv647Pv3JTCzjsGxP6LUNGy7yBmzaNfYxvyp2eSeQazuKGQm1brfdeQonlum11Z6LqMNDfCx8_sxOPZfORfUW_dQLWNgkDdekFj4gWMbasopbzzDhy0sWDkWgQzERTF-sztmrNi-JO0EklwdpTrMszGuW3Q-pcHDpBmkqqs7H5R1wvki00IQd2v2TUpbroOB-NyvVL4IpnifoZ63gIh2aU" className="w-full h-full object-cover rounded-full" />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2"><p className="font-bold text-sm">Julian Rossi</p><span className="bg-primary text-black text-[10px] font-bold px-1.5 rounded">VIP</span></div>
+                                            <p className="text-xs text-white/50">Yükleme Hatası • 2dk önce</p>
+                                        </div>
+                                    </div>
+                                    <span className="material-symbols-outlined text-white/30">open_in_full</span>
+                                </div>
+                                <div className="bg-white/5 rounded-lg p-3">
+                                    <p className="text-sm text-white/80 line-clamp-2">"Ödeme ekranında sürekli 'hata kodu 500' alıyorum, üyeliğimi yenileyemiyorum. Yardım lütfen!"</p>
+                                </div>
+                            </div>
+                            <div className="flex border-t border-white/5">
+                                <button className="flex-1 py-3 bg-primary/20 text-white text-xs font-bold hover:bg-primary/40 flex items-center justify-center gap-2"><span className="material-symbols-outlined text-sm">reply</span> CEVAPLA</button>
+                                <button className="flex-1 py-3 text-white/60 text-xs font-bold border-l border-white/5 flex items-center justify-center gap-2"><span className="material-symbols-outlined text-sm">forward</span> AKTAR</button>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav />
+                </div>
+            );
+        };
+
+        const SupportChat = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white h-screen flex flex-col">
+                    <header className="flex items-center p-4 border-b border-white/10 sticky top-0 bg-background-dark z-50">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back</span>
+                        <h2 className="text-lg font-bold flex-1 text-center">Caner Demir</h2>
+                        <span className="material-symbols-outlined">more_vert</span>
+                    </header>
+                    <div className="p-4 bg-primary/10 border-b border-white/5 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-full bg-cover" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuB5xDtkg6hgFThMRw0uWMIpn4YZLVarwzcTJ4z9nJM2vUKE4VC4r3oyATCZcyaV0Ai8JvTgjAUxkkkN3E1ceM2kittms5Im1iyTXo4mI_lFer59vtuIkLhOGcBSlH5b339dQBURCGPfA4cPe40qT7Zd52lzVP3oQgdsOJ69IZs2UdfNJVakMzknw0xoiJvkw4aGVFZRD-Hatp8zkNwntrQ-kf2YGa4KaF71MAa0sWzO6--Gbm0K4HZi-8tqi25ntPW7al37cJEOK5Y")'}}></div>
+                            <div><p className="font-bold text-sm leading-none">Caner Demir</p><p className="text-primary text-[10px] uppercase font-bold tracking-widest mt-1">Premium VIP</p></div>
+                        </div>
+                        <button className="bg-white/5 px-3 py-1 rounded-lg text-[10px] font-bold border border-white/10">DETAYLAR</button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div className="max-w-[85%] bg-white/5 border border-white/10 p-3 rounded-2xl rounded-tl-none text-sm">Merhaba, Premium üyeliğimle ilgili bir fatura sorunu yaşıyorum. Yardımcı olabilir misiniz?</div>
+                        <div className="max-w-[85%] ml-auto bg-primary text-black p-3 rounded-2xl rounded-tr-none text-sm font-medium">Tabii Caner Bey, Premium hesabınızı kontrol ediyorum. Lütfen bekleyin.</div>
+                    </div>
+                    <div className="p-4 border-t border-white/10 bg-background-dark">
+                        <div className="flex items-center gap-2 bg-white/5 rounded-full px-4 py-2 border border-white/5">
+                            <span className="material-symbols-outlined text-slate-400">attach_file</span>
+                            <input className="flex-1 bg-transparent border-none focus:ring-0 text-sm" placeholder="Mesajınızı yazın..." />
+                            <button className="size-10 bg-primary rounded-full flex items-center justify-center text-black shadow-lg"><span className="material-symbols-outlined">send</span></button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Screen 11 & 12: Broadcast & Image Promo ---
+        const Broadcast = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen pb-24">
+                    <nav className="sticky top-0 z-50 flex items-center bg-background-dark p-4 border-b border-white/10 justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="text-white flex size-10 items-center justify-center bg-primary/20 rounded-lg"><span className="material-symbols-outlined">campaign</span></div>
+                            <h2 className="text-lg font-bold">DENGIM Broadcast</h2>
+                        </div>
+                        <div className="flex gap-2">
+                            <button className="size-10 rounded-lg bg-white/5 flex items-center justify-center" onClick={() => navigate('/promo-designer')}><span className="material-symbols-outlined">design_services</span></button>
+                        </div>
+                    </nav>
+                    <main className="p-4 space-y-6">
+                        <div className="space-y-4">
+                            <h2 className="text-xl font-bold flex items-center gap-2"><span className="material-symbols-outlined text-primary">edit_note</span> Yeni Duyuru</h2>
+                            <input className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-4 text-sm" placeholder="Bildirim Başlığı" />
+                            <textarea className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-sm" placeholder="Duyuru detaylarını buraya yazın..."></textarea>
+                            <div className="grid grid-cols-2 gap-4">
+                                <select className="h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-sm"><option>Tüm Kullanıcılar</option><option>VIP Only</option></select>
+                                <select className="h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-sm"><option>Push Bildirim</option><option>Email</option></select>
+                            </div>
+                        </div>
+                        <div className="p-6 bg-primary rounded-xl text-black font-bold text-center shadow-lg shadow-primary/20">YAYINI BAŞLAT</div>
+                    </main>
+                    <BottomNav active="settings" />
+                </div>
+            );
+        };
+
+        const PromoDesigner = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="flex items-center p-4 border-b border-white/10 sticky top-0 bg-background-dark z-50">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>close</span>
+                        <h2 className="text-lg font-bold flex-1 text-center">DENGIM Görsel Duyuru</h2>
+                        <span className="text-primary font-bold">Yayınla</span>
+                    </header>
+                    <div className="p-4 pb-24 space-y-6">
+                        <div className="relative w-full aspect-[9/16] max-w-[280px] mx-auto rounded-3xl overflow-hidden border border-white/20 shadow-2xl">
+                            <img className="absolute inset-0 w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0p5BNpbVaywCOWw86yHGHS5VFzLYyaEU5j4rRfx85lroU3muUENIcasePswElzAD9Cer9iVBrU4n4vsXz2XxIkjptICxC5liBV5Dupf9JdkVZ0vNMfDWs9jBZgUprPNCgLXNiu61DL_5Z7fUNFd6p7ShNyh8ekj-gAHJWYS6ic7CkEO3EpetZcBbY1b3TDNB-HtLO9xnNdrjbLNm6WfHAzsTcDZzlOJSUPyIC2PVqSjiElGc8GyNFkTEt4TgO_LcDBD0j9heuDI4" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                            <div className="absolute bottom-10 left-6 right-6">
+                                <span className="inline-block px-2 py-1 bg-primary text-black text-[10px] font-black rounded mb-2 uppercase">Premium</span>
+                                <h4 className="text-2xl font-bold mb-2">Özel Davet: Gala Gecesi</h4>
+                                <button className="w-full py-3 bg-white text-black text-sm font-bold rounded-xl mt-4">Detayları Gör</button>
+                            </div>
+                        </div>
+                        <div className="bg-white/5 border-2 border-dashed border-white/20 p-10 rounded-xl text-center">
+                            <span className="material-symbols-outlined text-4xl text-primary/60 mb-2">cloud_upload</span>
+                            <p className="font-bold">Görsel Yükle</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Screen 13-16: VIP Profile, Privacy & Notifications ---
+        const ProfilePrivacy = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="p-4 flex items-center justify-between">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios_new</span>
+                        <h2 className="text-lg font-bold flex-1 text-center pr-10">Profil ve Gizlilik</h2>
+                    </header>
+                    <div className="px-4 py-2 space-y-4">
+                        <h3 className="text-xs uppercase font-bold text-white/40 tracking-widest pt-4">Hesap Ayarları</h3>
+                        <div className="bg-white/5 p-4 rounded-xl flex items-center justify-between" onClick={() => navigate('/security-settings')}>
+                            <div className="flex items-center gap-4">
+                                <span className="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">smartphone</span>
+                                <div><p className="font-medium text-sm">Telefon Numarası</p><p className="text-xs text-white/50">+90 532 *** ** 88</p></div>
+                            </div>
+                            <span className="material-symbols-outlined text-white/30">chevron_right</span>
+                        </div>
+                        <h3 className="text-xs uppercase font-bold text-white/40 tracking-widest pt-4">Gizlilik</h3>
+                        <div className="bg-white/5 p-4 rounded-xl flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <span className="material-symbols-outlined text-white/60">visibility_off</span>
+                                <p className="font-medium text-sm">Profilimi Gizle</p>
+                            </div>
+                            <div className="w-11 h-6 bg-primary rounded-full relative"><div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                        </div>
+                        <div className="bg-white/5 p-4 rounded-xl flex items-center justify-between" onClick={() => navigate('/notification-prefs')}>
+                            <div className="flex items-center gap-4">
+                                <span className="material-symbols-outlined text-white/60">notifications</span>
+                                <p className="font-medium text-sm">Bildirim Tercihleri</p>
+                            </div>
+                            <span className="material-symbols-outlined text-white/30">chevron_right</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const SecuritySettings = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="p-4 border-b border-white/5 flex items-center sticky top-0 bg-background-dark z-10">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios_new</span>
+                        <h2 className="text-lg font-bold flex-1 text-center pr-10">Güvenlik ve Görünürlük</h2>
+                    </header>
+                    <main className="p-4 space-y-6">
+                        <div className="bg-white/5 p-6 rounded-2xl border border-primary/20">
+                            <h3 className="flex items-center gap-2 font-bold mb-4"><span className="material-symbols-outlined text-primary">visibility</span> Görünürlük Modu</h3>
+                            <div className="space-y-3">
+                                {["Herkese Açık", "Sadece Beğendiklerim", "Gizli"].map((label, i) => (
+                                    <label key={i} className="flex items-center justify-between p-4 border border-white/10 rounded-xl cursor-pointer">
+                                        <span className="text-sm font-medium">{label}</span>
+                                        <div className={`size-5 rounded-full border-2 ${i === 0 ? 'border-primary bg-primary' : 'border-white/20'}`}></div>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const NotificationPrefs = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="p-6 flex items-center justify-between">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios</span>
+                        <h2 className="text-xl font-bold flex-1 text-center pr-10">Bildirim Tercihleri</h2>
+                    </header>
+                    <div className="p-4 space-y-6">
+                        <h2 className="text-lg font-bold">Eşleşmeler & Beğeniler</h2>
+                        <div className="flex justify-between items-center py-2 border-b border-white/5">
+                            <div><p className="font-medium">Yeni Eşleşmeler</p><p className="text-xs text-white/50">Biriyle eşleştiğinizde anında haber ver</p></div>
+                            <div className="w-11 h-6 bg-primary rounded-full relative"><div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                        </div>
+                        <div className="bg-white/5 p-6 rounded-2xl border border-white/5 mt-10" onClick={() => navigate('/smart-notifications')}>
+                            <div className="flex justify-between items-center mb-4">
+                                <div className="flex items-center gap-3"><span className="material-symbols-outlined text-primary">notifications_off</span><h2 className="text-lg font-semibold">Sessiz Saatler</h2></div>
+                                <div className="w-11 h-6 bg-primary rounded-full relative"><div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                            </div>
+                            <p className="text-white/40 text-xs mb-4">Belirlenen saatler arasında bildirimler sessize alınır.</p>
+                            <div className="flex justify-between items-center gap-4">
+                                <div className="flex-1 bg-black/40 p-4 rounded-xl border border-white/5 text-center">
+                                    <span className="text-[10px] text-primary font-bold uppercase block mb-1">Başlangıç</span><span className="text-2xl font-light">23:00</span>
+                                </div>
+                                <span className="material-symbols-outlined text-white/20">arrow_forward</span>
+                                <div className="flex-1 bg-black/40 p-4 rounded-xl border border-white/5 text-center">
+                                    <span className="text-[10px] text-primary font-bold uppercase block mb-1">Bitiş</span><span className="text-2xl font-light">08:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const SmartNotifications = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="p-4 flex items-center justify-between border-b border-white/5">
+                        <span className="material-symbols-outlined text-primary cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios</span>
+                        <h2 className="text-lg font-bold flex-1 text-center pr-10">Akıllı Bildirimler</h2>
+                    </header>
+                    <div className="p-4">
+                        <div className="rounded-2xl glass-card overflow-hidden mb-6">
+                            <div className="h-48 bg-cover bg-center" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDF9nFOOFZRNDLTbW71DwbH95pgAcXz5t4ATjNeiGgPv-46q-l3Geru59cb8aHADUi_fRFmke2H0eIpLVe5GDdhdysLrIuU5G6yt_hF2ofrSvbZdIXXIPkDL2XL4_fsUzqTNxBV9R87Za6st8At8xNBP57naC-q_LoB_2Za6upGBGXaU9z44uNy8PPAtKCzi82H-TuDSj7QBeu1S_Jg_YOHTSGk02HJAxD5tBcvg0CdUCN_6GioW6Uobe2HIT619CjQXlNPs4WFaZQ")'}}></div>
+                            <div className="p-5">
+                                <span className="bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border border-primary/30">Premium Feature</span>
+                                <h3 className="text-xl font-bold mt-2">Akıllı Bildirim Modu</h3>
+                                <p className="text-white/70 text-sm mt-2">Sadece VIP eşleşmeler ve direkt mesajlar için anlık bildirim alırsınız.</p>
+                                <button className="w-full mt-4 bg-primary text-black py-3 rounded-full font-bold">AKTİF ET</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Screen 17-20: Help, Invite & Referrals ---
+        const HelpCenter = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen pb-24">
+                    <header className="p-6 flex items-center justify-between">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios_new</span>
+                        <h2 className="text-lg font-bold flex-1 text-center pr-10 uppercase tracking-widest">Yardım Merkezi</h2>
+                    </header>
+                    <div className="p-4">
+                        <div className="bg-white/5 rounded-xl h-14 border border-white/10 flex items-center px-4 mb-8">
+                            <span className="material-symbols-outlined text-primary/70">search</span>
+                            <input className="bg-transparent border-none focus:ring-0 flex-1 px-4 text-sm" placeholder="Nasıl yardımcı olabiliriz?" />
+                        </div>
+                        <h2 className="text-2xl font-bold border-b border-white/5 pb-3 mb-4 uppercase tracking-wider">HESAP</h2>
+                        <div className="space-y-3">
+                            <div className="bg-white/5 p-4 rounded-xl flex justify-between items-center"><p className="font-medium">Profilimi nasıl güncellerim?</p><span className="material-symbols-outlined text-primary">expand_more</span></div>
+                            <div className="bg-white/5 p-4 rounded-xl flex justify-between items-center" onClick={() => navigate('/invite-promo')}><p className="font-medium">VIP Davetiye nedir?</p><span className="material-symbols-outlined text-primary">expand_more</span></div>
+                        </div>
+                    </div>
+                    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-dark to-transparent">
+                        <button className="w-full h-14 border border-accent-indigo text-accent-indigo font-bold rounded-xl flex items-center justify-center gap-3" onClick={() => navigate('/quick-support')}><span className="material-symbols-outlined">support_agent</span> Müşteri Temsilcisi</button>
+                    </div>
+                </div>
+            );
+        };
+
+        const QuickSupport = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen p-6">
+                    <header className="flex items-center justify-between mb-8">
+                        <span className="material-symbols-outlined text-primary cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios_new</span>
+                        <h2 className="text-lg font-bold flex-1 text-center">Hızlı Destek</h2>
+                    </header>
+                    <h3 className="text-3xl font-extrabold mb-8">Size nasıl yardımcı olabiliriz?</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        {[{icon: 'workspace_premium', label: 'Üyelik'}, {icon: 'favorite', label: 'Eşleşme'}, {icon: 'shield_lock', label: 'Gizlilik'}, {icon: 'person', label: 'Hesap'}].map((item, i) => (
+                            <div key={i} className="bg-white/5 border border-primary/10 p-5 aspect-square rounded-2xl flex flex-col justify-between">
+                                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center"><span className="material-symbols-outlined text-primary">{item.icon}</span></div>
+                                <p className="font-bold">{item.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const InvitePromo = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen flex flex-col">
+                    <header className="p-4 flex items-center justify-between z-10">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios</span>
+                        <h2 className="text-xs font-bold uppercase tracking-widest text-white/80">Altın Davetiye</h2>
+                        <div className="w-12"></div>
+                    </header>
+                    <div className="p-6 flex-1">
+                        <div className="h-64 bg-contain bg-center bg-no-repeat mb-8" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEn1-haHmnlAzjfpGJtTGyX6xZl8w36qCt2qkR_AEDVm_E5AMgfsTE2Q2YYBc5_49uXyloWVHpMP9HUGO8RH5QK-MAEzOXLec36cqv3bKU_xTPLETVC4NZndTzvCw90OjCLAl4WiTpECQT7adc8XWS6RQeXtzq2V-H1qvDSXt19n70_XdnRaHnV65xR4KDwp5qLuG0C_7z7TT7RMLGwB-Ricp-tEsz46XlqycvASnpjIhxlzDjzJPo01hZZHTMjzWTkhHyeuomIa0")'}}></div>
+                        <h1 className="text-3xl font-bold text-center mb-4">Seçkin Bir Davet Gönder</h1>
+                        <p className="text-center text-white/60 px-6 mb-8">Dengim topluluğunu genişletin, her başarılı davet için <span className="text-primary font-bold">1 ay VIP üyelik</span> kazanın.</p>
+                        <div className="glass-panel p-8 rounded-2xl text-center flex flex-col items-center gap-4">
+                            <div><p className="text-primary text-3xl font-bold tracking-[0.2em]">DNGM-GOLD</p><p className="text-white/40 text-[10px] uppercase font-bold mt-2">Özel Referans Kodun</p></div>
+                            <button className="bg-accent-indigo/20 text-accent-indigo px-6 py-2 rounded-full border border-accent-indigo/30 font-bold flex items-center gap-2 text-sm"><span className="material-symbols-outlined text-sm">content_copy</span> Kopyala</button>
+                        </div>
+                        <button className="w-full bg-primary text-black py-4 rounded-xl font-bold mt-8 flex items-center justify-center gap-4" onClick={() => navigate('/referral-network')}>Rehberden Davet Et <span className="material-symbols-outlined">chevron_right</span></button>
+                    </div>
+                </div>
+            );
+        };
+
+        const ReferralNetwork = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen flex flex-col">
+                    <header className="p-4 flex items-center justify-between sticky top-0 bg-background-dark z-50">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios</span>
+                        <h2 className="text-xs font-bold uppercase tracking-widest flex-1 text-center">DENGIM ELİT</h2>
+                        <div className="w-12"></div>
+                    </header>
+                    <div className="p-4 text-center">
+                        <h1 className="text-3xl font-bold mb-2">Ağınızı Seçkinleştirin</h1>
+                        <p className="text-white/60 text-sm mb-6 px-4">DENGIM kalitesini korumak için sadece vizyoner ve seçkin kişileri davet edin.</p>
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+                            <div className="flex justify-between items-end mb-4">
+                                <div className="text-left"><p className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Mevcut Durum</p><p className="font-bold">Hedef: 3 Davet</p></div>
+                                <p className="text-primary text-xl font-bold">1/3</p>
+                            </div>
+                            <div className="h-3 bg-white/10 rounded-full overflow-hidden mb-2"><div className="h-full bg-primary" style={{width: '33%'}}></div></div>
+                            <p className="text-white/40 text-xs">Gold Rozet kazanmanıza 2 davet kaldı</p>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            {["Murat Kara", "Selin Yılmaz", "Arda Erdem"].map((name, i) => (
+                                <div key={i} className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">{name.split(' ').map(n => n[0]).join('')}</div>
+                                        <p className="font-bold text-sm">{name}</p>
+                                    </div>
+                                    <button className="bg-primary text-black px-4 py-2 rounded-full text-[10px] font-black uppercase">Davet Et</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Screen 21-24: Virtual Gifts & Wallet ---
+        const GiftShop = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="p-4 flex items-center justify-between border-b border-white/5">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>close</span>
+                        <h2 className="text-lg font-bold flex-1 text-center font-display">Zarif Bir Jest Yap</h2>
+                        <span className="material-symbols-outlined">info</span>
+                    </header>
+                    <div className="p-4">
+                        <h3 className="text-2xl font-bold mb-1">Özel Koleksiyon</h3>
+                        <p className="text-white/40 text-sm mb-6">İlginizi seçkin bir hediye ile belli edin.</p>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[{icon: 'local_florist', label: 'Altın Gül', price: '50 Credits'}, {icon: 'liquor', label: 'Şampanya', price: '120 Credits'}, {icon: 'mail', label: 'Özel Davetiye', price: '200 Credits'}].map((gift, i) => (
+                                <div key={i} className="flex flex-col gap-3" onClick={() => navigate('/gift-received')}>
+                                    <div className="w-full aspect-square bg-[#1A1D23] rounded-xl flex items-center justify-center border border-white/5"><span className="material-symbols-outlined text-primary !text-6xl">{gift.icon}</span></div>
+                                    <div><p className="font-bold">{gift.label}</p><p className="text-primary text-xs font-bold">{gift.price}</p></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const GiftReceived = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen flex flex-col items-center">
+                    <header className="w-full p-4 flex justify-between z-10">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>close</span>
+                        <h2 className="text-xs font-bold uppercase tracking-widest opacity-60">Hediye Alındı</h2>
+                        <div className="w-12"></div>
+                    </header>
+                    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                        <div className="w-64 h-64 bg-center bg-contain bg-no-repeat mb-8 relative" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD_0csf1kkTMyaCuKomsRrIzkuNxvHSXUiBy6aIFyC4bloOqjG4zzsK5TyhYIykT4vRWh9LLngoSCregl5Q7lvPKB9nkeGuLl3ap_0PrdSXNkNCpd5bmYUqRRv-1-9kYcw3swpe2OzLq9kggLuodopJsuMVzF1LBs0rwtcHY8szOgM5KOIrQ4mcVgzAtqi8fNndMFJKxoFz2gAd3-AJrA_ynJywQN6GiH54twQ13gYegB6QxAVRKk400zGtV0Xw6vIkPrVMq-5R7d4")'}}>
+                            <div className="absolute inset-0 bg-primary/20 rounded-full blur-[80px] -z-10"></div>
+                        </div>
+                        <h1 className="text-3xl font-bold mb-2">Kaan size bir <span className="text-primary">Altın Gül</span> gönderdi</h1>
+                        <p className="text-white/40 mb-8">Premium Hediye</p>
+                        <div className="glass-card p-6 rounded-xl w-full max-w-sm italic text-lg leading-relaxed">"Bu gül senin zarafetin için. Harika bir akşam dilerim."</div>
+                    </div>
+                    <div className="w-full p-6"><button className="w-full h-14 bg-primary text-black font-bold rounded-xl flex items-center justify-center gap-2" onClick={() => navigate('/wallet')}>Teşekkür Et ve Mesaj At <span className="material-symbols-outlined">send</span></button></div>
+                </div>
+            );
+        };
+
+        const Wallet = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="p-4 flex items-center justify-between">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios</span>
+                        <h2 className="text-lg font-bold flex-1 text-center">Cüzdan</h2>
+                        <span className="material-symbols-outlined" onClick={() => navigate('/vip-wallet')}>settings</span>
+                    </header>
+                    <div className="p-4">
+                        <div className="glass-card p-8 rounded-2xl relative overflow-hidden flex flex-col gap-4">
+                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+                            <p className="text-white/60 text-[10px] uppercase font-bold tracking-widest">Dengim Cüzdan</p>
+                            <div><p className="text-sm">Kredi Bakiyesi</p><p className="text-primary text-5xl font-extrabold tracking-tight">1,250 <span className="text-xl">Kredi</span></p></div>
+                        </div>
+                        <h3 className="text-lg font-bold mt-8 mb-4">Kredi Paketleri</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="glass-card p-4 rounded-xl text-center">
+                                <span className="material-symbols-outlined text-primary !text-5xl mb-4">diamond</span>
+                                <p className="font-bold">500 Kredi</p><p className="text-white/60 text-sm">₺899.00</p>
+                                <button className="w-full py-2 bg-primary text-black rounded-lg text-xs font-bold mt-4">Satın Al</button>
+                            </div>
+                            <div className="glass-card p-4 rounded-xl text-center opacity-60">
+                                <span className="material-symbols-outlined text-primary !text-5xl mb-4">crown</span>
+                                <p className="font-bold">1000 Kredi</p><p className="text-white/60 text-sm">₺1,699.00</p>
+                                <button className="w-full py-2 border border-primary text-primary rounded-lg text-xs font-bold mt-4">Satın Al</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const VIPWallet = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background-dark font-display text-white min-h-screen">
+                    <header className="p-4 flex items-center justify-between">
+                        <span className="material-symbols-outlined cursor-pointer" onClick={() => navigate(-1)}>arrow_back_ios</span>
+                        <h2 className="text-lg font-bold flex-1 text-center">DENGIM VIP</h2>
+                        <span className="material-symbols-outlined">history</span>
+                    </header>
+                    <div className="p-4">
+                        <div className="metallic-card p-8 rounded-2xl shadow-2xl flex flex-col justify-end min-h-[220px]">
+                            <div className="flex justify-between items-start mb-auto">
+                                <div className="w-12 h-12 border-2 border-primary rounded-full flex items-center justify-center font-black text-2xl text-primary">D</div>
+                                <span className="bg-primary/10 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Premium Elite</span>
+                            </div>
+                            <div>
+                                <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest">Kullanılabilir Bakiye</p>
+                                <p className="text-3xl font-extrabold mt-1">12,850 <span className="text-primary text-xl">D-Kredi</span></p>
+                            </div>
+                        </div>
+                        <h3 className="text-lg font-bold mt-8 mb-4">Seçkin Kredi Paketleri</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            {["500 Kredi", "1500 Kredi", "5000 Kredi", "12000 Kredi"].map((pkg, i) => (
+                                <div key={i} className="bg-[#16181D] border border-white/5 p-6 rounded-2xl text-center transition-all active:scale-95">
+                                    <div className="w-14 h-14 bg-accent-indigo rounded-full mx-auto mb-4 flex items-center justify-center"><span className="material-symbols-outlined">token</span></div>
+                                    <p className="font-bold">{pkg}</p><p className="text-primary text-sm font-bold mt-1">₺249+</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App & Routing ---
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/users" element={<UserManagement />} />
+                        <Route path="/moderation" element={<Moderation />} />
+                        <Route path="/moderation-batch" element={<BatchModeration />} />
+                        <Route path="/financial-kpi" element={<FinancialKPI />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/settings" element={<SystemSettings />} />
+                        <Route path="/audit-log" element={<AuditLog />} />
+                        <Route path="/live-support" element={<SupportHub />} />
+                        <Route path="/support-chat" element={<SupportChat />} />
+                        <Route path="/broadcast" element={<Broadcast />} />
+                        <Route path="/promo-designer" element={<PromoDesigner />} />
+                        <Route path="/profile" element={<ProfilePrivacy />} />
+                        <Route path="/security-settings" element={<SecuritySettings />} />
+                        <Route path="/notification-prefs" element={<NotificationPrefs />} />
+                        <Route path="/smart-notifications" element={<SmartNotifications />} />
+                        <Route path="/help-center" element={<HelpCenter />} />
+                        <Route path="/quick-support" element={<QuickSupport />} />
+                        <Route path="/invite-promo" element={<InvitePromo />} />
+                        <Route path="/referral-network" element={<ReferralNetwork />} />
+                        <Route path="/gift-shop" element={<GiftShop />} />
+                        <Route path="/gift-received" element={<GiftReceived />} />
+                        <Route path="/wallet" element={<Wallet />} />
+                        <Route path="/vip-wallet" element={<VIPWallet />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        };
+
+        const container = document.getElementById('root');
+        const root = createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>

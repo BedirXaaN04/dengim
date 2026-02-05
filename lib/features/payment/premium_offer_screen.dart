@@ -2,12 +2,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
-import 'services/purchase_service.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../ads/services/ad_service.dart';
 import '../auth/services/profile_service.dart';
 import '../../core/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+
 
 class PremiumOfferScreen extends StatefulWidget {
   const PremiumOfferScreen({super.key});
