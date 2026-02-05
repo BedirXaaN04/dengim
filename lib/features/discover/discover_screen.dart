@@ -24,6 +24,7 @@ import '../../core/providers/story_provider.dart';
 import '../../core/providers/user_provider.dart';
 import 'story_viewer_screen.dart';
 import 'package:image_picker/image_picker.dart';
+import 'models/story_model.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});

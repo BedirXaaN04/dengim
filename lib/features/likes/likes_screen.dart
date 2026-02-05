@@ -179,6 +179,8 @@ class _LikesScreenState extends State<LikesScreen> {
         ),
       ],
     );
+  }
+
   Widget _buildTopBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

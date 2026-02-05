@@ -46,7 +46,7 @@ class DiscoveryService {
 
       final users = snapshot.docs
           .where((doc) => !swipedIds.contains(doc.id))
-          .map((doc) => UserProfile.fromMap(doc.data()))
+          .map((doc) => UserProfile.fromMap(doc.data() as Map<String, dynamic>))
           .where((profile) {
             // Client-side age filtering
             if (minAge != null && profile.age < minAge) return false;
@@ -175,7 +175,7 @@ class DiscoveryService {
         final chunk = otherUserIds.skip(i).take(10).toList();
         final usersSnapshot = await _firestore
             .collection('users')
-            .where('uid', propertyName: 'uid', whereIn: chunk) // or using documentId
+            .where(FieldPath.documentId, whereIn: chunk)
             .get();
         matches.addAll(usersSnapshot.docs.map((doc) => UserProfile.fromMap(doc.data())));
       }
@@ -202,6 +202,7 @@ class DiscoveryService {
       LogService.e("Error fetching active users", e);
       return [];
     }
+  }
   Stream<List<String>> getMatchedUserIdsStream() {
     final user = _currentUser;
     if (user == null) return Stream.value([]);
@@ -216,6 +217,50 @@ class DiscoveryService {
             return userIds.firstWhere((id) => id != user.uid, orElse: () => '') as String;
           }).where((id) => id.isNotEmpty).toList();
         });
+  }
+
+  /// Beni beğenen kullanıcıları getir (Premium özellik)
+  Future<List<UserProfile>> getLikedMeUsers() async {
+    final user = _currentUser;
+    if (user == null) return [];
+
+    try {
+      // swipes alt koleksiyonundaki bu kullanıcıyı beğenenleri bul
+      final likedMeSnapshot = await _firestore
+          .collectionGroup('swipes')
+          .where(FieldPath.documentId, isEqualTo: user.uid)
+          .get();
+
+      // Bu swipe'ların ana kullanıcı uid'lerini çıkar
+      final likerUids = <String>[];
+      for (final doc in likedMeSnapshot.docs) {
+        if (doc.data()['type'] == 'like') {
+          // Parent path: users/{uid}/swipes/{targetUid}
+          final pathSegments = doc.reference.path.split('/');
+          if (pathSegments.length >= 2) {
+            likerUids.add(pathSegments[1]); // uid at index 1
+          }
+        }
+      }
+
+      if (likerUids.isEmpty) return [];
+
+      // Bu kullanıcıların profillerini getir (max 10 chunk)
+      final List<UserProfile> likers = [];
+      for (var i = 0; i < likerUids.length && i < 30; i += 10) {
+        final chunk = likerUids.skip(i).take(10).toList();
+        final usersSnapshot = await _firestore
+            .collection('users')
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+        likers.addAll(usersSnapshot.docs.map((doc) => UserProfile.fromMap(doc.data())));
+      }
+
+      return likers;
+    } catch (e) {
+      LogService.e("Get Liked Me Users Error", e);
+      return [];
+    }
   }
 }
 

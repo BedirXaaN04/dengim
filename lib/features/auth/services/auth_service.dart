@@ -75,4 +75,18 @@ class AuthService {
       rethrow;
     }
   }
+
+  Future<void> deleteAccount() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        await _googleSignIn.signOut();
+        await user.delete();
+        LogService.i("User account deleted.");
+      }
+    } catch (e) {
+      LogService.e("Delete account error", e);
+      rethrow;
+    }
+  }
 }

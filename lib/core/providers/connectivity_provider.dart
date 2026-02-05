@@ -4,12 +4,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../utils/log_service.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
-  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
-  ConnectivityResult get connectionStatus => _connectionStatus;
-  bool get isConnected => _connectionStatus != ConnectivityResult.none;
+  List<ConnectivityResult> get connectionStatus => _connectionStatus;
+  bool get isConnected => !_connectionStatus.contains(ConnectivityResult.none);
 
   ConnectivityProvider() {
     _initConnectivity();
@@ -25,7 +25,7 @@ class ConnectivityProvider extends ChangeNotifier {
     }
   }
 
-  void _updateConnectionStatus(ConnectivityResult result) {
+  void _updateConnectionStatus(List<ConnectivityResult> result) {
     _connectionStatus = result;
     LogService.i("Connection Status Changed: $_connectionStatus");
     notifyListeners();

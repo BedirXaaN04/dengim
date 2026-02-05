@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../features/chats/models/chat_models.dart';
-import '../features/chats/services/chat_service.dart';
+import '../../features/chats/models/chat_models.dart';
+import '../../features/chats/services/chat_service.dart';
 import '../utils/log_service.dart';
 
 class ChatProvider extends ChangeNotifier {
