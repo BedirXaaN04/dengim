@@ -22,6 +22,7 @@ import 'core/providers/connectivity_provider.dart';
 import 'core/providers/likes_provider.dart';
 import 'core/providers/map_provider.dart';
 import 'core/utils/log_service.dart';
+import 'features/auth/services/profile_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,7 +75,7 @@ void main() async {
   );
 }
 
-import 'features/auth/services/profile_service.dart';
+
 
 class DengimApp extends StatefulWidget {
   const DengimApp({super.key});
