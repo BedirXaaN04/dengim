@@ -11,6 +11,11 @@ import 'widgets/nearby_users_list.dart';
 import '../auth/services/auth_service.dart';
 import 'dart:math' as math;
 
+import 'package:provider/provider.dart';
+import '../../core/providers/map_provider.dart';
+import '../../core/utils/log_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
@@ -20,112 +25,18 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
-  final AuthService _authService = AuthService();
-  
-  List<NearbyUser> _nearbyUsers = [];
-  List<CircleMarker> _heatCircles = []; 
-  
-  LatLng _currentLocation = const LatLng(41.0082, 28.9784); // Default Istanbul
   double _initialZoom = 13.0;
-  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initializeMap();
-  }
-
-  Future<void> _initializeMap() async {
-    await _determinePosition();
-    await _fetchNearbyUsers();
-  }
-
-  Future<void> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Konum servisleri kapalı.')));
-      }
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Konum izni reddedildi.')));
-        }
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Konum izni kalıcı olarak reddedildi.')));
-      }
-      return;
-    }
-
-    final position = await Geolocator.getCurrentPosition();
-    
-    // Konumu Firestore'a güncelle
-    _authService.updateLocation(position.latitude, position.longitude);
-
-    setState(() {
-      _currentLocation = LatLng(position.latitude, position.longitude);
-    });
-    
-    // Haritayı kullanıcının konumuna taşı
-    _mapController.move(_currentLocation, _initialZoom);
-  }
-
-  Future<void> _fetchNearbyUsers() async {
-    try {
-      final usersData = await _authService.getUsersToMatch();
-      
-      final List<NearbyUser> loadedUsers = [];
-
-      for (var data in usersData) {
-        // Konum verisi olmayan kullanıcıları atla
-        if (data['latitude'] == null || data['longitude'] == null) continue;
-
-        double userLat = (data['latitude'] as num).toDouble();
-        double userLng = (data['longitude'] as num).toDouble();
-        
-        // Mesafe hesapla
-        final Distance distanceCalc = const Distance();
-        double distKm = distanceCalc.as(LengthUnit.Kilometer, _currentLocation, LatLng(userLat, userLng));
-
-        // İsteğe bağlı: Çok uzak kullanıcıları gösterme (örneğin > 100km)
-        // if (distKm > 100) continue;
-
-        loadedUsers.add(NearbyUser(
-          id: data['uid'] ?? '',
-          name: data['name'] ?? 'İsimsiz',
-          age: data['age'] ?? 18,
-          avatarUrl: (data['photoUrls'] != null && (data['photoUrls'] as List).isNotEmpty)
-              ? data['photoUrls'][0]
-              : 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=500&auto=format&fit=crop&q=60',
-          latitude: userLat,
-          longitude: userLng,
-          distance: distKm,
-          isOnline: data['isOnline'] ?? false,
-        ));
-      }
-
-      setState(() {
-        _nearbyUsers = loadedUsers;
-        _isLoading = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MapProvider>().initializeMap().then((_) {
+        // Move camera to current location once initialized
+        final loc = context.read<MapProvider>().currentLocation;
+        _mapController.move(loc, _initialZoom);
       });
-
-    } catch (e) {
-      print("Error fetching nearby users: $e");
-      setState(() => _isLoading = false);
-    }
+    });
   }
 
   void _onUserTap(NearbyUser user) {
@@ -133,6 +44,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     HapticFeedback.mediumImpact();
     _showUserProfile(user);
   }
+
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
     final camera = _mapController.camera;
@@ -159,7 +71,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
   void _centerOnLocation() {
     HapticFeedback.mediumImpact();
-    _animatedMapMove(_currentLocation, 15);
+    final loc = context.read<MapProvider>().currentLocation;
+    _animatedMapMove(loc, 15);
   }
 
   void _showUserProfile(NearbyUser user) {
@@ -197,12 +110,19 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         gradient: AppColors.goldGradient,
                       ),
                       child: Container(
-                        width: 84, height: 84, // 3px border + 84 image
+                        width: 84, height: 84,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: AppColors.scaffold, width: 3),
                         ),
-                        child: ClipOval(child: Image.network(user.avatarUrl, fit: BoxFit.cover)),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: user.avatarUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(color: AppColors.surface),
+                            errorWidget: (context, url, error) => const Icon(Icons.person),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -249,7 +169,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          // Mesajlaşma veya Profile git
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -293,69 +212,73 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
-      body: Stack(
-        children: [
-          // Koyu Harita Katmanı
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: _currentLocation,
-              initialZoom: _initialZoom,
-              minZoom: 3,
-              maxZoom: 18,
-              backgroundColor: AppColors.scaffold,
-            ),
+      body: Consumer<MapProvider>(
+        builder: (context, provider, child) {
+          return Stack(
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.dengim.app',
-                tileBuilder: (context, tileWidget, tile) {
-                  return ColorFiltered(
-                    // Haritayı aşırı koyu ve 'Midnight Blue' tonuna çekiyoruz
-                    colorFilter: const ColorFilter.matrix(<double>[
-                      0.2126, 0.7152, 0.0722, 0, -20, // R (Daha karanlık)
-                      0.2126, 0.7152, 0.0722, 0, -20, // G
-                      0.2126, 0.7152, 0.0722, 0, -10, // B (Hafif mavi kalsın)
-                      0, 0, 0, 1, 0,
-                    ]),
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(const Color(0xFF0F172A).withOpacity(0.6), BlendMode.srcOver), // Lacivert overlay
-                      child: tileWidget,
-                    ),
-                  );
-                },
-              ),
-              MarkerLayer(
-                markers: [
-                  // Benim Konumum (Altın Radar Efekti)
-                  Marker(
-                    point: _currentLocation,
-                    width: 80, height: 80,
-                    child: _buildMyLocationMarker(),
+              // Koyu Harita Katmanı
+              FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: provider.currentLocation,
+                  initialZoom: _initialZoom,
+                  minZoom: 3,
+                  maxZoom: 18,
+                  backgroundColor: AppColors.scaffold,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.dengim.app',
+                    tileBuilder: (context, tileWidget, tile) {
+                      return ColorFiltered(
+                        colorFilter: const ColorFilter.matrix(<double>[
+                          0.2126, 0.7152, 0.0722, 0, -20,
+                          0.2126, 0.7152, 0.0722, 0, -20,
+                          0.2126, 0.7152, 0.0722, 0, -10,
+                          0, 0, 0, 1, 0,
+                        ]),
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(const Color(0xFF0F172A).withOpacity(0.6), BlendMode.srcOver),
+                          child: tileWidget,
+                        ),
+                      );
+                    },
                   ),
-                  ..._nearbyUsers.map((user) => Marker(
-                    point: LatLng(user.latitude, user.longitude),
-                    width: 60, height: 75,
-                    child: GestureDetector(
-                      onTap: () => _onUserTap(user),
-                      child: _buildUserMarker(user),
-                    ),
-                  )),
+                  MarkerLayer(
+                    markers: [
+                      // Benim Konumum
+                      Marker(
+                        point: provider.currentLocation,
+                        width: 80, height: 80,
+                        child: _buildMyLocationMarker(),
+                      ),
+                      ...provider.nearbyUsers.map((user) => Marker(
+                        point: LatLng(user.latitude, user.longitude),
+                        width: 60, height: 75,
+                        child: GestureDetector(
+                          onTap: () => _onUserTap(user),
+                          child: _buildUserMarker(user),
+                        ),
+                      )),
+                    ],
+                  ),
                 ],
               ),
+              
+              if (provider.isLoading)
+                const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                
+              Positioned(top: 0, left: 0, right: 0, child: _buildTopBar(provider.nearbyUsers.length)),
+              Positioned(right: 20, bottom: 240, child: _buildZoomControls()),
+              Positioned(bottom: 0, left: 0, right: 0, child: NearbyUsersList(users: provider.nearbyUsers, onUserTap: _onUserTap)),
             ],
-          ),
-          
-          if (_isLoading)
-            const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-            
-          Positioned(top: 0, left: 0, right: 0, child: _buildTopBar()),
-          Positioned(right: 20, bottom: 240, child: _buildZoomControls()),
-          Positioned(bottom: 0, left: 0, right: 0, child: NearbyUsersList(users: _nearbyUsers, onUserTap: _onUserTap)),
-        ],
+          );
+        },
       ),
     );
   }
+
 
   Widget _buildMyLocationMarker() {
     return Stack(
@@ -436,7 +359,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTopBar() {
+  Widget _buildTopBar(int activeCount) {
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -470,7 +393,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     Container(width: 6, height: 6, decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle)),
                     const SizedBox(width: 6),
                     Text(
-                      '${_nearbyUsers.length} AKTİF',
+                      '$activeCount AKTİF',
                       style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary),
                     ),
                   ],

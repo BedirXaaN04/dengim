@@ -2,12 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/chat_models.dart';
 import '../../auth/models/user_profile.dart'; // UserProfile için
+import '../../../core/utils/log_service.dart';
 
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? get currentUser => _auth.currentUser;
+
+  // Profile cache to avoid repetitive fetches (N+1 problem)
+  static final Map<String, UserProfile> _profileCache = {};
 
   /// Sohbet Listesini Getir (Realtime)
   Stream<List<ChatConversation>> getConversations() {
@@ -25,23 +29,32 @@ class ChatService {
           for (var doc in snapshot.docs) {
             var chat = ChatConversation.fromFirestore(doc, user.uid);
             
-            // Karşı tarafın bilgilerini çek
             if (chat.otherUserId.isNotEmpty) {
-               try {
-                 final userDoc = await _firestore.collection('users').doc(chat.otherUserId).get();
-                 if (userDoc.exists) {
-                   final userProfile = UserProfile.fromMap(userDoc.data()!);
-                   chat = chat.copyWithDetails(
-                     name: userProfile.name,
-                     avatar: userProfile.imageUrl,
-                     isOnline: userProfile.isOnline,
-                   );
-                 } else {
-                   // Kullanıcı bulunamadı (silinmiş olabilir)
-                   chat = chat.copyWithDetails(name: "Silinmiş Kullanıcı");
+               // Check cache first
+               if (_profileCache.containsKey(chat.otherUserId)) {
+                 final cachedProfile = _profileCache[chat.otherUserId]!;
+                 chat = chat.copyWithDetails(
+                   name: cachedProfile.name,
+                   avatar: cachedProfile.imageUrl,
+                   isOnline: cachedProfile.isOnline,
+                 );
+               } else {
+                 try {
+                   final userDoc = await _firestore.collection('users').doc(chat.otherUserId).get();
+                   if (userDoc.exists) {
+                     final userProfile = UserProfile.fromMap(userDoc.data()!);
+                     _profileCache[chat.otherUserId] = userProfile; // Update cache
+                     chat = chat.copyWithDetails(
+                       name: userProfile.name,
+                       avatar: userProfile.imageUrl,
+                       isOnline: userProfile.isOnline,
+                     );
+                   } else {
+                     chat = chat.copyWithDetails(name: "Silinmiş Kullanıcı");
+                   }
+                 } catch (e) {
+                   LogService.e("Error fetching user details for chat: $e");
                  }
-               } catch (e) {
-                 print("Error fetching user details for chat: $e");
                }
             }
             chats.add(chat);

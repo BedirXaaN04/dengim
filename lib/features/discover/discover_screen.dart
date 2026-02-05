@@ -16,6 +16,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'widgets/filter_bottom_sheet.dart';
 
 /// Keşfet Ekranı - Tinder tarzı Swipe Kartlar
+import 'package:provider/provider.dart';
+import '../../core/providers/discovery_provider.dart';
+import '../../core/utils/log_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
 
@@ -30,50 +35,34 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   );
   
   FilterSettings _filterSettings = FilterSettings();
-  List<UserProfile> _users = [];
-  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadUsers();
-  }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DiscoveryProvider>().loadDiscoveryUsers(
+        gender: _filterSettings.gender,
+        minAge: _filterSettings.ageRange.start.toInt(),
+        maxAge: _filterSettings.ageRange.end.toInt(),
+      );
+    });
 
-  Future<void> _loadUsers() async {
-    try {
-      final usersData = await AuthService().getUsersToMatch();
-      setState(() {
-        _users = usersData.map((data) => UserProfile.fromMap(data)).toList();
-        _isLoading = false;
-      });
-    } catch (e) {
-      print("Error loading users: $e");
-      setState(() => _isLoading = false);
-    }
-  }
-
-  // final List<UserProfile> _users = UserProfile.getMockUsers(); // Removed
-  bool _showMatch = false;
-  UserProfile? _matchedUser;
-
-  @override
-  void dispose() {
-    _cardController.dispose();
-    _confettiController.dispose();
-    super.dispose();
   }
 
   Future<bool> _onSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) async {
     HapticFeedback.mediumImpact();
     
-    final targetUser = _users[previousIndex];
+    final discoveryProvider = context.read<DiscoveryProvider>();
+    final targetUser = discoveryProvider.users[previousIndex];
     final isLike = direction == CardSwiperDirection.right || direction == CardSwiperDirection.top;
     
-    // Firestore'da kaydet
-    final isMatch = await AuthService().swipeUser(targetUser.uid, isLike);
-    
-    if (isMatch) {
-      _showMatchAnimation(targetUser);
+    try {
+      final isMatch = await discoveryProvider.swipeUser(targetUser.uid, isLike);
+      if (isMatch) {
+        _showMatchAnimation(targetUser);
+      }
+    } catch (e) {
+      LogService.e("Swipe action failed", e);
     }
     
     return true; 
@@ -88,11 +77,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _confettiController.play();
   }
 
-  void _dismissMatch() {
-    setState(() {
-      _showMatch = false;
-      _matchedUser = null;
-    });
+  UserProfile? _matchedUser;
+  bool _showMatch = false;
+
+  @override
+  void dispose() {
+    _cardController.dispose();
+    _confettiController.dispose();
+    super.dispose();
   }
 
   void _onLike() {
@@ -115,6 +107,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _cardController.undo();
   }
 
+  void _dismissMatch() {
+    setState(() {
+      _showMatch = false;
+      _matchedUser = null;
+    });
+  }
+
   void _showFilters() {
     showFilterBottomSheet(
       context,
@@ -123,87 +122,71 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         setState(() {
           _filterSettings = settings;
         });
-        // Filtering logic would happen here (reload users with filters)
-        _loadUsers();
+        context.read<DiscoveryProvider>().loadDiscoveryUsers(
+          gender: settings.gender,
+          minAge: settings.ageRange.start.toInt(),
+          maxAge: settings.ageRange.end.toInt(),
+        );
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
-      body: Stack(
-        children: [
-          // Ana içerik
-          Column(
+      body: Consumer<DiscoveryProvider>(
+        builder: (context, provider, child) {
+          return Stack(
             children: [
-              // Üst bar (Dengim Tasarımı)
-              _buildTopBar(),
+              Column(
+                children: [
+                  _buildTopBar(),
+                  _buildStoriesTray(provider.activeUsers),
+                  const SizedBox(height: 8),
 
-              // Hikaye Alanı (Yeni)
-              _buildStoriesTray(),
-              
-              const SizedBox(height: 8),
-
-              // Kart alanı
-              Expanded(
-                child: _isLoading 
-                    ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-                    : _users.isEmpty
-                        ? _buildEmptyState()
-                        // Kart Swiper (Mevcut Logic)
-                    : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: CardSwiper(
-                          controller: _cardController,
-                          cardsCount: _users.length,
-                          numberOfCardsDisplayed: 3,
-                          backCardOffset: const Offset(0, 30),
-                          padding: EdgeInsets.zero,
-                          onSwipe: _onSwipe,
-                          allowedSwipeDirection: const AllowedSwipeDirection.only(
-                            left: true,
-                            right: true,
-                            up: true,
-                          ),
-                          cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
-                            return _buildUserCard(_users[index], percentThresholdX.toDouble(), percentThresholdY.toDouble());
-                          },
+                  Expanded(
+                    child: provider.isLoading 
+                        ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                        : provider.users.isEmpty
+                            ? _buildEmptyState()
+                        : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: CardSwiper(
+                              controller: _cardController,
+                              cardsCount: provider.users.length,
+                              numberOfCardsDisplayed: 3,
+                              backCardOffset: const Offset(0, 30),
+                              padding: EdgeInsets.zero,
+                              onSwipe: _onSwipe,
+                              allowedSwipeDirection: const AllowedSwipeDirection.only(
+                                left: true,
+                                right: true,
+                                up: true,
+                              ),
+                              cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                                return _buildUserCard(provider.users[index], percentThresholdX.toDouble(), percentThresholdY.toDouble());
+                              },
+                            ),
                         ),
-                    ),
+                  ),
+                  _buildActionButtons(),
+                  const SizedBox(height: 100), 
+                ],
               ),
-              
-              // Alt aksiyon butonları
-              _buildActionButtons(),
-              
-              const SizedBox(height: 100), 
+              if (_showMatch) _buildMatchOverlay(),
+              Align(
+                alignment: Alignment.topCenter,
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  colors: const [AppColors.primary, AppColors.secondary, AppColors.success],
+                ),
+              ),
             ],
-          ),
-          
-          // Eşleşme overlay
-          if (_showMatch) _buildMatchOverlay(),
-          
-          // Konfeti
-          Align(
-            alignment: Alignment.topCenter,
-            child: ConfettiWidget(
-              confettiController: _confettiController,
-              blastDirectionality: BlastDirectionality.explosive,
-              particleDrag: 0.05,
-              emissionFrequency: 0.05,
-              numberOfParticles: 30,
-              gravity: 0.2,
-              colors: const [
-                AppColors.primary,
-                AppColors.secondary,
-                AppColors.success,
-                Colors.pink,
-                Colors.purple,
-              ],
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -250,8 +233,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  // Hikaye Tepsisi (HTML stili Luxury Tray)
-  Widget _buildStoriesTray() {
+  Widget _buildStoriesTray(List<UserProfile> activeUsers) {
     return Container(
       height: 110,
       padding: const EdgeInsets.only(top: 16),
@@ -259,7 +241,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: 8,
+        itemCount: activeUsers.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             // Ekle Butonu
@@ -284,8 +266,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             );
           }
           
-          final names = ['SELINA', 'MARCUS', 'ELENA', 'KAAN', 'AYLIN', 'CANER', 'MELIS'];
-          final name = names[(index - 1) % names.length];
+          final user = activeUsers[index - 1];
+          final name = user.name.toUpperCase();
           
           return Padding(
             padding: const EdgeInsets.only(right: 20),
@@ -302,18 +284,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: AppColors.scaffold, width: 2),
                     ),
-                    child: CircleAvatar(
-                      radius: 28,
-                      backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=$name'),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: user.imageUrl,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(color: AppColors.surface),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  name, 
+                  name.length > 8 ? '${name.substring(0, 7)}..' : name, 
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 10, 
-                    color: Colors.white60, 
+                    color: user.isOnline ? Colors.white : Colors.white60, 
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
                   )
@@ -325,6 +312,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       ),
     );
   }
+
 
   // Yeni Kart Tasarımı (Glassmorphism)
   Widget _buildUserCard(UserProfile user, double percentX, double percentY) {
@@ -350,10 +338,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             fit: StackFit.expand,
             children: [
               // Fotoğraf
-              Image.network(
-                user.imageUrl,
+              CachedNetworkImage(
+                imageUrl: user.imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.white10,
+                  highlightColor: Colors.white24,
+                  child: Container(color: Colors.white),
+                ),
+                errorWidget: (context, url, error) => Container(
                   color: AppColors.surface,
                   child: const Icon(Icons.person, size: 80, color: Colors.white10),
                 ),
@@ -384,13 +377,28 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFF10B981), shape: BoxShape.circle)),
+                      Container(
+                        width: 8, height: 8, 
+                        decoration: BoxDecoration(
+                          color: user.isOnline ? const Color(0xFF10B981) : Colors.white30, 
+                          shape: BoxShape.circle
+                        )
+                      ),
                       const SizedBox(width: 8),
-                      Text('AKTİF', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1.0)),
+                      Text(
+                        user.isOnline ? 'AKTİF' : 'ÇEVRİMDIŞI', 
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10, 
+                          fontWeight: FontWeight.bold, 
+                          color: user.isOnline ? Colors.white : Colors.white30, 
+                          letterSpacing: 1.0
+                        )
+                      ),
                     ],
                   ),
                 ),
               ),
+
 
               // Alt Panel (Glassmorphism)
               Positioned(
@@ -586,7 +594,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           ),
           const SizedBox(height: 12),
           TextButton(
-            onPressed: () => _loadUsers(),
+            onPressed: () => context.read<DiscoveryProvider>().loadDiscoveryUsers(),
             child: Text("Tekrar dene", style: GoogleFonts.plusJakartaSans(color: AppColors.primary)),
           ),
         ],

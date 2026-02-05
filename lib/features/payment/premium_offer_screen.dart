@@ -5,7 +5,9 @@ import '../../core/theme/app_colors.dart';
 import 'services/purchase_service.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../ads/services/ad_service.dart';
-import '../auth/services/auth_service.dart'; // Kredi eklemek için
+import '../auth/services/profile_service.dart';
+import '../../core/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class PremiumOfferScreen extends StatefulWidget {
   const PremiumOfferScreen({super.key});
@@ -29,8 +31,12 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
   void _watchAd() {
     AdService().showRewardedAd(onReward: (amount) async {
        // Kredi Ekle (Varsayılan 10 kredi)
-       await AuthService().addCredits(10);
+       await ProfileService().addCredits(10);
+       
        if (mounted) {
+         // Update provider to reflect new credits
+         await context.read<UserProvider>().loadCurrentUser();
+         
          ScaffoldMessenger.of(context).showSnackBar(
            const SnackBar(content: Text('Tebrikler! 10 Kredi Kazandınız. 🎉')),
          );
@@ -65,17 +71,6 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
        );
        Navigator.pop(context, true); // Başarılı döndür
     }
-
-    /* Gerçek Kod:
-    if (_selectedPackage != null) {
-      bool success = await PurchaseService().purchasePackage(_selectedPackage!);
-      if (success && mounted) {
-        Navigator.pop(context, true);
-      } else {
-        setState(() => _isLoading = false);
-      }
-    }
-    */
   }
 
   @override

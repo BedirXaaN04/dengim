@@ -12,8 +12,16 @@ import 'features/auth/login_screen.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/create_profile/create_profile_screen.dart';
 import 'core/widgets/responsive_center_wrapper.dart'; // Web Wrapper
-
+import 'core/widgets/network_wrapper.dart'; // Network Wrapper
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import 'core/providers/user_provider.dart';
+import 'core/providers/discovery_provider.dart';
+import 'core/providers/chat_provider.dart';
+import 'core/providers/connectivity_provider.dart';
+import 'core/providers/likes_provider.dart';
+import 'core/providers/map_provider.dart';
+import 'core/utils/log_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +36,7 @@ void main() async {
   }
 
   try {
-    print("DENGİM: Firebase başlatılıyor...");
+    LogService.i("Firebase initializing...");
     await Firebase.initializeApp(
       options: kIsWeb 
         ? const FirebaseOptions(
@@ -42,20 +50,70 @@ void main() async {
           )
         : null,
     );
-    print("DENGİM: Firebase başlatıldı.");
+    LogService.i("Firebase initialized successfully.");
     
     if (kIsWeb) {
       FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
     }
   } catch (e) {
-    print("DENGİM: Firebase başlatma hatası: $e");
+    LogService.e("Firebase initialization error", e);
   }
   
-  runApp(const DengimApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+        ChangeNotifierProvider(create: (_) => LikesProvider()),
+        ChangeNotifierProvider(create: (_) => MapProvider()),
+      ],
+      child: const DengimApp(),
+    ),
+  );
 }
 
-class DengimApp extends StatelessWidget {
+import 'features/auth/services/profile_service.dart';
+
+class DengimApp extends StatefulWidget {
   const DengimApp({super.key});
+
+  @override
+  State<DengimApp> createState() => _DengimAppState();
+}
+
+class _DengimAppState extends State<DengimApp> with WidgetsBindingObserver {
+  final ProfileService _profileService = ProfileService();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _updateStatus(true);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _updateStatus(false);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _updateStatus(true);
+    } else {
+      _updateStatus(false);
+    }
+  }
+
+  void _updateStatus(bool isOnline) {
+    if (FirebaseAuth.instance.currentUser != null) {
+      _profileService.updateOnlineStatus(isOnline);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,14 +121,15 @@ class DengimApp extends StatelessWidget {
       title: 'DENGİM',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      // Web ve Desktop için responsive wrapper
-      builder: (context, child) => ResponsiveCenterWrapper(child: child!),
+      builder: (context, child) => ResponsiveCenterWrapper(
+        child: NetworkWrapper(child: child!),
+      ),
       home: const SplashScreen(),
     );
   }
 }
 
-/// Açılış Ekranı - Kullanıcının ilk giriş durumunu kontrol eder
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -86,62 +145,44 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkFirstTime() async {
-    print("SPLASH: Waiting 2 seconds...");
-    // 2 saniyelik yapay bekleme (logo görünmesi için)
     await Future.delayed(const Duration(seconds: 2));
-    print("SPLASH: Waited.");
 
     try {
-      print("SPLASH: Getting SharedPreferences...");
       final prefs = await SharedPreferences.getInstance();
-      print("SPLASH: Got SharedPreferences.");
       final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-      print("SPLASH: isFirstTime: $isFirstTime");
 
-      if (!mounted) {
-        print("SPLASH: Context not mounted!");
-        return;
-      }
+      if (!mounted) return;
 
       if (isFirstTime) {
-        print("SPLASH: Navigating to OnboardingScreen...");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const OnboardingScreen()),
         );
       } else {
-        // Auth kontrolü
-        print("SPLASH: Checking Auth...");
         final user = FirebaseAuth.instance.currentUser;
-        print("SPLASH: User: $user");
         
         if (user == null) {
-          print("SPLASH: Navigating to LoginScreen...");
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else {
-          // Profil kontrolü
-          print("SPLASH: Checking Profile...");
           try {
-            final hasProfile = await AuthService().hasProfile();
+            final userProvider = Provider.of<UserProvider>(context, listen: false);
+            await userProvider.loadCurrentUser();
             
             if (!mounted) return;
 
-            if (hasProfile) {
-              print("SPLASH: Profile exists. Navigating to MainScaffold...");
+            if (userProvider.currentUser != null) {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const MainScaffold()),
               );
             } else {
-              print("SPLASH: Profile missing. Navigating to CreateProfileScreen...");
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
               );
             }
           } catch (e) {
-            print("SPLASH: Profile check error: $e");
-            // Hata durumunda create profile'a yönlendir (güvenli taraf)
-             if (mounted) {
+            LogService.e("Profile check error", e);
+            if (mounted) {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
               );
@@ -150,7 +191,7 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       }
     } catch (e) {
-      print("SPLASH ERROR: $e");
+      LogService.e("SPLASH ERROR", e);
     }
   }
 
@@ -162,7 +203,6 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo
             Container(
               width: 120,
               height: 120,
@@ -188,7 +228,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            // Başlık
             RichText(
               text: TextSpan(
                 style: const TextStyle(
@@ -216,7 +255,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 48),
-            // Yükleniyor
             const SizedBox(
               width: 24,
               height: 24,

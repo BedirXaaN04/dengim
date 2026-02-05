@@ -26,6 +26,9 @@ dependencies:
   # Ödeme Sistemi (RevenueCat)
   purchases_flutter: ^6.25.0
   
+  # Bağlantı Durumu
+  connectivity_plus: ^6.0.3
+
   # Reklamlar (Admob)
   google_mobile_ads: ^5.0.0
   
@@ -37,6 +40,17 @@ dependencies:
   # Swipe Kartları
   flutter_card_swiper: ^7.0.0
   
+  # State Management
+  provider: ^6.1.2
+
+  # Görsel Optimizasyonu
+  cached_network_image: ^3.4.1
+  flutter_blurhash: ^0.8.2
+
+  # Yardımcı Araçlar
+  logger: ^2.4.0
+  intl: ^0.19.0
+
   # Animasyonlar
   shimmer: ^3.0.0
   confetti: ^0.7.0

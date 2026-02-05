@@ -7,6 +7,10 @@ import 'models/chat_models.dart';
 import 'widgets/chat_widgets.dart';
 import 'services/chat_service.dart';
 
+import 'package:provider/provider.dart';
+import '../../core/providers/chat_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({super.key});
 
@@ -15,11 +19,17 @@ class ChatsScreen extends StatefulWidget {
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
-  final ChatService _chatService = ChatService();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChatProvider>().initConversations();
+    });
+  }
 
   void _onChatTap(ChatConversation chat) {
     HapticFeedback.lightImpact();
-    _chatService.markAsRead(chat.id);
+    context.read<ChatProvider>().markAsRead(chat.id);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ChatDetailScreen(chat: chat),
@@ -34,111 +44,23 @@ class _ChatsScreenState extends State<ChatsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header Area
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-              child: Column(
-                children: [
-                  // Title Row
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                        ),
-                        child: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.primary, size: 24),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        "MESAJLAR",
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 2.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const Spacer(),
-                      _buildIconButton(Icons.edit_note_rounded, () {}),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Search Bar
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0F172A).withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withOpacity(0.08)),
-                      boxShadow: [
-                         BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.search, color: Colors.white.withOpacity(0.4)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Sohbetlerde ara...",
-                              hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white.withOpacity(0.4), fontSize: 13),
-                              border: InputBorder.none,
-                            ),
-                            style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Header Area (remains same)
+            _buildHeader(),
             
             const SizedBox(height: 10),
 
             // Chat List
             Expanded(
-              child: StreamBuilder<List<ChatConversation>>(
-                stream: _chatService.getConversations(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+              child: Consumer<ChatProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
                     return const Center(child: CircularProgressIndicator(color: AppColors.primary));
                   }
                   
-                  final chats = snapshot.data ?? [];
+                  final chats = provider.conversations;
                   
                   if (chats.isEmpty) {
-                     return Center(
-                       child: Column(
-                         mainAxisAlignment: MainAxisAlignment.center,
-                         children: [
-                           Container(
-                             padding: const EdgeInsets.all(20),
-                             decoration: BoxDecoration(
-                               color: AppColors.primary.withOpacity(0.05),
-                               shape: BoxShape.circle,
-                             ),
-                             child: Icon(Icons.mark_chat_unread_outlined, size: 40, color: AppColors.primary.withOpacity(0.5)),
-                           ),
-                           const SizedBox(height: 16),
-                           Text(
-                             "Henüz mesaj yok", 
-                             style: GoogleFonts.plusJakartaSans(
-                               color: Colors.white30, 
-                               fontSize: 14, 
-                               fontWeight: FontWeight.bold,
-                               letterSpacing: 0.5
-                             ),
-                           ),
-                         ],
-                       ),
-                     );
+                     return _buildEmptyChats();
                   }
 
                   return ListView.builder(
@@ -159,6 +81,102 @@ class _ChatsScreenState extends State<ChatsScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                ),
+                child: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.primary, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                "MESAJLAR",
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2.0,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              _buildIconButton(Icons.edit_note_rounded, () {}),
+            ],
+          ),
+          const SizedBox(height: 24),
+          _buildSearchBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      height: 52,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A).withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        boxShadow: [
+           BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.search, color: Colors.white.withOpacity(0.4)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Sohbetlerde ara...",
+                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white.withOpacity(0.4), fontSize: 13),
+                border: InputBorder.none,
+              ),
+              style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyChats() {
+    return Center(
+       child: Column(
+         mainAxisAlignment: MainAxisAlignment.center,
+         children: [
+           Container(
+             padding: const EdgeInsets.all(20),
+             decoration: BoxDecoration(
+               color: AppColors.primary.withOpacity(0.05),
+               shape: BoxShape.circle,
+             ),
+             child: Icon(Icons.mark_chat_unread_outlined, size: 40, color: AppColors.primary.withOpacity(0.5)),
+           ),
+           const SizedBox(height: 16),
+           Text(
+             "Henüz mesaj yok", 
+             style: GoogleFonts.plusJakartaSans(
+               color: Colors.white30, 
+               fontSize: 14, 
+               fontWeight: FontWeight.bold,
+               letterSpacing: 0.5
+             ),
+           ),
+         ],
+       ),
+     );
   }
 
   Widget _buildIconButton(IconData icon, VoidCallback onTap) {
@@ -225,9 +243,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     child: CircleAvatar(
                       radius: 20,
                       backgroundColor: AppColors.scaffold,
-                      child: CircleAvatar(
-                        radius: 18,
-                        backgroundImage: NetworkImage(widget.chat.otherUserAvatar),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: widget.chat.otherUserAvatar,
+                          width: 36,
+                          height: 36,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(color: AppColors.surface),
+                          errorWidget: (context, url, error) => const Icon(Icons.person),
+                        ),
                       ),
                     ),
                   ),

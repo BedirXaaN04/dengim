@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Yardımcı Fonksiyonlar
+    // Helper Functions
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -11,53 +11,73 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    // Kullanıcı Profilleri
+    function isValidProfile() {
+      let data = request.resource.data;
+      return data.name is string && data.name.size() >= 2 &&
+             data.age is int && data.age >= 18 &&
+             data.photoUrls is list && data.photoUrls.size() >= 1;
+    }
+
+    // User Profiles
     match /users/{userId} {
-      allow read: if isAuthenticated(); // Herkes her profili görebilir (MVP için)
-      allow create: if isAuthenticated() && isOwner(userId); // Sadece kendi profilini oluştur
-      allow update: if isAuthenticated() && isOwner(userId); // Sadece kendi profilini güncelle
-      allow delete: if isAuthenticated() && isOwner(userId); // Sadece kendi profilini sil (Hesap silme)
+      // Everyone who is authenticated can read profiles (Discovery)
+      allow read: if isAuthenticated(); 
       
-      // Kullanıcının alt koleksiyonları (swipes)
+      // Create: Only owner and must be valid
+      allow create: if isAuthenticated() && isOwner(userId) && isValidProfile();
+      
+      // Update: Only owner, and prevent changing UID
+      allow update: if isAuthenticated() && isOwner(userId) && 
+                    (request.resource.data.uid == resource.data.uid);
+      
+      allow delete: if isAuthenticated() && isOwner(userId);
+      
+      // Swipes (Sub-collection)
       match /swipes/{targetId} {
         allow read, write: if isAuthenticated() && isOwner(userId);
       }
+
+      // Notifications (Sub-collection)
+      match /notifications/{notifId} {
+        allow read: if isAuthenticated() && isOwner(userId);
+        allow create: if isAuthenticated(); // Allow others to send notifications (likes/matches)
+        allow update: if isAuthenticated() && isOwner(userId); // Mark as read
+      }
     }
 
-    // Eşleşmeler (Matches)
+    // Matches
     match /matches/{matchId} {
-      // Sadece eşleşmeye dahil olan kullanıcılar okuyabilir
-      allow read: if isAuthenticated() && 
-                 (request.auth.uid in resource.data.userIds);
-      
-      // Eşleşme oluşturma: Sunucu taraflı tetikleyici (Function) tercih edilir ama
-      // client-side yapıyorsak sadece geçerli veriye izin ver.
-      allow create: if isAuthenticated(); 
-    }
-
-    // Sohbetler (Conversations)
-    match /conversations/{conversationId} {
-      // Sohbetin katılımcısıysan oku
+      // Only users involved in the match can read
       allow read: if isAuthenticated() && (request.auth.uid in resource.data.userIds);
       
-      // Sohbet oluşturma: Sadece 2 kişi olmalı ve biri sen olmalısın
-      allow create: if isAuthenticated() && 
-                   request.resource.data.userIds.size() == 2 &&
-                   (request.auth.uid in request.resource.data.userIds);
+      // Prevent manual creation of matches by clients to avoid "matching with anyone" hack.
+      // Ideally, matches should be created via Cloud Functions.
+      // If client-side is required, we must at least ensure the requester is one of the userIds.
+      allow create: if isAuthenticated() && (request.auth.uid in request.resource.data.userIds);
       
-      // Güncelleme (Son mesaj vb.): Katılımcıysan
+      allow update, delete: if false; // Matches are immutable once created
+    }
+
+    // Conversations
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() && (request.auth.uid in resource.data.userIds);
+      
+      // Conversation can only be created if user is a participant
+      allow create: if isAuthenticated() && 
+                    request.resource.data.userIds.size() == 2 &&
+                    (request.auth.uid in request.resource.data.userIds);
+      
       allow update: if isAuthenticated() && (request.auth.uid in resource.data.userIds);
 
-      // Mesajlar Alt Koleksiyonu
+      // Messages
       match /messages/{messageId} {
-        allow read: if isAuthenticated(); // Parent kuralı yeterli olmalı ama açık olsun
-        // Mesaj gönderme: Gönderen ID'si sen olmalısın
+        allow read: if isAuthenticated() && (request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.userIds);
         allow create: if isAuthenticated() && 
                      request.resource.data.senderId == request.auth.uid;
       }
     }
     
-    // Varsayılan: Her şeyi reddet
+    // Global Deny
     match /{document=**} {
       allow read, write: if false;
     }

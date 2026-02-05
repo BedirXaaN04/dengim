@@ -7,6 +7,10 @@ import 'register_screen.dart';
 import '../create_profile/create_profile_screen.dart';
 import '../../features/main/main_scaffold.dart';
 
+import 'package:provider/provider.dart';
+import '../../core/providers/user_provider.dart';
+import '../../core/utils/log_service.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -24,25 +28,29 @@ class _LoginScreenState extends State<LoginScreen> {
       final userCredential = await _authService.signInWithGoogle();
       if (userCredential != null) {
         if (!mounted) return;
-        _checkProfileAndNavigate();
+        await _checkProfileAndNavigate();
       } else {
         setState(() => _isLoading = false);
       }
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      LogService.e("Google Sign In Error", e);
       _showError('Giriş başarısız: ${e.toString()}');
     }
   }
 
   Future<void> _checkProfileAndNavigate() async {
     try {
-      bool hasProfile = await _authService.hasProfile();
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      await userProvider.loadCurrentUser();
+      
       if (!mounted) return;
 
-      if (hasProfile) {
-        Navigator.of(context).pushReplacement(
+      if (userProvider.currentUser != null) {
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScaffold()),
+          (route) => false,
         );
       } else {
         Navigator.of(context).pushReplacement(
@@ -50,13 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
+      LogService.e("Profile Navigation Error", e);
       if (!mounted) return;
-      // Fail-safe: Hata alsa bile profile git
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
       );
     }
   }
+
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(

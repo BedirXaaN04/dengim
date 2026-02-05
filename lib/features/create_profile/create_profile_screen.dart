@@ -4,8 +4,11 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 // import '../features.dart'; 
 import 'package:dengim/features/main/main_scaffold.dart'; 
-import '../auth/services/auth_service.dart'; 
-import 'package:image_picker/image_picker.dart'; 
+import '../auth/services/profile_service.dart';
+import '../../core/providers/user_provider.dart';
+import '../../core/utils/log_service.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
@@ -17,6 +20,7 @@ class CreateProfileScreen extends StatefulWidget {
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
+  final ProfileService _profileService = ProfileService();
   
   Future<void> _pickImage(int index) async {
     try {
@@ -61,7 +65,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   bool _isLoading = false;
 
   void _submitProfile() async {
-    // Form validasyonu (Opsiyonel: Geliştirme aşamasında burayı gevşetebiliriz)
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen isminizi giriniz')));
       return;
@@ -69,44 +72,47 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     setState(() => _isLoading = true);
     HapticFeedback.mediumImpact();
-    print("DEBUG: [START] Submission process...");
+    LogService.i("Starting profile submission process...");
 
     try {
-      final authService = AuthService();
-      final user = authService.currentUser;
+      final userProvider = context.read<UserProvider>();
       
-      // Fotoğraf yükleme (Sadece debug logları için, hata durumunda akışı bozmaz)
+      // Fotoğraf yükleme
       List<String> photoUrls = [];
       try {
         final List<Future<String>> uploadFutures = [];
+        final uid = Provider.of<UserProvider>(context, listen: false).currentUser?.uid ?? 'anon';
+        
         for (var photo in _profilePhotos) {
           if (photo != null && photo is XFile) {
-            uploadFutures.add(authService.uploadProfilePhoto(photo, user?.uid ?? 'anon'));
+            uploadFutures.add(_profileService.uploadProfilePhoto(photo, uid));
           }
         }
-        photoUrls = await Future.wait(uploadFutures).timeout(const Duration(seconds: 3), onTimeout: () => []);
+        
+        if (uploadFutures.isNotEmpty) {
+          photoUrls = await Future.wait(uploadFutures).timeout(const Duration(seconds: 15));
+        }
       } catch (e) {
-        print("DEBUG: Photo upload ignored/failed: $e");
+        LogService.e("Photo upload failed, using placeholder", e);
       }
 
-      // Firestore kaydı (Hata olsa bile devam et!)
-      try {
-        await authService.createProfile(
-          name: _nameController.text.trim(),
-          age: int.tryParse(_ageController.text.trim()) ?? 25,
-          gender: _selectedGender ?? 'Diğer',
-          country: _countryController.text.trim(),
-          interests: _selectedInterests,
-          photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://ui-avatars.com/api/?name=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}&size=500'],
-          bio: _bioController.text.trim(),
-          job: _jobController.text.trim(),
-          education: '',
-        ).timeout(const Duration(seconds: 4));
-      } catch (e) {
-        print("DEBUG: Firestore call bypassed: $e");
-      }
+      // Firestore kaydı
+      await _profileService.createProfile(
+        name: _nameController.text.trim(),
+        age: int.tryParse(_ageController.text.trim()) ?? 25,
+        gender: _selectedGender ?? 'Diğer',
+        country: _countryController.text.trim(),
+        interests: _selectedInterests,
+        photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://ui-avatars.com/api/?name=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}&size=500'],
+        bio: _bioController.text.trim(),
+        job: _jobController.text.trim(),
+        education: '',
+      );
 
-      print("DEBUG: [FINISH] Navigating to MainScaffold...");
+      // Provider'ı güncelle
+      await userProvider.loadCurrentUser();
+
+      LogService.i("Profile process finished. Navigating...");
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScaffold()),
@@ -114,14 +120,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         );
       }
     } catch (e) {
-      print("DEBUG: Unexpected Error: $e");
-      // KRİTİK: Hata ne olursa olsun içeri al!
+      LogService.e("Unexpected Error in _submitProfile", e);
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScaffold()),
           (route) => false,
         );
       }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

@@ -6,6 +6,12 @@ import '../auth/models/user_profile.dart';
 import '../auth/services/auth_service.dart';
 import '../payment/premium_offer_screen.dart';
 
+import 'package:provider/provider.dart';
+import '../../core/providers/likes_provider.dart';
+import '../../core/utils/log_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
+
 class LikesScreen extends StatefulWidget {
   const LikesScreen({super.key});
 
@@ -15,108 +21,164 @@ class LikesScreen extends StatefulWidget {
 
 class _LikesScreenState extends State<LikesScreen> {
   int _activeTab = 0; // 0: Seni Beğenenler, 1: Eşleşmeler
-  List<UserProfile> _matches = [];
-  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    setState(() => _isLoading = true);
-    try {
-      final matches = await AuthService().getMatchedUsers();
-      if (mounted) {
-        setState(() {
-          _matches = matches;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LikesProvider>().loadMatches();
+      context.read<LikesProvider>().loadLikedMeUsers();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildTopBar(),
-            _buildTabs(),
+      body: Consumer<LikesProvider>(
+        builder: (context, provider, child) {
+          return SafeArea(
+            child: Column(
+              children: [
+                _buildTopBar(),
+                _buildTabs(),
 
-            Expanded(
-              child: _isLoading 
-                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-                : CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  if (_activeTab == 1) ...[
-                    // Eşleşmeler Listesi (Grid)
-                    SliverPadding(
-                      padding: const EdgeInsets.all(20),
-                      sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.75,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => _UnlockedLikeCard(user: _matches[index]),
-                          childCount: _matches.length,
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    // Seni Beğenenler Section (Mockup for now as per AuthService note)
-                    SliverToBoxAdapter(
-                      child: _buildNewMatchesSection(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
-                        child: Text(
-                          "SENI BEĞENENLER (VIP)",
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                            color: Colors.white.withOpacity(0.9),
+                Expanded(
+                  child: provider.isLoading 
+                    ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                    : CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      if (_activeTab == 1) ...[
+                        // Eşleşmeler Listesi (Grid)
+                        SliverPadding(
+                          padding: const EdgeInsets.all(20),
+                          sliver: SliverGrid(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                            ),
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => _UnlockedLikeCard(user: provider.matches[index]),
+                              childCount: provider.matches.length,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.75,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
+                      ] else ...[
+                        // Seni Beğenenler Section
+                        SliverToBoxAdapter(
+                          child: _buildNewMatchesSection(provider.matches),
                         ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => const _LockedLikeCard(),
-                          childCount: 4,
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
+                            child: Text(
+                              "SENI BEĞENENLER (VIP)",
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                  const SliverToBoxAdapter(child: SizedBox(height: 120)),
-                ],
-              ),
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          sliver: SliverGrid(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                            ),
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => const _LockedLikeCard(),
+                              childCount: 4, // Mock for locked users
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
+  Widget _buildNewMatchesSection(List<UserProfile> matches) {
+    if (matches.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+          child: Text(
+            "YENI EŞLEŞMELER",
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: Colors.white.withOpacity(0.5),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 140,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: matches.length,
+            itemBuilder: (context, index) {
+              final user = matches[index];
+              return Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: CachedNetworkImage(
+                        imageUrl: user.imageUrl,
+                        width: 80,
+                        height: 110,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Shimmer.fromColors(
+                          baseColor: Colors.white10,
+                          highlightColor: Colors.white24,
+                          child: Container(color: Colors.white),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.surface,
+                          child: const Icon(Icons.person, color: Colors.white10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      user.name,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   Widget _buildTopBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -180,69 +242,6 @@ class _LikesScreenState extends State<LikesScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildNewMatchesSection() {
-    if (_matches.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-          child: Text(
-            "YENI EŞLEŞMELER",
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: Colors.white.withOpacity(0.5),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 140,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: _matches.length,
-            itemBuilder: (context, index) {
-              final user = _matches[index];
-              return Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
-                        image: DecorationImage(
-                          image: NetworkImage(user.imageUrl),
-                          fit: BoxFit.cover,
-                          onError: (_, __) {},
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      user.name,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withOpacity(0.8),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }
