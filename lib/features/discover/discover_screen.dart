@@ -7,6 +7,8 @@ import 'package:confetti/confetti.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/models/user_profile.dart';
+import '../auth/services/profile_service.dart';
+import '../../core/utils/log_service.dart';
 import 'widgets/filter_bottom_sheet.dart';
 
 /// Keşfet Ekranı - Tinder tarzı Swipe Kartlar
