@@ -11,10 +11,10 @@ class FilterSettings {
   String location;
 
   FilterSettings({
-    this.ageRange = const RangeValues(24, 38),
-    this.gender = 'female',
-    this.distance = 45,
-    this.location = 'İstanbul, Türkiye',
+    this.ageRange = const RangeValues(18, 99),
+    this.gender = 'other',
+    this.distance = 100,
+    this.location = 'Türkiye',
   });
 
   FilterSettings copyWith({

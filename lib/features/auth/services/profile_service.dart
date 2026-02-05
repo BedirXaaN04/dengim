@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/user_profile.dart';
 import '../../../../core/utils/log_service.dart';
+import '../../../../core/services/cloudinary_service.dart';
 import 'package:flutter/foundation.dart';
 
 class ProfileService {
@@ -73,20 +74,16 @@ class ProfileService {
 
   Future<String> uploadProfilePhoto(XFile file, String userId) async {
     try {
-      final ref = _storage.ref().child('user_photos/$userId/${DateTime.now().millisecondsSinceEpoch}.jpg');
-      final data = await file.readAsBytes();
+      // Firebase Storage yerine Cloudinary kullanıyoruz (Ücretsiz)
+      final imageUrl = await CloudinaryService.uploadImage(file);
       
-      final uploadTask = ref.putData(data, SettableMetadata(contentType: 'image/jpeg'));
-      
-      if (kIsWeb) {
-        await uploadTask.timeout(const Duration(seconds: 10));
-      } else {
-        await uploadTask;
+      if (imageUrl != null) {
+        return imageUrl;
       }
       
-      return await ref.getDownloadURL();
+      throw Exception("Upload failed");
     } catch (e) {
-      LogService.e("Upload failed", e);
+      LogService.e("Upload failed, reverting to placeholder", e);
       return 'https://ui-avatars.com/api/?name=${userId.substring(0, 1)}&background=EAEAEA&color=000&size=500';
     }
   }
