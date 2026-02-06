@@ -17,6 +17,8 @@ import '../../core/providers/discovery_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/providers/story_provider.dart';
 import '../../core/providers/user_provider.dart';
+import '../map/map_screen.dart';
+import '../notifications/notifications_screen.dart';
 import 'story_viewer_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'models/story_model.dart';
@@ -293,6 +295,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       );
                    },
                    child: Icon(Icons.refresh_rounded, color: Colors.white.withOpacity(0.8), size: 24),
+                ),
+                const SizedBox(width: 16),
+                GestureDetector(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                  child: Icon(Icons.notifications_outlined, color: Colors.white.withOpacity(0.8), size: 24),
                 ),
                 const SizedBox(width: 16),
                 GestureDetector(

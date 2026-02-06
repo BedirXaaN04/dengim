@@ -35,50 +35,16 @@ class DiscoveryProvider extends ChangeNotifier {
         maxAge: maxAge,
       );
       
-      // 2. Yeterli kullanıcı yoksa demo profilleri ekle
-      if (realUsers.length < _minUsersThreshold) {
-        LogService.i("Few real users (${realUsers.length}), loading demo profiles...");
-        
-        List<UserProfile> demoUsers = await DemoProfileService.getDemoProfiles();
-        
-        // Gender ve yaş filtresi uygula
-        if (gender != null && gender != 'other') {
-          final targetGender = gender == 'male' ? 'Erkek' : 'Kadın';
-          demoUsers = demoUsers.where((u) => u.gender == targetGender).toList();
-        }
-        if (minAge != null) {
-          demoUsers = demoUsers.where((u) => u.age >= minAge).toList();
-        }
-        if (maxAge != null) {
-          demoUsers = demoUsers.where((u) => u.age <= maxAge).toList();
-        }
-        
-        // Gerçek kullanıcıları önce, sonra demo profilleri göster
-        _users = [...realUsers, ...demoUsers];
-        LogService.i("Combined: ${realUsers.length} real + ${demoUsers.length} demo = ${_users.length} total");
-      } else {
-        _users = realUsers;
-      }
+      _users = realUsers;
       
-      // 3. Aktif kullanıcılar için de aynı mantık
       List<UserProfile> realActiveUsers = await _discoveryService.getActiveUsers();
-      if (realActiveUsers.isEmpty) {
-        final demoUsers = await DemoProfileService.getDemoProfiles();
-        _activeUsers = demoUsers.where((u) => u.isOnline).toList();
-      } else {
-        _activeUsers = realActiveUsers;
-      }
+      _activeUsers = realActiveUsers;
       
       LogService.i("Discovery loaded: ${_users.length} users, ${_activeUsers.length} active");
     } catch (e) {
       LogService.e("Error loading discovery users", e);
       
-      // Hata durumunda bile demo profilleri göster
-      try {
-        _users = await DemoProfileService.getDemoProfiles();
-        _activeUsers = _users.where((u) => u.isOnline).toList();
-        LogService.i("Fallback to demo profiles: ${_users.length} loaded");
-      } catch (_) {}
+
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -94,15 +60,7 @@ class DiscoveryProvider extends ChangeNotifier {
   }
 
   Future<bool> swipeUser(String targetUserId, bool isLike) async {
-    // Demo profillere swipe yapıldığında
-    if (DemoProfileService.isDemoProfile(targetUserId)) {
-      LogService.i("Demo profile swiped: $targetUserId (${isLike ? 'LIKE' : 'NOPE'})");
-      // Demo profiller için simüle edilmiş match şansı (%30)
-      if (isLike && DateTime.now().millisecond % 3 == 0) {
-        return true; // Match!
-      }
-      return false;
-    }
+
     
     try {
       return await _discoveryService.swipeUser(targetUserId, isLike);
