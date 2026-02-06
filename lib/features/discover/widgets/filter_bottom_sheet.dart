@@ -9,12 +9,14 @@ class FilterSettings {
   String gender; // 'male', 'female', 'other'
   double distance; // in km
   String location;
+  List<String> interests;
 
   FilterSettings({
     this.ageRange = const RangeValues(18, 99),
     this.gender = 'other',
     this.distance = 100,
     this.location = 'Türkiye',
+    this.interests = const [],
   });
 
   FilterSettings copyWith({
@@ -22,15 +24,18 @@ class FilterSettings {
     String? gender,
     double? distance,
     String? location,
+    List<String>? interests,
   }) {
     return FilterSettings(
       ageRange: ageRange ?? this.ageRange,
       gender: gender ?? this.gender,
       distance: distance ?? this.distance,
       location: location ?? this.location,
+      interests: interests ?? this.interests,
     );
   }
 }
+
 
 class FilterBottomSheet extends StatefulWidget {
   final FilterSettings initialSettings;
@@ -57,6 +62,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       gender: widget.initialSettings.gender,
       distance: widget.initialSettings.distance,
       location: widget.initialSettings.location,
+      interests: widget.initialSettings.interests,
+    );
     );
   }
 
@@ -219,6 +226,19 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       ),
                       const SizedBox(height: 16),
                       _buildLocationPicker(),
+                      const SizedBox(height: 48),
+                      // Section: Interests
+                      Text(
+                        'İlgi Alanları',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInterestsSection(),
+
                       const SizedBox(height: 100), // Padding for button
                     ],
                   ),
@@ -408,6 +428,52 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     color: Colors.white30,
     letterSpacing: 1.2,
   );
+
+  final List<String> _interestOptions = const [
+    'Müzik', 'Spor', 'Sanat', 'Gezi', 'Teknoloji', 
+    'Yemek', 'Dans', 'Oyun', 'Sinema', 'Kitap', 
+    'Moda', 'Fotoğraf', 'Doğa', 'Hayvanlar'
+  ];
+
+  Widget _buildInterestsSection() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: _interestOptions.map((interest) {
+        final isSelected = _settings.interests.contains(interest);
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              List<String> newInterests = List.from(_settings.interests);
+              if (isSelected) {
+                newInterests.remove(interest);
+              } else {
+                newInterests.add(interest);
+              }
+              _settings.interests = newInterests;
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.1)),
+            ),
+            child: Text(
+              interest,
+              style: GoogleFonts.plusJakartaSans(
+                color: isSelected ? Colors.black : Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
 }
 
 void showFilterBottomSheet(

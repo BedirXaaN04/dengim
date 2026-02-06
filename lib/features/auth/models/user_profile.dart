@@ -24,6 +24,7 @@ class UserProfile {
   final double? latitude;
   final double? longitude;
   final List<String> blockedUsers;
+  final String? fcmToken;
 
   // Zamanlar
   final DateTime createdAt;
@@ -51,6 +52,7 @@ class UserProfile {
     required this.createdAt,
     required this.lastActive,
     this.blockedUsers = const [],
+    this.fcmToken,
   });
 
   // UI Yardımcıları
@@ -82,7 +84,9 @@ class UserProfile {
       'createdAt': Timestamp.fromDate(createdAt),
       'createdAt': Timestamp.fromDate(createdAt),
       'lastActive': Timestamp.fromDate(lastActive),
+      'lastActive': Timestamp.fromDate(lastActive),
       'blockedUsers': blockedUsers,
+      'fcmToken': fcmToken,
     };
   }
 
@@ -109,7 +113,9 @@ class UserProfile {
       createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
       createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
       lastActive: (map['lastActive'] as Timestamp? ?? Timestamp.now()).toDate(),
+      lastActive: (map['lastActive'] as Timestamp? ?? Timestamp.now()).toDate(),
       blockedUsers: List<String>.from(map['blockedUsers'] ?? []),
+      fcmToken: map['fcmToken'],
     );
   }
 }

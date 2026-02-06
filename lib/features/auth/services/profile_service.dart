@@ -199,6 +199,21 @@ class ProfileService {
       rethrow;
     }
   }
+  Future<void> updateFcmToken(String token) async {
+    final uid = _currentUser?.uid;
+    if (uid == null) return;
+    
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'fcmToken': token,
+        'lastActive': FieldValue.serverTimestamp(),
+      });
+      LogService.i("FCM Token updated");
+    } catch (e) {
+      LogService.e("FCM update error", e);
+    }
+  }
+
   /// Hesabı kalıcı olarak sil
   Future<void> deleteAccount() async {
     final uid = _currentUser?.uid;

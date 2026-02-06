@@ -23,6 +23,7 @@ class DiscoveryProvider extends ChangeNotifier {
     String? gender,
     int? minAge,
     int? maxAge,
+    List<String>? interests,
   }) async {
     if (_isLoading) return;
     
@@ -43,6 +44,11 @@ class DiscoveryProvider extends ChangeNotifier {
       
       if (blockedUsers.isNotEmpty) {
         realUsers.removeWhere((u) => blockedUsers.contains(u.uid));
+      }
+      
+      // Interest Filter
+      if (interests != null && interests.isNotEmpty) {
+        realUsers = realUsers.where((u) => u.interests.any((i) => interests.contains(i))).toList();
       }
       
       _users = realUsers;

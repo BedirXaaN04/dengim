@@ -66,8 +66,11 @@ void main() async {
     await ConfigService().init();
 
     // Bildirim servisini başlat
-    if (!kIsWeb) {
-       await NotificationService.initialize();
+    // Bildirim servisini başlat
+    try {
+      await NotificationService().initialize();
+    } catch (e) {
+      LogService.w("Notification init warning: $e");
     }
     
     if (kIsWeb) {

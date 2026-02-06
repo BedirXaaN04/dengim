@@ -1,95 +1,58 @@
-import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
-import '../utils/log_service.dart';
-
-// Sadece mobil için gerekli olan paketleri koşullu içe aktarabiliriz veya 
-// içerde kIsWeb ile kontrol edebiliriz.
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../utils/log_service.dart';
+import '../../features/auth/services/profile_service.dart';
 
 class NotificationService {
-  static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  
-  // Web'de bu plugin'in bazı özellikleri hata verebilir, bu yüzden dikkatli kullanmalıyız.
-  static final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  static final NotificationService _instance = NotificationService._internal();
+  factory NotificationService() => _instance;
+  NotificationService._internal();
 
-  static Future<void> initialize() async {
-    if (kIsWeb) {
-      // Web için sadece temel FCM izni
-      await _messaging.requestPermission(alert: true, badge: true, sound: true);
-      return;
-    }
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
-    // --- MOBİL ÖZEL AYARLAR ---
-    NotificationSettings settings = await _messaging.requestPermission(
+  Future<void> initialize() async {
+    // 1. İzin İste
+    NotificationSettings settings = await _fcm.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      LogService.i("Notification permission granted.");
-    }
-
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-
-    await _localNotifications.initialize(initializationSettings);
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      LogService.i("Handling a foreground message: ${message.messageId}");
-      _showLocalNotification(message);
-    });
-
-    updateToken();
-  }
-
-  static Future<void> updateToken() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    try {
-      String? token = await _messaging.getToken(
-        // Web için VAPID anahtarı gerekebilir
-        vapidKey: kIsWeb ? "BHX6SzRp1uGY9SvV63rwACM8wiuef3LPfV2ykGNB_SQUmKFD91aRwP23kTsoJ9O3xpS1fytE6Im6UVX4cwjdUkw" : null
-      );
+      LogService.i('User granted permission');
       
-      if (token != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-          'fcmToken': token,
-          'lastTokenUpdate': FieldValue.serverTimestamp(),
-          'platform': kIsWeb ? 'web' : 'mobile'
-        });
-        LogService.i("FCM Token updated.");
+      // 2. Token Al ve Kaydet
+      try {
+        String? token = await _fcm.getToken();
+        if (token != null) {
+          await ProfileService().updateFcmToken(token);
+        }
+      } catch (e) {
+        LogService.w("FCM Token fetch failed (Web might need VAPID key): $e");
       }
-    } catch (e) {
-      LogService.e("Error updating FCM token", e);
+      
+      // Token yenilenirse güncelle
+      _fcm.onTokenRefresh.listen((token) {
+        ProfileService().updateFcmToken(token);
+      });
+
+      // 3. Foreground Mesajları Dinle
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        LogService.i('Got a message whilst in the foreground!');
+        
+        if (message.notification != null) {
+          _showLocalNotification(message);
+        }
+      });
+      
+    } else {
+      LogService.w('User declined or has not accepted permission');
     }
   }
 
-  static Future<void> _showLocalNotification(RemoteMessage message) async {
-    if (kIsWeb) return; // Web'de yerel bildirim farklı çalışır
-
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'high_importance_channel',
-      'High Importance Notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    const NotificationDetails details = NotificationDetails(android: androidDetails);
-
-    await _localNotifications.show(
-      message.hashCode,
-      message.notification?.title ?? "Yeni Bildirim",
-      message.notification?.body ?? "",
-      details,
-    );
+  void _showLocalNotification(RemoteMessage message) async {
+     LogService.i("Notification Received: ${message.notification?.title}");
+     // Implementation for local notifications can be added here
   }
 }
