@@ -88,11 +88,19 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         final List<Future<String>> uploadFutures = [];
         final uid = Provider.of<UserProvider>(context, listen: false).currentUser?.uid ?? 'anon';
         
-        for (var photo in _profilePhotos) {
+        for (int i = 0; i < _profilePhotos.length; i++) {
+          final photo = _profilePhotos[i];
           if (photo != null) {
-            uploadFutures.add(_profileService.uploadProfilePhoto(photo, uid));
+            if (_photoBytes.containsKey(i)) {
+              // Prefer uploading bytes directly (reliable for web/mobile)
+              uploadFutures.add(_profileService.uploadProfilePhotoBytes(_photoBytes[i]!, uid));
+            } else {
+              // Fallback to XFile upload
+              uploadFutures.add(_profileService.uploadProfilePhoto(photo, uid));
+            }
           }
         }
+
         
         if (uploadFutures.isNotEmpty) {
           photoUrls = await Future.wait(uploadFutures).timeout(const Duration(seconds: 30)); // 30s timeout

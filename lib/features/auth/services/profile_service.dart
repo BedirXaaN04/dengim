@@ -74,19 +74,34 @@ class ProfileService {
 
   Future<String> uploadProfilePhoto(XFile file, String userId) async {
     try {
-      // Firebase Storage yerine Cloudinary kullanıyoruz (Ücretsiz)
       final imageUrl = await CloudinaryService.uploadImage(file);
       
       if (imageUrl != null) {
         return imageUrl;
       }
       
-      throw Exception("Upload failed");
+      throw Exception("Upload returned null");
     } catch (e) {
-      LogService.e("Upload failed, reverting to placeholder", e);
+      LogService.e("Upload failed (XFile), reverting to placeholder. UserId: $userId", e);
       return 'https://ui-avatars.com/api/?name=${userId.substring(0, 1)}&background=EAEAEA&color=000&size=500';
     }
   }
+
+  Future<String> uploadProfilePhotoBytes(Uint8List bytes, String userId) async {
+    try {
+      final imageUrl = await CloudinaryService.uploadImageBytes(bytes);
+      
+      if (imageUrl != null) {
+        return imageUrl;
+      }
+      
+      throw Exception("Byte upload returned null");
+    } catch (e) {
+      LogService.e("Upload failed (Bytes), reverting to placeholder. UserId: $userId", e);
+      return 'https://ui-avatars.com/api/?name=${userId.substring(0, 1)}&background=EAEAEA&color=000&size=500';
+    }
+  }
+
 
   Future<void> updateLocation(double latitude, double longitude) async {
     final uid = _currentUser?.uid;
