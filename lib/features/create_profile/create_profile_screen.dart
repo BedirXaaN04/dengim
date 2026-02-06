@@ -89,15 +89,25 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         final uid = Provider.of<UserProvider>(context, listen: false).currentUser?.uid ?? 'anon';
         
         for (var photo in _profilePhotos) {
-          if (photo != null && photo is XFile) {
+          if (photo != null) {
             uploadFutures.add(_profileService.uploadProfilePhoto(photo, uid));
           }
         }
         
         if (uploadFutures.isNotEmpty) {
-          photoUrls = await Future.wait(uploadFutures).timeout(const Duration(seconds: 15));
+          photoUrls = await Future.wait(uploadFutures).timeout(const Duration(seconds: 30)); // 30s timeout
+          
+          // Check if any upload failed (placeholder returned)
+          if (photoUrls.any((url) => url.contains('ui-avatars.com'))) {
+             if (mounted) {
+               ScaffoldMessenger.of(context).showSnackBar(
+                 const SnackBar(content: Text('Not: Bazı fotoğraflar yüklenemedi ve varsayılan görsel atandı.')),
+               );
+             }
+          }
         }
       } catch (e) {
+
         LogService.e("Photo upload failed, using placeholder", e);
       }
 

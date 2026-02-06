@@ -239,7 +239,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: TextField(
         controller: controller,
         obscureText: isPassword,
+        enableSuggestions: !isPassword,
+        autocorrect: !isPassword,
         style: const TextStyle(color: Colors.white),
+
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: Colors.white30),

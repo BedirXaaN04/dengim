@@ -46,26 +46,18 @@ class DiscoveryService {
             .get();
         
         // Strategy A: No results? Maybe missing lastActive field or restrictive gender.
+        // Strategy A: No results? Maybe missing lastActive field or restrictive gender.
+        // We will try without ordering by lastActive, but we MUST keep the gender filter.
         if (snapshot.docs.isEmpty) {
           LogService.w("No results with gender/lastActive. Trying without lastActive ordering.");
           snapshot = await activeQuery.limit(limit * 3).get();
-          
-          // Strategy B: Still no results? Maybe gender filter is too restrictive or wrong labels.
-          if (snapshot.docs.isEmpty && gender != 'other') {
-            LogService.w("No results with gender filter. Trying base query without gender filter.");
-            snapshot = await baseQuery.limit(limit * 3).get();
-          }
         }
       } catch (e) {
         LogService.w("Query failed (possible index error), trying fallback queries: $e");
-        // Fallback: Try without order, then without gender if needed
-        snapshot = await activeQuery.limit(limit * 3).get().catchError((_) => baseQuery.limit(limit * 3).get());
+        // Fallback: Try without order, BUT KEEP FILTERS (activeQuery)
+        snapshot = await activeQuery.limit(limit * 3).get();
       }
 
-      // If we still have nothing, try getting ANY users to see if the collection is empty
-      if (snapshot.docs.isEmpty) {
-        snapshot = await baseQuery.limit(10).get();
-      }
 
       final users = snapshot.docs
           .where((doc) => !swipedIds.contains(doc.id))

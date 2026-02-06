@@ -439,8 +439,11 @@ class _EmailLoginFormState extends State<_EmailLoginForm> {
         TextField(
           controller: _passwordController,
           obscureText: true,
+          enableSuggestions: false,
+          autocorrect: false,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
+
             hintText: 'Şifre',
             hintStyle: const TextStyle(color: Colors.white30),
             prefixIcon: const Icon(Icons.lock_outline, color: Colors.white30),
