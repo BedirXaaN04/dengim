@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/chat_models.dart';
 
@@ -195,15 +196,33 @@ class ChatBubble extends StatelessWidget {
             )
           ] : null,
         ),
-        child: Text(
-          message.content,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 15,
-            color: isMe ? const Color(0xFF1F1F1F) : Colors.white.withOpacity(0.9), // Gold üstüne koyu, koyu üstüne açık yazı
-            fontWeight: isMe ? FontWeight.w600 : FontWeight.normal,
-            height: 1.4,
-          ),
-        ),
+        child: message.type == MessageType.image
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: CachedNetworkImage(
+                  imageUrl: message.content,
+                  placeholder: (context, url) => Container(
+                    height: 200, width: 250,
+                    color: Colors.black12,
+                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  ),
+                  errorWidget: (context, url, error) => const SizedBox(
+                    height: 100, width: 100,
+                    child: Icon(Icons.broken_image, color: Colors.white),
+                  ),
+                  fit: BoxFit.cover,
+                  width: 250,
+                ),
+              )
+            : Text(
+                message.content,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 15,
+                  color: isMe ? const Color(0xFF1F1F1F) : Colors.white.withOpacity(0.9),
+                  fontWeight: isMe ? FontWeight.w600 : FontWeight.normal,
+                  height: 1.4,
+                ),
+              ),
       ),
     );
   }

@@ -9,7 +9,11 @@ import 'services/chat_service.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/chat_provider.dart';
+import 'package:provider/provider.dart';
+import '../../core/providers/chat_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../core/services/cloudinary_service.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({super.key});
@@ -240,11 +244,69 @@ class ChatDetailScreen extends StatefulWidget {
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _controller = TextEditingController();
   final ChatService _service = ChatService();
+  final ImagePicker _picker = ImagePicker();
 
   void _send() {
     if (_controller.text.trim().isEmpty) return;
     _service.sendMessage(widget.chat.id, _controller.text.trim(), widget.chat.otherUserId);
+    _service.sendMessage(widget.chat.id, _controller.text.trim(), widget.chat.otherUserId);
     _controller.clear();
+  }
+
+  Future<void> _pickAndSendImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(source: source, imageQuality: 70);
+      if (image == null) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Fotoğraf yükleniyor...")));
+
+      final imageUrl = await CloudinaryService.uploadImage(image);
+      if (imageUrl != null) {
+        await _service.sendMessage(
+            widget.chat.id, 
+            imageUrl, 
+            widget.chat.otherUserId, 
+            type: MessageType.image
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Hata: $e")));
+    }
+  }
+
+  void _showAttachmentOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: AppColors.scaffold,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Colors.white),
+              title: const Text("Kamera", style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndSendImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Colors.white),
+              title: const Text("Galeri", style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAndSendImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -383,13 +445,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           ),
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  shape: BoxShape.circle,
+              GestureDetector(
+                onTap: _showAttachmentOptions,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.add_rounded, color: Colors.white70, size: 24),
                 ),
-                child: const Icon(Icons.add_rounded, color: Colors.white70, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(

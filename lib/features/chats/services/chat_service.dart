@@ -77,11 +77,19 @@ class ChatService {
   }
 
   /// Mesaj Gönder
-  Future<void> sendMessage(String chatId, String content, String receiverId) async {
+  Future<void> sendMessage(String chatId, String content, String receiverId, {MessageType type = MessageType.text}) async {
     final user = currentUser;
     if (user == null) return;
 
     final timestamp = Timestamp.now();
+    
+    // Last Message Preview logic
+    String lastMessagePreview = content;
+    if (type == MessageType.image) {
+      lastMessagePreview = "📷 Fotoğraf";
+    } else if (type == MessageType.audio) {
+      lastMessagePreview = "🎤 Ses";
+    }
 
     // 1. Mesajı alt koleksiyona ekle
     await _firestore
@@ -93,12 +101,13 @@ class ChatService {
       'content': content,
       'timestamp': timestamp,
       'isRead': false,
+      'type': type.name,
     });
 
     // 2. Ana sohbet belgesini güncelle (son mesaj, okunmamış sayısı vb.)
     // Okunmamış sayısını artırmak için receiverId'yi kullanarak map'i güncelle
     await _firestore.collection('conversations').doc(chatId).update({
-      'lastMessage': content,
+      'lastMessage': lastMessagePreview,
       'lastMessageTime': timestamp,
       'lastMessageSenderId': user.uid,
       'unreadCounts.$receiverId': FieldValue.increment(1), // Karşı taraf için 1 artır
