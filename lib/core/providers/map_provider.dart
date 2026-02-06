@@ -12,12 +12,25 @@ class MapProvider extends ChangeNotifier {
   final ProfileService _profileService = ProfileService();
   
   List<NearbyUser> _nearbyUsers = [];
+  List<NearbyUser> _allUsers = [];
+  double _searchRadius = 1000.0; // Default max range
   LatLng _currentLocation = const LatLng(41.0082, 28.9784); // Default Istanbul
   bool _isLoading = false;
 
   List<NearbyUser> get nearbyUsers => _nearbyUsers;
   LatLng get currentLocation => _currentLocation;
   bool get isLoading => _isLoading;
+  double get searchRadius => _searchRadius;
+
+  void setSearchRadius(double radius) {
+    _searchRadius = radius;
+    _applyFilter();
+  }
+
+  void _applyFilter() {
+    _nearbyUsers = _allUsers.where((u) => u.distance <= _searchRadius).toList();
+    notifyListeners();
+  }
 
   Future<void> initializeMap() async {
     _isLoading = true;
@@ -110,8 +123,9 @@ class MapProvider extends ChangeNotifier {
         LogService.i("Added demo profiles to map: ${loadedUsers.length} total");
       }
 
-      _nearbyUsers = loadedUsers;
-      LogService.i("Found ${_nearbyUsers.length} users near location on map.");
+      _allUsers = loadedUsers;
+      _applyFilter();
+      LogService.i("Found ${_allUsers.length} total users, displaying ${_nearbyUsers.length} within ${_searchRadius.toInt()}km");
     } catch (e) {
       LogService.e("Error fetching nearby users for map", e);
       
@@ -133,6 +147,7 @@ class MapProvider extends ChangeNotifier {
               isOnline: user.isOnline,
             ))
             .toList();
+        _allUsers = _nearbyUsers; // For demo data, all are shown initially
         LogService.i("Fallback to demo profiles for map: ${_nearbyUsers.length}");
       } catch (_) {}
     }

@@ -272,8 +272,104 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 const Center(child: CircularProgressIndicator(color: AppColors.primary)),
                 
               Positioned(top: 0, left: 0, right: 0, child: _buildTopBar(provider.nearbyUsers.length)),
-              Positioned(right: 20, bottom: 240, child: _buildZoomControls()),
-              Positioned(bottom: 0, left: 0, right: 0, child: NearbyUsersList(users: provider.nearbyUsers, onUserTap: _onUserTap)),
+              Positioned(right: 20, bottom: 350, child: _buildZoomControls()),
+              DraggableScrollableSheet(
+                initialChildSize: 0.35,
+                minChildSize: 0.12,
+                maxChildSize: 0.6,
+                builder: (context, scrollController) {
+                  return ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F172A).withOpacity(0.9),
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
+                        ),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Handle
+                                Center(
+                                  child: Container(
+                                    width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
+                                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(2)),
+                                  ),
+                                ),
+                                
+                                // Header
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('YAKININDAKİLER', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 2)),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                                      child: Text('${provider.nearbyUsers.length} KİŞİ', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 10)),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                
+                                // Slider
+                                Row(
+                                  children: [
+                                    Text('Mesafe: ${provider.searchRadius.toInt()} km', style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 12)),
+                                    Expanded(
+                                      child: SliderTheme(
+                                        data: SliderTheme.of(context).copyWith(
+                                          activeTrackColor: AppColors.primary,
+                                          inactiveTrackColor: Colors.white10,
+                                          thumbColor: AppColors.primary,
+                                          overlayColor: AppColors.primary.withOpacity(0.2),
+                                          trackHeight: 2,
+                                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                                        ),
+                                        child: Slider(
+                                          value: provider.searchRadius,
+                                          min: 10,
+                                          max: 1000,
+                                          onChanged: (val) {
+                                            provider.setSearchRadius(val);
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Users List
+                                SizedBox(
+                                  height: 120,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const BouncingScrollPhysics(),
+                                    itemCount: provider.nearbyUsers.length,
+                                    itemBuilder: (context, index) {
+                                       return NearbyUserAvatar(
+                                         user: provider.nearbyUsers[index], 
+                                         onTap: () => _onUserTap(provider.nearbyUsers[index])
+                                       );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 100), // Bottom padding
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
           );
         },
