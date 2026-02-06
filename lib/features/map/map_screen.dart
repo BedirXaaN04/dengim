@@ -11,6 +11,7 @@ import 'widgets/nearby_users_list.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/map_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../features/discover/user_profile_detail_screen.dart';
 
 
 class MapScreen extends StatefulWidget {
@@ -167,6 +168,10 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => UserProfileDetailScreen(userId: user.id)),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
