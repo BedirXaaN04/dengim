@@ -381,17 +381,36 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: activeCount > 0 
+                      ? AppColors.primary.withOpacity(0.1)
+                      : Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  border: Border.all(
+                    color: activeCount > 0 
+                        ? AppColors.primary.withOpacity(0.2)
+                        : Colors.white.withOpacity(0.1),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    Container(width: 6, height: 6, decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle)),
+                    Container(
+                      width: 6, 
+                      height: 6, 
+                      decoration: BoxDecoration(
+                        color: activeCount > 0 ? AppColors.primary : Colors.white38, 
+                        shape: BoxShape.circle
+                      )
+                    ),
                     const SizedBox(width: 6),
                     Text(
-                      '$activeCount AKTİF',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary),
+                      activeCount > 0 
+                          ? '$activeCount AKTİF'
+                          : 'KEŞFET',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10, 
+                        fontWeight: FontWeight.bold, 
+                        color: activeCount > 0 ? AppColors.primary : Colors.white38,
+                      ),
                     ),
                   ],
                 ),

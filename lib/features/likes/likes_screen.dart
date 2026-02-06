@@ -121,12 +121,38 @@ class _LikesScreenState extends State<LikesScreen> {
                         if (provider.likedMeUsers.isEmpty)
                           SliverToBoxAdapter(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 40),
-                              child: Center(
-                                child: Text(
-                                  "Henüz seni beğenen kimse yok.",
-                                  style: GoogleFonts.plusJakartaSans(color: Colors.white24, fontSize: 13),
-                                ),
+                              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary.withOpacity(0.1),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.favorite_border_rounded, size: 40, color: AppColors.primary),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    "Profilini güçlendir! 💪",
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: Colors.white, 
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "Daha fazla fotoğraf ekle ve\nilgi çekici bir biyografi yaz.",
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: Colors.white38, 
+                                      fontSize: 13,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),

@@ -20,17 +20,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     OnboardingData(
       title: 'Mükemmel Dengini Bul',
       description: 'Zevklerinize ve yaşam tarzınıza en uygun kişilerle tanışın. Sizin için rafine edilmiş bir deneyim.',
-      imageUrl: 'https://images.unsplash.com/photo-1516589174184-c6858b16ecbe?q=80&w=1287&auto=format&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=800&q=80',
     ),
     OnboardingData(
       title: 'Güvenli ve Prestijli',
       description: 'Doğrulanmış profiller ve elit bir topluluk. DENGİM\'de her etkileşim değerlidir.',
-      imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1471&auto=format&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=800&q=80',
     ),
     OnboardingData(
       title: 'Anı Yakala',
       description: 'Yeni insanlarla tanışmanın en estetik yolu. Şimdi katılın ve ayrıcalıklı hissedin.',
-      imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1287&auto=format&fit=crop',
+      imageUrl: 'https://images.unsplash.com/photo-1516589091380-5d8e87df6999?w=800&q=80',
     ),
   ];
 

@@ -144,4 +144,44 @@ class ProfileService {
       LogService.e("Add credits error", e);
     }
   }
+
+  /// Kullanıcı profilini güncelle
+  Future<void> updateProfile({
+    String? name,
+    String? bio,
+    String? job,
+    String? education,
+    int? age,
+    String? country,
+    List<String>? interests,
+    List<String>? photoUrls,
+    bool? isPremium,
+    bool? isVerified,
+  }) async {
+    final uid = _currentUser?.uid;
+    if (uid == null) return;
+
+    final Map<String, dynamic> updates = {
+      'lastActive': FieldValue.serverTimestamp(),
+    };
+
+    if (name != null) updates['name'] = name;
+    if (bio != null) updates['bio'] = bio;
+    if (job != null) updates['job'] = job;
+    if (education != null) updates['education'] = education;
+    if (age != null) updates['age'] = age;
+    if (country != null) updates['country'] = country;
+    if (interests != null) updates['interests'] = interests;
+    if (photoUrls != null) updates['photoUrls'] = photoUrls;
+    if (isPremium != null) updates['isPremium'] = isPremium;
+    if (isVerified != null) updates['isVerified'] = isVerified;
+
+    try {
+      await _firestore.collection('users').doc(uid).update(updates);
+      LogService.i("Profile updated for: $uid");
+    } catch (e) {
+      LogService.e("Profile update error", e);
+      rethrow;
+    }
+  }
 }

@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/story_model.dart';
 import '../../../core/utils/log_service.dart';
 import '../../../core/services/config_service.dart';
+import '../../../core/services/cloudinary_service.dart';
 
 
 class StoryService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? get _currentUser => _auth.currentUser;
@@ -25,19 +24,20 @@ class StoryService {
     if (user == null) return;
 
     try {
-      // 1. Upload Image to Storage
-      final ref = _storage.ref().child('stories/${user.uid}/${DateTime.now().millisecondsSinceEpoch}.jpg');
-      final data = await file.readAsBytes();
+      // 1. Upload Image to Cloudinary (Web compatible)
+      final imageUrl = await CloudinaryService.uploadImage(file);
       
-      final uploadTask = ref.putData(data, SettableMetadata(contentType: 'image/jpeg'));
-      await uploadTask;
-      final imageUrl = await ref.getDownloadURL();
+      if (imageUrl == null) {
+        throw Exception('Görsel yüklenemedi');
+      }
 
       // 2. Create Story Record in Firestore
       await _firestore.collection('stories').add({
         'userId': user.uid,
         'userName': userName,
-        'userAvatar': userAvatar,
+        'userAvatar': userAvatar.isNotEmpty 
+            ? userAvatar 
+            : 'https://ui-avatars.com/api/?name=${userName.substring(0, 1)}&background=D4AF37&color=fff&size=200',
         'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
         'viewers': [],
@@ -45,7 +45,7 @@ class StoryService {
         'isVerified': isVerified,
       });
 
-      LogService.i("Story uploaded successfully.");
+      LogService.i("Story uploaded successfully to Cloudinary.");
     } catch (e) {
       LogService.e("Story upload failed", e);
       rethrow;

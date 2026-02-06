@@ -9,6 +9,8 @@ import '../../core/providers/user_provider.dart';
 import '../../core/utils/log_service.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
@@ -24,10 +26,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   
   Future<void> _pickImage(int index) async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
       if (image != null) {
+        final bytes = await image.readAsBytes();
         setState(() {
           _profilePhotos[index] = image;
+          _photoBytes[index] = bytes;
         });
       }
     } catch (e) {
@@ -49,7 +53,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   // State variables
   String? _selectedGender;
   final List<String> _selectedInterests = [];
-  final List<dynamic> _profilePhotos = [null, null, null, null, null, null]; // 6 slots
+  final List<XFile?> _profilePhotos = [null, null, null, null, null, null]; 
+  final Map<int, Uint8List> _photoBytes = {}; 
   
   final List<Map<String, dynamic>> _interests = [
     {'name': 'Seyahat', 'icon': Icons.flight},
@@ -268,15 +273,20 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white.withOpacity(0.1), width: 2),
-                      image: _profilePhotos[0] != null
-                          ? DecorationImage(image: NetworkImage(_profilePhotos[0].path), fit: BoxFit.cover)
-                          : null,
                       color: AppColors.surface,
                     ),
-                    child: _profilePhotos[0] == null
-                        ? Icon(Icons.person, size: 64, color: Colors.white.withOpacity(0.1))
-                        : null,
+                    child: _photoBytes.containsKey(0) 
+                        ? ClipOval(
+                            child: Image.memory(
+                              _photoBytes[0]!,
+                              fit: BoxFit.cover,
+                              width: 140,
+                              height: 140,
+                            ),
+                          )
+                        : Icon(Icons.person, size: 64, color: Colors.white.withOpacity(0.1)),
                   ),
+
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -314,24 +324,29 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 itemCount: 5,
                 itemBuilder: (context, index) {
                   final realIndex = index + 1;
-                  final img = _profilePhotos[realIndex];
                   return GestureDetector(
-                    onTap: () => _pickImage(realIndex),
-                    child: Container(
-                      width: 60,
-                      margin: const EdgeInsets.only(right: 12),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: AppColors.surface,
-                        border: Border.all(
-                          color: img != null ? AppColors.primary : Colors.white10,
-                          width: img != null ? 1.5 : 1,
+
+                      onTap: () => _pickImage(realIndex),
+                      child: Container(
+                        width: 60,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: AppColors.surface,
+                          border: Border.all(
+                            color: _photoBytes.containsKey(realIndex) ? AppColors.primary : Colors.white10,
+                            width: _photoBytes.containsKey(realIndex) ? 1.5 : 1,
+                          ),
                         ),
-                        image: img != null ? DecorationImage(image: NetworkImage(img.path), fit: BoxFit.cover) : null,
+                        child: _photoBytes.containsKey(realIndex)
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(11),
+                                child: Image.memory(_photoBytes[realIndex]!, fit: BoxFit.cover, width: 60, height: 80),
+                              )
+                            : const Icon(Icons.add, color: Colors.white10, size: 20),
                       ),
-                      child: img == null ? const Icon(Icons.add, color: Colors.white10, size: 20) : null,
-                    ),
-                  );
+                    );
+
                 },
               ),
             ),

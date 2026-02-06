@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../auth/services/auth_service.dart';
 import '../auth/login_screen.dart';
 import 'settings_screen.dart';
+import 'edit_profile_screen.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/user_provider.dart';
@@ -88,7 +89,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Icons.settings,
                               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
                             ),
-                            _buildCircleIcon(Icons.edit),
+                            _buildCircleIcon(
+                              Icons.edit,
+                              onTap: () {
+                                if (profile != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => EditProfileScreen(profile: profile),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ],
                         ),
                       ),

@@ -5,6 +5,7 @@ import '../../features/auth/services/discovery_service.dart';
 import '../../features/auth/services/profile_service.dart';
 import '../../features/map/models/nearby_user.dart';
 import '../utils/log_service.dart';
+import '../utils/demo_profile_service.dart';
 
 class MapProvider extends ChangeNotifier {
   final DiscoveryService _discoveryService = DiscoveryService();
@@ -81,11 +82,61 @@ class MapProvider extends ChangeNotifier {
         ));
       }
 
+      // Eğer hiç kullanıcı yoksa veya çok azsa, demo profilleri ekle
+      if (loadedUsers.length < 3) {
+        LogService.i("Few map users (${loadedUsers.length}), loading demo profiles...");
+        final demoProfiles = await DemoProfileService.getDemoProfiles();
+        
+        for (var user in demoProfiles) {
+          if (user.latitude == null || user.longitude == null) continue;
+          
+          double distKm = distanceCalc.as(
+            LengthUnit.Kilometer, 
+            _currentLocation, 
+            LatLng(user.latitude!, user.longitude!)
+          );
+
+          loadedUsers.add(NearbyUser(
+            id: user.uid,
+            name: user.name,
+            age: user.age,
+            avatarUrl: user.imageUrl,
+            latitude: user.latitude!,
+            longitude: user.longitude!,
+            distance: distKm,
+            isOnline: user.isOnline,
+          ));
+        }
+        LogService.i("Added demo profiles to map: ${loadedUsers.length} total");
+      }
+
       _nearbyUsers = loadedUsers;
       LogService.i("Found ${_nearbyUsers.length} users near location on map.");
     } catch (e) {
       LogService.e("Error fetching nearby users for map", e);
+      
+      // Hata durumunda demo profilleri göster
+      try {
+        final demoProfiles = await DemoProfileService.getDemoProfiles();
+        final Distance distanceCalc = const Distance();
+        
+        _nearbyUsers = demoProfiles
+            .where((u) => u.latitude != null && u.longitude != null)
+            .map((user) => NearbyUser(
+              id: user.uid,
+              name: user.name,
+              age: user.age,
+              avatarUrl: user.imageUrl,
+              latitude: user.latitude!,
+              longitude: user.longitude!,
+              distance: distanceCalc.as(LengthUnit.Kilometer, _currentLocation, LatLng(user.latitude!, user.longitude!)),
+              isOnline: user.isOnline,
+            ))
+            .toList();
+        LogService.i("Fallback to demo profiles for map: ${_nearbyUsers.length}");
+      } catch (_) {}
     }
   }
 
 }
+

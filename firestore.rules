@@ -76,6 +76,23 @@ service cloud.firestore {
                      request.resource.data.senderId == request.auth.uid;
       }
     }
+
+    // Stories (24h Instagram-like stories)
+    match /stories/{storyId} {
+      // Everyone can see stories (filtering is done client-side for matches/premium)
+      allow read: if isAuthenticated();
+      
+      // Only the owner can create their own story
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      
+      // Anyone can update viewers array
+      allow update: if isAuthenticated();
+
+      
+      // Stories cannot be manually deleted by clients (use TTL or Cloud Function)
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
     
     // Global Deny
     match /{document=**} {

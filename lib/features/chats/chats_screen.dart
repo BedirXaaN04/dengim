@@ -153,28 +153,62 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   Widget _buildEmptyChats() {
     return Center(
-       child: Column(
-         mainAxisAlignment: MainAxisAlignment.center,
-         children: [
-           Container(
-             padding: const EdgeInsets.all(20),
-             decoration: BoxDecoration(
-               color: AppColors.primary.withOpacity(0.05),
-               shape: BoxShape.circle,
+       child: Padding(
+         padding: const EdgeInsets.symmetric(horizontal: 40),
+         child: Column(
+           mainAxisAlignment: MainAxisAlignment.center,
+           children: [
+             Container(
+               width: 100,
+               height: 100,
+               decoration: BoxDecoration(
+                 color: AppColors.primary.withOpacity(0.1),
+                 shape: BoxShape.circle,
+               ),
+               child: const Icon(Icons.chat_bubble_outline_rounded, size: 48, color: AppColors.primary),
              ),
-             child: Icon(Icons.mark_chat_unread_outlined, size: 40, color: AppColors.primary.withOpacity(0.5)),
-           ),
-           const SizedBox(height: 16),
-           Text(
-             "Henüz mesaj yok", 
-             style: GoogleFonts.plusJakartaSans(
-               color: Colors.white30, 
-               fontSize: 14, 
-               fontWeight: FontWeight.bold,
-               letterSpacing: 0.5
+             const SizedBox(height: 24),
+             Text(
+               "Henüz mesajınız yok 💬", 
+               style: GoogleFonts.plusJakartaSans(
+                 color: Colors.white, 
+                 fontSize: 20, 
+                 fontWeight: FontWeight.bold,
+               ),
              ),
-           ),
-         ],
+             const SizedBox(height: 12),
+             Text(
+               "Eşleşmelerinizle sohbet etmeye\nburadan başlayabilirsiniz.", 
+               textAlign: TextAlign.center,
+               style: GoogleFonts.plusJakartaSans(
+                 color: Colors.white38, 
+                 fontSize: 14, 
+                 height: 1.5,
+               ),
+             ),
+             const SizedBox(height: 28),
+             ElevatedButton.icon(
+               onPressed: () {
+                 // Navigate to discover tab (index 0)
+                 // This will be handled by bottom nav - just show toast for now
+                 ScaffoldMessenger.of(context).showSnackBar(
+                   const SnackBar(
+                     content: Text('Keşfet sekmesine gidip yeni kişilerle eşleş!'),
+                     duration: Duration(seconds: 2),
+                   ),
+                 );
+               },
+               icon: const Icon(Icons.explore_rounded, size: 18),
+               label: Text("Keşfetmeye Başla", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+               style: ElevatedButton.styleFrom(
+                 backgroundColor: AppColors.primary,
+                 foregroundColor: Colors.black,
+                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+               ),
+             ),
+           ],
+         ),
        ),
      );
   }

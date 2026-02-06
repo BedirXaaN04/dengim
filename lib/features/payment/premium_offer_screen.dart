@@ -46,31 +46,77 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
   }
 
   Future<void> _loadOfferings() async {
-    // Gerçek API Key olmadığı için loading'de kalmasın diye mock data ile simüle edelim (Geliştirme Amaçlı)
-    // Gerçekte: 
-    // var offerings = await PurchaseService().getOfferings();
-    
-    // Simülasyon:
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        // _offerings = offerings; (Mock data olmadığı için UI'da manuel göstereceğiz)
-      });
+    try {
+      // RevenueCat'ten paketleri çekmeye çalış
+      final offerings = await Purchases.getOfferings();
+      if (mounted) {
+        setState(() {
+          _offerings = offerings;
+          _isLoading = false;
+          // Varsayılan olarak yıllık paketi seç
+          if (offerings.current?.annual != null) {
+            _selectedPackage = offerings.current!.annual;
+          } else if (offerings.current?.availablePackages.isNotEmpty == true) {
+            _selectedPackage = offerings.current!.availablePackages.first;
+          }
+        });
+      }
+    } catch (e) {
+      // RevenueCat yapılandırılmamışsa veya hata varsa demo modunda çalış
+      debugPrint("RevenueCat Error: $e - Running in demo mode");
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   Future<void> _buy() async {
     setState(() => _isLoading = true);
     
-    // Simüle edilmiş satın alma
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-       setState(() => _isLoading = false);
-       ScaffoldMessenger.of(context).showSnackBar(
-         const SnackBar(content: Text('Demo Modu: Satın alma başarılı (Simülasyon)')),
-       );
-       Navigator.pop(context, true); // Başarılı döndür
+    try {
+      // Gerçek paket varsa RevenueCat ile satın al
+      if (_selectedPackage != null) {
+        final customerInfo = await Purchases.purchasePackage(_selectedPackage!);
+        final isPremium = customerInfo.entitlements.all['dengim_premium']?.isActive ?? false;
+        
+        if (isPremium && mounted) {
+          // Firestore'da kullanıcı profilini güncelle
+          await ProfileService().updateProfile(isPremium: true);
+          await context.read<UserProvider>().loadCurrentUser();
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('🎉 Tebrikler! Premium üyeliğiniz aktif edildi.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pop(context, true);
+          return;
+        }
+      }
+      
+      // Demo modu (API key yoksa veya paket seçilmediyse)
+      await Future.delayed(const Duration(seconds: 1));
+      if (mounted) {
+        // Demo modunda da premium olarak işaretle
+        await ProfileService().updateProfile(isPremium: true);
+        await context.read<UserProvider>().loadCurrentUser();
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Demo Modu: Premium aktif edildi!'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 

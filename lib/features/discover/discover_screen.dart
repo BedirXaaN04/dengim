@@ -643,25 +643,70 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.person_search_outlined, size: 80, color: Colors.white.withOpacity(0.1)),
-          const SizedBox(height: 24),
-          Text(
-            "Yakındaki tüm profilleri gördün!",
-            style: GoogleFonts.plusJakartaSans(
-              color: Colors.white30,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.explore_rounded, size: 60, color: AppColors.primary),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () => context.read<DiscoveryProvider>().loadDiscoveryUsers(),
-            child: Text("Tekrar dene", style: GoogleFonts.plusJakartaSans(color: AppColors.primary)),
-          ),
-        ],
+            const SizedBox(height: 32),
+            Text(
+              "Şu an için bu kadar! 🎉",
+              style: GoogleFonts.plusJakartaSans(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "Yakındaki tüm profilleri gördün.\nDaha fazla kişi için filtrelerini genişlet\nveya daha sonra tekrar dene.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                color: Colors.white38,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _showFilters,
+                  icon: const Icon(Icons.tune_rounded, size: 18),
+                  label: Text("Filtreleri Değiştir", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                OutlinedButton.icon(
+                  onPressed: () => context.read<DiscoveryProvider>().loadDiscoveryUsers(),
+                  icon: const Icon(Icons.refresh_rounded, size: 18),
+                  label: Text("Yenile", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white54,
+                    side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

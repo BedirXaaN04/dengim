@@ -52,6 +52,8 @@ dependencies:
   # Yardımcı Araçlar
   logger: ^2.4.0
   intl: ^0.19.0
+  url_launcher: ^6.2.4
+  http: ^1.2.0
 
   # Animasyonlar
   shimmer: ^3.0.0
@@ -83,4 +85,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/demo_profiles/
 
