@@ -1,7 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../utils/log_service.dart';
 import '../../features/auth/services/profile_service.dart';
+import 'package:flutter/foundation.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -9,7 +9,6 @@ class NotificationService {
   NotificationService._internal();
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
     // 1. İzin İste
@@ -24,12 +23,16 @@ class NotificationService {
       
       // 2. Token Al ve Kaydet
       try {
-        String? token = await _fcm.getToken();
+        String? token = await _fcm.getToken(
+          vapidKey: kIsWeb ? "BMwS-s3k...EXAMPLE...KEY" : null 
+        );
+        
         if (token != null) {
           await ProfileService().updateFcmToken(token);
         }
       } catch (e) {
-        LogService.w("FCM Token fetch failed (Web might need VAPID key): $e");
+        // Web'de VAPID key yoksa veya service worker yoksa hata verebilir.
+        LogService.w("FCM Token fetch warning: $e");
       }
       
       // Token yenilenirse güncelle
@@ -39,20 +42,11 @@ class NotificationService {
 
       // 3. Foreground Mesajları Dinle
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        LogService.i('Got a message whilst in the foreground!');
-        
-        if (message.notification != null) {
-          _showLocalNotification(message);
-        }
+        LogService.i('Notification Received: ${message.notification?.title}');
       });
       
     } else {
-      LogService.w('User declined or has not accepted permission');
+      LogService.w('User declined permission');
     }
-  }
-
-  void _showLocalNotification(RemoteMessage message) async {
-     LogService.i("Notification Received: ${message.notification?.title}");
-     // Implementation for local notifications can be added here
   }
 }
