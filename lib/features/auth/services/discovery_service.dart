@@ -30,36 +30,71 @@ class DiscoveryService {
       swipedIds.add(user.uid); 
 
       // 2. Fetch users with basic filters
-      Query query = _firestore.collection('users');
+      Query baseQuery = _firestore.collection('users');
+      Query activeQuery = baseQuery;
       
       if (gender != null && gender != 'other') {
-        query = query.where('gender', isEqualTo: gender == 'male' ? 'Erkek' : 'Kadın');
+        activeQuery = activeQuery.where('gender', isEqualTo: gender == 'male' ? 'Erkek' : 'Kadın');
       }
       
-      // Age filtering (Firestore can only handle one inequality per query if not carefully indexed)
-      // We'll filter age and distance client-side for better flexibility in small user bases
-      
-      final snapshot = await query
-          .orderBy('lastActive', descending: true)
-          .limit(limit * 2) // Fetch more to allow for swiped/filter exclusion
-          .get();
+      // Try fetching with orderBy first
+      QuerySnapshot snapshot;
+      try {
+        snapshot = await activeQuery
+            .orderBy('lastActive', descending: true)
+            .limit(limit * 3)
+            .get();
+        
+        // Strategy A: No results? Maybe missing lastActive field or restrictive gender.
+        if (snapshot.docs.isEmpty) {
+          LogService.w("No results with gender/lastActive. Trying without lastActive ordering.");
+          snapshot = await activeQuery.limit(limit * 3).get();
+          
+          // Strategy B: Still no results? Maybe gender filter is too restrictive or wrong labels.
+          if (snapshot.docs.isEmpty && gender != 'other') {
+            LogService.w("No results with gender filter. Trying base query without gender filter.");
+            snapshot = await baseQuery.limit(limit * 3).get();
+          }
+        }
+      } catch (e) {
+        LogService.w("Query failed (possible index error), trying fallback queries: $e");
+        // Fallback: Try without order, then without gender if needed
+        snapshot = await activeQuery.limit(limit * 3).get().catchError((_) => baseQuery.limit(limit * 3).get());
+      }
+
+      // If we still have nothing, try getting ANY users to see if the collection is empty
+      if (snapshot.docs.isEmpty) {
+        snapshot = await baseQuery.limit(10).get();
+      }
 
       final users = snapshot.docs
           .where((doc) => !swipedIds.contains(doc.id))
-          .map((doc) => UserProfile.fromMap(doc.data() as Map<String, dynamic>))
+          .map((doc) {
+            try {
+              return UserProfile.fromMap(doc.data() as Map<String, dynamic>);
+            } catch (e) {
+              LogService.e("Error parsing user profile for ${doc.id}", e);
+              return null;
+            }
+          })
+          .where((profile) => profile != null)
+          .cast<UserProfile>()
           .where((profile) {
-            // Client-side age filtering
-            if (minAge != null && profile.age < minAge) return false;
-            if (maxAge != null && profile.age > maxAge) return false;
+            // Client-side age filtering - only apply if we have enough users
+            // If we have very few users, be more lenient with age
+            if (snapshot.docs.length > 5) {
+              if (minAge != null && profile.age < minAge) return false;
+              if (maxAge != null && profile.age > maxAge) return false;
+            }
             return true;
           })
           .take(limit)
           .toList();
 
-      LogService.i("Fetched ${users.length} potential matches after filters.");
+      LogService.i("Final discovery fetch: Found ${users.length} users (Original raw docs: ${snapshot.docs.length})");
       return users;
     } catch (e) {
-      LogService.e("Error fetching users to match", e);
+      LogService.e("Critical failure in discovery query", e);
       return [];
     }
   }

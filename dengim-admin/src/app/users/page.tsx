@@ -18,6 +18,8 @@ export default function UsersPage() {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
     const [lastDoc, setLastDoc] = useState<any>(null);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [showUserModal, setShowUserModal] = useState(false);
 
     // Verileri Çek
     useEffect(() => {
@@ -34,6 +36,24 @@ export default function UsersPage() {
             console.error('Kullanıcılar yüklenemedi:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleEdit = (user: User) => {
+        setEditingUser({ ...user });
+        setShowUserModal(true);
+    };
+
+    const handleUpdateUser = async () => {
+        if (!editingUser) return;
+        try {
+            await UserService.updateUser(editingUser.id, editingUser);
+            setUsers(prev => prev.map(u => u.id === editingUser.id ? editingUser : u));
+            setShowUserModal(false);
+            setEditingUser(null);
+            alert('Kullanıcı başarıyla güncellendi.');
+        } catch (error) {
+            alert('Güncelleme hatası!');
         }
     };
 
@@ -188,6 +208,8 @@ export default function UsersPage() {
                                         selected={selectedUsers.includes(user.id)}
                                         onSelect={() => toggleUserSelection(user.id)}
                                         onAction={handleAction}
+                                        onEdit={() => handleEdit(user)}
+                                        onView={() => handleEdit(user)} // Same for now
                                     />
                                 ))}
 
@@ -202,16 +224,69 @@ export default function UsersPage() {
                     )}
                 </main>
                 <BottomNav />
+
+                {/* Edit Modal */}
+                {showUserModal && editingUser && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                        <div className="bg-surface-dark w-full max-w-lg rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+                            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                                <h3 className="text-xl font-bold text-white">Kullanıcı Düzenle</h3>
+                                <button onClick={() => setShowUserModal(false)} className="text-white/50 hover:text-white">
+                                    <span className="material-symbols-outlined">close</span>
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div>
+                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">Ad Soyad</label>
+                                    <input
+                                        type="text"
+                                        value={editingUser.name}
+                                        onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">Biyo</label>
+                                    <textarea
+                                        value={editingUser.bio}
+                                        onChange={(e) => setEditingUser({ ...editingUser, bio: e.target.value })}
+                                        rows={3}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary resize-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">Durum</label>
+                                    <select
+                                        value={editingUser.status}
+                                        onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as any })}
+                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary"
+                                    >
+                                        <option value="active">Aktif</option>
+                                        <option value="verified">Doğrulanmış</option>
+                                        <option value="pending">Beklemede</option>
+                                        <option value="banned">Yasaklı</option>
+                                    </select>
+                                </div>
+                                <div className="flex gap-3 pt-4">
+                                    <Button variant="outline" className="flex-1 h-12" onClick={() => setShowUserModal(false)}>İptal</Button>
+                                    <Button className="flex-1 h-12" onClick={handleUpdateUser}>Kaydet</Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-function UserCard({ user, selected, onSelect, onAction }: {
+function UserCard({ user, selected, onSelect, onAction, onEdit, onView }: {
     user: User;
     selected: boolean;
     onSelect: () => void;
     onAction: (id: string, action: 'ban' | 'verify' | 'suspend') => void;
+    onEdit: () => void;
+    onView: () => void;
 }) {
     return (
         <div className={cn(
@@ -233,7 +308,7 @@ function UserCard({ user, selected, onSelect, onAction }: {
                         verified={user.isVerified}
                         premium={user.isPremium}
                     />
-                    <div>
+                    <div className="cursor-pointer" onClick={onView}>
                         <h4 className="font-bold text-white flex items-center gap-2">
                             {user.name}
                             {user.isVerified && (
@@ -253,11 +328,17 @@ function UserCard({ user, selected, onSelect, onAction }: {
 
             {/* Actions */}
             <div className="grid grid-cols-4 gap-2 border-t border-white/5 pt-3">
-                <button className="flex flex-col items-center gap-1 py-2 text-slate-400 hover:text-white transition-colors">
+                <button
+                    onClick={onView}
+                    className="flex flex-col items-center gap-1 py-2 text-slate-400 hover:text-white transition-colors"
+                >
                     <span className="material-symbols-outlined text-lg">visibility</span>
                     <span className="text-[10px] font-semibold">Gör</span>
                 </button>
-                <button className="flex flex-col items-center gap-1 py-2 text-slate-400 hover:text-white transition-colors">
+                <button
+                    onClick={onEdit}
+                    className="flex flex-col items-center gap-1 py-2 text-slate-400 hover:text-white transition-colors"
+                >
                     <span className="material-symbols-outlined text-lg">edit</span>
                     <span className="text-[10px] font-semibold">Düzenle</span>
                 </button>

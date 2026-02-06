@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import '../../core/services/config_service.dart';
 import '../ads/services/ad_service.dart';
 import '../auth/services/profile_service.dart';
 import '../../core/providers/user_provider.dart';
@@ -192,32 +193,33 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                         const SizedBox(height: 24),
                         
                         // Watch Ad Button (Alternative)
-                        GestureDetector(
-                          onTap: _watchAd,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: AppColors.secondary.withOpacity(0.3)),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.play_circle_filled_rounded, color: AppColors.secondary, size: 20),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Reklam İzle & 10 Kredi Kazan',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                        if (ConfigService().isAdsEnabled)
+                          GestureDetector(
+                            onTap: _watchAd,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: AppColors.secondary.withOpacity(0.3)),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.play_circle_filled_rounded, color: AppColors.secondary, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Reklam İzle & 10 Kredi Kazan',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
 
                         const SizedBox(height: 32),
                         

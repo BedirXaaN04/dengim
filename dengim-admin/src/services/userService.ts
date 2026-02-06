@@ -123,15 +123,61 @@ export const UserService = {
         }
     },
 
+    // Biyografisi olan ve kontrol edilmesi gereken kullanıcıları getir
+    getFlaggedBios: async () => {
+        try {
+            const q = query(
+                collection(db, USERS_COLLECTION),
+                where("bio", "!=", ""),
+                limit(50)
+            );
+            const snapshot = await getDocs(q);
+            const users: User[] = [];
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                users.push({
+                    id: doc.id,
+                    name: data.name || 'İsimsiz',
+                    bio: data.bio,
+                    createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+                    status: data.isBanned ? 'banned' : 'active'
+                } as unknown as User);
+            });
+            return users;
+        } catch (e) {
+            console.error("Flagged Bios Error:", e);
+            return [];
+        }
+    },
+
     // Kullanıcı durumunu güncelle
     updateUserStatus: async (userId: string, action: 'ban' | 'verify' | 'suspend') => {
         try {
-            const userRef = doc(db, USERS_COLLECTION, userId);
             const updates: any = {};
             if (action === 'ban') { updates.isBanned = true; updates.status = 'banned'; }
             else if (action === 'verify') { updates.isVerified = true; updates.status = 'verified'; }
             else if (action === 'suspend') { updates.isBanned = true; updates.status = 'suspended'; }
-            await updateDoc(userRef, updates);
+
+            const userRef = doc(db, USERS_COLLECTION, userId);
+            await updateDoc(userRef, {
+                ...updates,
+                updatedAt: new Date()
+            });
+            return true;
+        } catch (e) {
+            console.error("Update User Status Error:", e);
+            throw e;
+        }
+    },
+
+    // Kullanıcı verisini güncelle (Edit için)
+    updateUser: async (userId: string, data: Partial<User>) => {
+        try {
+            const userRef = doc(db, USERS_COLLECTION, userId);
+            await updateDoc(userRef, {
+                ...data as any,
+                updatedAt: new Date()
+            });
             return true;
         } catch (e) {
             console.error("Update User Error:", e);

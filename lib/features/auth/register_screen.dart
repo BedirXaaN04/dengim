@@ -83,13 +83,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             top: -100,
             right: -100,
             child: Container(
-              width: 300,
-              height: 300,
+              width: 400,
+              height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withOpacity(0.08),
               ),
-              child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100), child: Container()),
+              child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120), child: Container()),
             ),
           ),
           
@@ -111,14 +111,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primary.withOpacity(0.1),
+                            border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                          ),
+                          child: const Icon(Icons.person_add_rounded, color: AppColors.primary, size: 32),
+                        ),
+                        const SizedBox(height: 32),
                         Text(
                           'Hesap Oluştur',
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 32,
+                            fontSize: 36,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
                             letterSpacing: -1,
@@ -126,11 +137,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Aramıza katıl ve eşleşmeye başla.',
+                          'Aramıza katıl ve kaliteli bir topluluğun parçası ol.',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 16,
-                            fontWeight: FontWeight.w300,
-                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white54,
                           ),
                         ),
                         const SizedBox(height: 48),
@@ -138,14 +149,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _buildTextField(
                           controller: _emailController,
                           hint: 'E-posta',
-                          icon: Icons.email_rounded,
+                          icon: Icons.email_outlined,
                         ),
                         const SizedBox(height: 16),
                         
                         _buildTextField(
                           controller: _passwordController,
                           hint: 'Şifre',
-                          icon: Icons.lock_rounded,
+                          icon: Icons.lock_outline_rounded,
                           isPassword: true,
                         ),
                         const SizedBox(height: 16),
@@ -153,48 +164,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _buildTextField(
                           controller: _confirmPasswordController,
                           hint: 'Şifre Tekrar',
-                          icon: Icons.lock_outline_rounded,
+                          icon: Icons.shield_outlined,
                           isPassword: true,
                         ),
                         
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 48),
 
                         ElevatedButton(
                           onPressed: _isLoading ? null : _register,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.vibrantGold,
+                            backgroundColor: AppColors.primary,
                             foregroundColor: Colors.black,
-                            minimumSize: const Size(double.infinity, 56),
+                            minimumSize: const Size(double.infinity, 60),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            elevation: 4,
-                            shadowColor: AppColors.vibrantGold.withOpacity(0.3),
+                            elevation: 0,
                           ),
                           child: _isLoading 
-                              ? const CircularProgressIndicator(color: Colors.black) 
+                              ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2)) 
                               : Text(
                                   'Kayıt Ol',
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               'Zaten hesabın var mı? ',
-                              style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary),
+                              style: GoogleFonts.plusJakartaSans(color: Colors.white38),
                             ),
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
-                              child: Text(
+                              child: const Text(
                                 'Giriş Yap',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: TextStyle(
                                   color: AppColors.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -202,7 +212,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 48),
                       ],
                     ),
                   ),
@@ -223,20 +233,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
       ),
       child: TextField(
         controller: controller,
         obscureText: isPassword,
-        style: GoogleFonts.poppins(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: GoogleFonts.poppins(color: AppColors.textSecondary),
-          prefixIcon: Icon(icon, color: AppColors.textSecondary),
+          hintStyle: const TextStyle(color: Colors.white30),
+          prefixIcon: Icon(icon, color: Colors.white30),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.primary, width: 1),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         ),
       ),
     );

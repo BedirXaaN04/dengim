@@ -38,6 +38,7 @@ export function Card({ children, className, hover = false, glass = false, paddin
 interface StatCardProps {
     title: string;
     value: string | number;
+    subValue?: string;
     change?: {
         value: number;
         type: 'increase' | 'decrease';
@@ -47,7 +48,7 @@ interface StatCardProps {
     onClick?: () => void;
 }
 
-export function StatCard({ title, value, change, icon, borderColor = 'border-l-primary', onClick }: StatCardProps) {
+export function StatCard({ title, value, subValue, change, icon, borderColor = 'border-l-primary', onClick }: StatCardProps) {
     return (
         <div
             className={cn(
@@ -61,18 +62,23 @@ export function StatCard({ title, value, change, icon, borderColor = 'border-l-p
                 <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">{title}</p>
                 {icon && <div className="text-primary">{icon}</div>}
             </div>
-            <div className="flex items-end justify-between">
-                <h3 className="text-3xl font-bold text-white">{value}</h3>
-                {change && (
-                    <span className={cn(
-                        'text-sm font-medium flex items-center gap-1',
-                        change.type === 'increase' ? 'text-emerald-400' : 'text-rose-400'
-                    )}>
-                        <span className="material-symbols-outlined text-sm">
-                            {change.type === 'increase' ? 'trending_up' : 'trending_down'}
+            <div className="flex flex-col">
+                <div className="flex items-end justify-between">
+                    <h3 className="text-3xl font-bold text-white">{value}</h3>
+                    {change && (
+                        <span className={cn(
+                            'text-sm font-medium flex items-center gap-1',
+                            change.type === 'increase' ? 'text-emerald-400' : 'text-rose-400'
+                        )}>
+                            <span className="material-symbols-outlined text-sm">
+                                {change.type === 'increase' ? 'trending_up' : 'trending_down'}
+                            </span>
+                            {change.value}%
                         </span>
-                        {change.value}%
-                    </span>
+                    )}
+                </div>
+                {subValue && (
+                    <p className="text-[10px] text-zinc-500 font-medium mt-1">{subValue}</p>
                 )}
             </div>
         </div>

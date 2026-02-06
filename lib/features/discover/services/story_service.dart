@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/story_model.dart';
 import '../../../core/utils/log_service.dart';
+import '../../../core/services/config_service.dart';
 
 
 class StoryService {
@@ -67,10 +68,9 @@ class StoryService {
             final story = Story.fromMap(doc.data(), doc.id);
             
             // Visibility Filter:
-            // 1. My own stories
-            // 2. Stories from matches (mutual followers)
-            // 3. Showcase stories (Premium or Verified)
-            final bool isVisible = story.userId == currentUserId || 
+            // Controlled by Admin Panel (ConfigService)
+            final bool isVisible = !ConfigService().isVipEnabled || 
+                                   story.userId == currentUserId || 
                                    matchIds.contains(story.userId) || 
                                    story.isPremium || 
                                    story.isVerified;

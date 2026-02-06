@@ -26,6 +26,7 @@ import 'core/utils/log_service.dart';
 
 import 'features/auth/services/profile_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/config_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +59,9 @@ void main() async {
         : null,
     );
     LogService.i("Firebase initialized successfully.");
+
+    // Remote Configuration'ı başlat
+    await ConfigService().init();
 
     // Bildirim servisini başlat
     if (!kIsWeb) {
@@ -150,15 +154,40 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.8, curve: Curves.outBack)),
+    );
+
+    _controller.forward();
     _checkFirstTime();
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _checkFirstTime() async {
-    await Future.delayed(const Duration(seconds: 2));
+    // Biraz bekleyelim ki animasyon tadı çıksın
+    await Future.delayed(const Duration(seconds: 3));
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -168,14 +197,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (isFirstTime) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const OnboardingScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
         );
       } else {
         final user = FirebaseAuth.instance.currentUser;
         
         if (user == null) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const LoginScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
           );
         } else {
           try {
@@ -184,15 +223,18 @@ class _SplashScreenState extends State<SplashScreen> {
             
             if (!mounted) return;
 
-            if (userProvider.currentUser != null) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const MainScaffold()),
-              );
-            } else {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
-              );
-            }
+            Widget nextScreen = userProvider.currentUser != null 
+                ? const MainScaffold() 
+                : const CreateProfileScreen();
+
+            Navigator.of(context).pushReplacement(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            );
           } catch (e) {
             LogService.e("Profile check error", e);
             if (mounted) {
@@ -211,73 +253,140 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
+      backgroundColor: const Color(0xFF0F0F0F), // Darker, more premium black
+      body: Stack(
+        children: [
+          // Background Glows
+          Positioned(
+            top: -100,
+            left: -100,
+            child: Container(
+              width: 300,
+              height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.secondary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withAlpha(100),
-                    blurRadius: 30,
-                    spreadRadius: 10,
-                  ),
-                ],
+                color: AppColors.primary.withOpacity(0.05),
               ),
-              child: const Icon(
-                Icons.local_fire_department_rounded,
-                size: 60,
-                color: Colors.white,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: Container(),
               ),
             ),
-            const SizedBox(height: 24),
-            RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 1.2,
-                ),
-                children: [
-                  const TextSpan(text: 'DENG'),
-                  TextSpan(
-                    text: 'İM',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      shadows: [
-                        Shadow(
-                          color: AppColors.primary.withAlpha(150),
-                          blurRadius: 20,
+          ),
+          
+          Center(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo Container
+                    Container(
+                      width: 140,
+                      height: 140,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.2),
+                            blurRadius: 40,
+                            spreadRadius: 5,
+                          ),
+                        ],
+                        gradient: const LinearGradient(
+                          colors: [AppColors.primary, Color(0xFFE5A110)], // Sophisticated gold gradient
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.local_fire_department_rounded,
+                          size: 70,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 32),
+                    
+                    // Brand Name
+                    RichText(
+                      text: TextSpan(
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 42,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -1,
+                        ),
+                        children: [
+                          const TextSpan(text: 'DENG'),
+                          TextSpan(
+                            text: 'İM',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              shadows: [
+                                Shadow(
+                                  color: AppColors.primary.withOpacity(0.4),
+                                  blurRadius: 15,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'DENGİNİ BURADA BUL',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white38,
+                        letterSpacing: 4.0,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 48),
-            const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.secondary,
+          ),
+          
+          // Bottom Loading Indicator
+          Positioned(
+            bottom: 64,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      width: 32,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Colors.white10,
+                        color: AppColors.primary,
+                        minHeight: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'BAŞLATILIYOR',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white24,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

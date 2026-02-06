@@ -14,11 +14,14 @@ import { User } from '@/types';
 export default function ModerationPage() {
     const [activeTab, setActiveTab] = useState<'photos' | 'bios' | 'settings'>('photos');
     const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+    const [pendingBios, setPendingBios] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (activeTab === 'photos') {
             fetchPending();
+        } else if (activeTab === 'bios') {
+            fetchBios();
         }
     }, [activeTab]);
 
@@ -34,10 +37,35 @@ export default function ModerationPage() {
         }
     };
 
+    const fetchBios = async () => {
+        setLoading(true);
+        try {
+            const data = await UserService.getFlaggedBios();
+            setPendingBios(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleVerify = async (userId: string, status: 'verify' | 'ban') => {
         try {
             await UserService.updateUserStatus(userId, status);
             setPendingUsers(prev => prev.filter(u => u.id !== userId));
+        } catch (error) {
+            alert('Hata oluştu');
+        }
+    };
+
+    const handleUpdateBio = async (userId: string, action: 'approve' | 'reject') => {
+        try {
+            if (action === 'reject') {
+                await UserService.updateUser(userId, { bio: '' });
+            }
+            // For approve, we just clear it from the moderation list (local state)
+            // In a real system you might have a 'isBioVerified' flag
+            setPendingBios(prev => prev.filter(u => u.id !== userId));
         } catch (error) {
             alert('Hata oluştu');
         }
@@ -144,8 +172,48 @@ export default function ModerationPage() {
                                 )}
 
                                 {activeTab === 'bios' && (
-                                    <div className="py-20 text-center text-white/20 italic">
-                                        Otomatik biyografi tarayıcı devrede. Şüpheli içerikler "Raporlar" kısmına düşer.
+                                    <div className="space-y-4">
+                                        {pendingBios.length > 0 ? pendingBios.map((user) => (
+                                            <div key={user.id} className="bg-surface-dark rounded-xl border border-white/10 p-4">
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                                            <span className="material-symbols-outlined">person</span>
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-bold text-white text-sm">{user.name}</h4>
+                                                            <p className="text-xs text-white/40">{formatRelativeTime(user.createdAt)}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="secondary"
+                                                            className="h-9 px-4 bg-emerald-500 hover:bg-emerald-400 border-none"
+                                                            onClick={() => handleUpdateBio(user.id, 'approve')}
+                                                        >
+                                                            Onayla
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            className="h-9 px-4 text-rose-500 hover:bg-rose-500/10"
+                                                            onClick={() => handleUpdateBio(user.id, 'reject')}
+                                                        >
+                                                            Kaldır
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <div className="bg-white/5 p-4 rounded-xl text-white/80 text-sm leading-relaxed italic border border-white/5">
+                                                    "{user.bio}"
+                                                </div>
+                                            </div>
+                                        )) : (
+                                            <div className="py-20 text-center text-white/20">
+                                                <span className="material-symbols-outlined text-6xl mb-4">description</span>
+                                                <p>İncelenecek biyografi bulunmuyor.</p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </>

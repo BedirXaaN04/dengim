@@ -17,19 +17,22 @@ export const AnalyticsService = {
         try {
             const usersColl = collection(db, "users");
             const reportsColl = collection(db, "reports");
+            const supportColl = collection(db, "support_tickets");
 
             const [
                 pendingReports,
-                pendingVerifications
+                pendingVerifications,
+                openTickets
             ] = await Promise.all([
                 getCountFromServer(query(reportsColl, where("status", "==", "pending"))),
-                getCountFromServer(query(usersColl, where("isVerified", "==", false)))
+                getCountFromServer(query(usersColl, where("isVerified", "==", false))),
+                getCountFromServer(query(supportColl, where("status", "==", "open")))
             ]);
 
             return {
                 reports: pendingReports.data().count,
                 moderation: pendingVerifications.data().count,
-                support: 0 // Destek talepleri için koleksiyon henüz belirlenmedi
+                support: openTickets.data().count
             };
         } catch (error) {
             console.error("System counts error:", error);
@@ -44,66 +47,81 @@ export const AnalyticsService = {
             const reportsColl = collection(db, "reports");
             const matchesColl = collection(db, "matches");
 
+            const now = new Date();
+            const todayStart = new Date(now.setHours(0, 0, 0, 0));
+            const weekStart = new Date(new Date().setDate(now.getDate() - 7));
+            const monthStart = new Date(new Date().setMonth(now.getMonth() - 1));
+
             const [
                 totalUsersSnap,
                 premiumUsersSnap,
                 reportsSnap,
-                matchesSnap
+                matchesSnap,
+                todayUsersSnap,
+                weekUsersSnap,
+                monthUsersSnap
             ] = await Promise.all([
                 getCountFromServer(usersColl),
                 getCountFromServer(query(usersColl, where("isPremium", "==", true))),
                 getCountFromServer(query(reportsColl, where("status", "==", "pending"))),
-                getCountFromServer(matchesColl)
+                getCountFromServer(matchesColl),
+                getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(todayStart)))),
+                getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(weekStart)))),
+                getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(monthStart))))
             ]);
 
             return {
                 totalUsers: totalUsersSnap.data().count,
-                activeUsers: totalUsersSnap.data().count,
+                activeUsers: totalUsersSnap.data().count, // TODO: Define active criteria
                 premiumUsers: premiumUsersSnap.data().count,
                 totalMatches: matchesSnap.data().count,
-                totalMessages: 0,
+                totalMessages: 0, // Requires messages subcollection or count
                 pendingReports: reportsSnap.data().count,
                 pendingVerifications: 0,
-                newUsersToday: 0,
-                newUsersThisWeek: 0,
-                newUsersThisMonth: 0,
-                mrr: 0,
-                arr: 0,
+                newUsersToday: todayUsersSnap.data().count,
+                newUsersThisWeek: weekUsersSnap.data().count,
+                newUsersThisMonth: monthUsersSnap.data().count,
+                mrr: premiumUsersSnap.data().count * 299, // Assumption: 299 TL per premium
+                arr: premiumUsersSnap.data().count * 299 * 12,
                 churnRate: 0,
-                conversionRate: 0
+                conversionRate: totalUsersSnap.data().count > 0
+                    ? (premiumUsersSnap.data().count / totalUsersSnap.data().count) * 100
+                    : 0
             };
         } catch (error) {
             console.error("Dashboard Stats Error:", error);
-            return {
-                totalUsers: 0,
-                activeUsers: 0,
-                premiumUsers: 0,
-                totalMatches: 0,
-                totalMessages: 0,
-                pendingReports: 0,
-                pendingVerifications: 0,
-                newUsersToday: 0,
-                newUsersThisWeek: 0,
-                newUsersThisMonth: 0,
-                mrr: 0,
-                arr: 0,
-                churnRate: 0,
-                conversionRate: 0
-            };
+            return {} as DashboardStats;
         }
     },
 
     // Kullanıcı Artış Grafiği (Son 7 gün)
     getUserGrowth: async (): Promise<ChartDataPoint[]> => {
-        return [
-            { date: 'Pzt', value: 0 },
-            { date: 'Sal', value: 0 },
-            { date: 'Çar', value: 0 },
-            { date: 'Per', value: 0 },
-            { date: 'Cum', value: 2 },
-            { date: 'Cmt', value: 5 },
-            { date: 'Paz', value: 8 },
-        ];
+        try {
+            const days = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+            const result: ChartDataPoint[] = [];
+
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                date.setHours(0, 0, 0, 0);
+                const nextDate = new Date(date);
+                nextDate.setDate(date.getDate() + 1);
+
+                const q = query(
+                    collection(db, "users"),
+                    where("createdAt", ">=", Timestamp.fromDate(date)),
+                    where("createdAt", "<", Timestamp.fromDate(nextDate))
+                );
+                const snap = await getCountFromServer(q);
+                result.push({
+                    date: days[date.getDay()],
+                    value: snap.data().count
+                });
+            }
+            return result;
+        } catch (e) {
+            return [];
+        }
     },
 
     // Cinsiyet Dağılımı
@@ -111,8 +129,8 @@ export const AnalyticsService = {
         try {
             const usersColl = collection(db, "users");
             const [male, female] = await Promise.all([
-                getCountFromServer(query(usersColl, where("gender", "==", "male"))),
-                getCountFromServer(query(usersColl, where("gender", "==", "female"))),
+                getCountFromServer(query(usersColl, where("gender", "in", ["male", "Erkek"]))),
+                getCountFromServer(query(usersColl, where("gender", "in", ["female", "Kadın"]))),
             ]);
 
             return {

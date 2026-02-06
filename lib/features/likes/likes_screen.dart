@@ -7,6 +7,7 @@ import '../payment/premium_offer_screen.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/likes_provider.dart';
+import '../../core/services/config_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -70,35 +71,65 @@ class _LikesScreenState extends State<LikesScreen> {
                         SliverToBoxAdapter(
                           child: _buildNewMatchesSection(provider.matches),
                         ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
-                            child: Text(
-                              "SENI BEĞENENLER (VIP)",
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                                color: Colors.white.withOpacity(0.9),
+                        if (ConfigService().isVipEnabled) ...[
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
+                              child: Text(
+                                "SENI BEĞENENLER (VIP)",
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                  color: Colors.white.withOpacity(0.9),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          sliver: SliverGrid(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.75,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                            ),
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) => const _LockedLikeCard(),
-                              childCount: 4, // Mock for locked users
+                          SliverPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            sliver: SliverGrid(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.75,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                              ),
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => const _LockedLikeCard(),
+                                childCount: provider.likedMeUsers.length,
+                              ),
                             ),
                           ),
-                        ),
+                        ] else ...[
+                          SliverPadding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            sliver: SliverGrid(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.75,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                              ),
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => _UnlockedLikeCard(user: provider.likedMeUsers[index]),
+                                childCount: provider.likedMeUsers.length,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (provider.likedMeUsers.isEmpty)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 40),
+                              child: Center(
+                                child: Text(
+                                  "Henüz seni beğenen kimse yok.",
+                                  style: GoogleFonts.plusJakartaSans(color: Colors.white24, fontSize: 13),
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                       const SliverToBoxAdapter(child: SizedBox(height: 120)),
                     ],

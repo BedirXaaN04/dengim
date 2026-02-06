@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -8,6 +8,8 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const settingSections = [
     { id: 'general', label: 'Genel', icon: 'tune' },
@@ -20,6 +22,43 @@ const settingSections = [
 export default function SettingsPage() {
     const [activeSection, setActiveSection] = useState('general');
     const [darkMode, setDarkMode] = useState(true);
+    const [isVipEnabled, setIsVipEnabled] = useState(false);
+    const [isAdsEnabled, setIsAdsEnabled] = useState(true);
+    const [isCreditsEnabled, setIsCreditsEnabled] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    // Initial load from Firestore
+    useEffect(() => {
+        const loadConfig = async () => {
+            const docSnap = await getDoc(doc(db, 'system', 'config'));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setIsVipEnabled(data.isVipEnabled ?? false);
+                setIsAdsEnabled(data.isAdsEnabled ?? true);
+                setIsCreditsEnabled(data.isCreditsEnabled ?? false);
+            }
+        };
+        loadConfig();
+    }, []);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await setDoc(doc(db, 'system', 'config'), {
+                isVipEnabled,
+                isAdsEnabled,
+                isCreditsEnabled,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+
+            alert('Ayarlar başarıyla kaydedildi!');
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            alert('Hata oluştu!');
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <div className="flex min-h-screen bg-background-dark">
@@ -56,6 +95,66 @@ export default function SettingsPage() {
                         {/* General Settings */}
                         {activeSection === 'general' && (
                             <div className="space-y-6">
+                                <Card glass>
+                                    <h3 className="text-lg font-bold text-white mb-4">Sistem Kontrolü (Aç/Kapat)</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between py-3 border-b border-white/5">
+                                            <div>
+                                                <p className="font-medium text-white">VIP / Premium Sistemi</p>
+                                                <p className="text-xs text-white/50">Aktif edildiğinde bazı özellikler VIP şartına bağlanır</p>
+                                            </div>
+                                            <button
+                                                onClick={() => setIsVipEnabled(!isVipEnabled)}
+                                                className={cn(
+                                                    'relative w-14 h-8 rounded-full transition-colors',
+                                                    isVipEnabled ? 'bg-primary' : 'bg-white/20'
+                                                )}
+                                            >
+                                                <span className={cn(
+                                                    'absolute top-1 w-6 h-6 rounded-full bg-white shadow-lg transition-transform',
+                                                    isVipEnabled ? 'left-7' : 'left-1'
+                                                )} />
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-between py-3 border-b border-white/5">
+                                            <div>
+                                                <p className="font-medium text-white">AdMob Reklamları</p>
+                                                <p className="text-xs text-white/50">Uygulama içi ödüllü reklamları aktif eder</p>
+                                            </div>
+                                            <button
+                                                onClick={() => setIsAdsEnabled(!isAdsEnabled)}
+                                                className={cn(
+                                                    'relative w-14 h-8 rounded-full transition-colors',
+                                                    isAdsEnabled ? 'bg-primary' : 'bg-white/20'
+                                                )}
+                                            >
+                                                <span className={cn(
+                                                    'absolute top-1 w-6 h-6 rounded-full bg-white shadow-lg transition-transform',
+                                                    isAdsEnabled ? 'left-7' : 'left-1'
+                                                )} />
+                                            </button>
+                                        </div>
+                                        <div className="flex items-center justify-between py-3">
+                                            <div>
+                                                <p className="font-medium text-white">Kredi Sistemi</p>
+                                                <p className="text-xs text-white/50">Mesajlaşma ve diğer eylemler için kredi şartı</p>
+                                            </div>
+                                            <button
+                                                onClick={() => setIsCreditsEnabled(!isCreditsEnabled)}
+                                                className={cn(
+                                                    'relative w-14 h-8 rounded-full transition-colors',
+                                                    isCreditsEnabled ? 'bg-primary' : 'bg-white/20'
+                                                )}
+                                            >
+                                                <span className={cn(
+                                                    'absolute top-1 w-6 h-6 rounded-full bg-white shadow-lg transition-transform',
+                                                    isCreditsEnabled ? 'left-7' : 'left-1'
+                                                )} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Card>
+
                                 <Card glass>
                                     <h3 className="text-lg font-bold text-white mb-4">Uygulama Ayarları</h3>
                                     <div className="space-y-4">
@@ -136,9 +235,15 @@ export default function SettingsPage() {
                                     </div>
                                 </Card>
 
-                                <Button className="w-full h-12">
-                                    <span className="material-symbols-outlined mr-2">save</span>
-                                    Değişiklikleri Kaydet
+                                <Button
+                                    className="w-full h-12"
+                                    onClick={handleSave}
+                                    disabled={isSaving}
+                                >
+                                    <span className="material-symbols-outlined mr-2">
+                                        {isSaving ? 'sync' : 'save'}
+                                    </span>
+                                    {isSaving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
                                 </Button>
                             </div>
                         )}
