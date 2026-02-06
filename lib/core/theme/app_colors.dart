@@ -29,4 +29,11 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  static const LinearGradient storyGradient = LinearGradient(
+    colors: [Color(0xFF8B5CF6), Color(0xFFEC4899)], // Purple to Pink
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
 }
