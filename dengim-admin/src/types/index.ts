@@ -5,7 +5,7 @@ export interface User {
     email: string;
     phone?: string;
     age: number;
-    gender: 'male' | 'female' | 'other';
+    gender: 'male' | 'female' | 'other' | 'Erkek' | 'Kadın';
     location: {
         city: string;
         country: string;
@@ -14,7 +14,7 @@ export interface User {
     photos: string[];
     bio?: string;
     interests?: string[];
-    status: 'active' | 'banned' | 'deleted' | 'pending';
+    status: 'active' | 'banned' | 'deleted' | 'pending' | 'verified' | 'suspended';
     isPremium: boolean;
     premiumTier?: 'basic' | 'gold' | 'platinum';
     premiumExpiry?: Date;
