@@ -199,4 +199,26 @@ class ProfileService {
       rethrow;
     }
   }
+  /// Hesabı kalıcı olarak sil
+  Future<void> deleteAccount() async {
+    final uid = _currentUser?.uid;
+    if (uid == null) return;
+    
+    try {
+      // 1. Firestore verisini sil
+      await _firestore.collection('users').doc(uid).delete();
+      
+      // Not: Storage'daki resimlerin ve sub-collectionların silinmesi 
+      // ideal olarak Cloud Functions ile yapılmalıdır.
+      // Ancak MVP için ana döküman silmek listelerde görünmesini engeller.
+      
+      // 2. Auth kullanıcısını sil
+      await _auth.currentUser?.delete();
+      
+      LogService.i("Account deleted for: $uid");
+    } catch (e) {
+      LogService.e("Account deletion error", e);
+      rethrow;
+    }
+  }
 }

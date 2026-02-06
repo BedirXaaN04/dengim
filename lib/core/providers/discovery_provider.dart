@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../features/auth/models/user_profile.dart';
 import '../../features/auth/services/discovery_service.dart';
+import '../../features/auth/services/profile_service.dart';
 import '../utils/log_service.dart';
 import '../utils/demo_profile_service.dart';
 
@@ -9,6 +10,7 @@ class DiscoveryProvider extends ChangeNotifier {
   List<UserProfile> _activeUsers = [];
   bool _isLoading = false;
   final DiscoveryService _discoveryService = DiscoveryService();
+  final ProfileService _profileService = ProfileService();
 
   List<UserProfile> get users => _users;
   List<UserProfile> get activeUsers => _activeUsers;
@@ -34,10 +36,22 @@ class DiscoveryProvider extends ChangeNotifier {
         minAge: minAge,
         maxAge: maxAge,
       );
+
+      // Block Filter
+      final currentUserProfile = await _profileService.getUserProfile();
+      final blockedUsers = currentUserProfile?.blockedUsers ?? [];
+      
+      if (blockedUsers.isNotEmpty) {
+        realUsers.removeWhere((u) => blockedUsers.contains(u.uid));
+      }
       
       _users = realUsers;
       
+      // 3. Aktif kullanıcılar için de aynı mantık
       List<UserProfile> realActiveUsers = await _discoveryService.getActiveUsers();
+      if (blockedUsers.isNotEmpty) {
+        realActiveUsers.removeWhere((u) => blockedUsers.contains(u.uid));
+      }
       _activeUsers = realActiveUsers;
       
       LogService.i("Discovery loaded: ${_users.length} users, ${_activeUsers.length} active");

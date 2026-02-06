@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/services/safety_service.dart';
 
 class UserProfileDetailScreen extends StatelessWidget {
   final String userId;
@@ -83,7 +84,7 @@ class UserProfileDetailScreen extends StatelessWidget {
               if (photos.length > 1) 
                  Positioned(
                    top: 50,
-                   right: 20,
+                   right: 70,
                    child: Container(
                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                      decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(20)),
@@ -100,6 +101,61 @@ class UserProfileDetailScreen extends StatelessWidget {
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+
+              // Menu Button (Report/Block)
+              Positioned(
+                top: 50,
+                right: 20,
+                child: CircleAvatar(
+                  backgroundColor: Colors.black45,
+                  child: PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, color: Colors.white),
+                    onSelected: (value) async {
+                      if (value == 'report') {
+                         final reasonController = TextEditingController();
+                         showDialog(context: context, builder: (ctx) => AlertDialog(
+                           backgroundColor: const Color(0xFF1E293B),
+                           title: const Text("Şikayet Et", style: TextStyle(color: Colors.white)),
+                           content: TextField(
+                             controller: reasonController, 
+                             style: const TextStyle(color: Colors.white),
+                             decoration: const InputDecoration(hintText: "Sebep...", hintStyle: TextStyle(color: Colors.white54)),
+                           ),
+                           actions: [
+                             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("İptal")),
+                             TextButton(onPressed: () {
+                               if (reasonController.text.isNotEmpty) {
+                                  SafetyService().reportUser(reportedUserId: userId, reason: reasonController.text);
+                                  Navigator.pop(ctx);
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Şikayet alındı.")));
+                               }
+                             }, child: const Text("Gönder")),
+                           ],
+                         ));
+                      } else if (value == 'block') {
+                         showDialog(context: context, builder: (ctx) => AlertDialog(
+                           backgroundColor: const Color(0xFF1E293B),
+                           title: const Text("Engelle?", style: TextStyle(color: Colors.white)),
+                           content: const Text("Bu kullanıcıyı bir daha görmeyeceksiniz.", style: TextStyle(color: Colors.white70)),
+                           actions: [
+                             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Vazgeç")),
+                             TextButton(onPressed: () async {
+                               await SafetyService().blockUser(userId);
+                               Navigator.pop(ctx); // Dialog kapat
+                               Navigator.pop(context); // Ekranı kapat
+                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Kullanıcı engellendi.")));
+                             }, child: const Text("ENGELLE", style: TextStyle(color: Colors.red))),
+                           ],
+                         ));
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(value: 'report', child: Text('Şikayet Et')),
+                      const PopupMenuItem(value: 'block', child: Text('Engelle', style: TextStyle(color: Colors.red))),
+                    ],
                   ),
                 ),
               ),

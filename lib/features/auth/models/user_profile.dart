@@ -23,6 +23,7 @@ class UserProfile {
   final double distance;
   final double? latitude;
   final double? longitude;
+  final List<String> blockedUsers;
 
   // Zamanlar
   final DateTime createdAt;
@@ -49,6 +50,7 @@ class UserProfile {
     this.longitude,
     required this.createdAt,
     required this.lastActive,
+    this.blockedUsers = const [],
   });
 
   // UI Yardımcıları
@@ -78,7 +80,9 @@ class UserProfile {
       'latitude': latitude,
       'longitude': longitude,
       'createdAt': Timestamp.fromDate(createdAt),
+      'createdAt': Timestamp.fromDate(createdAt),
       'lastActive': Timestamp.fromDate(lastActive),
+      'blockedUsers': blockedUsers,
     };
   }
 
@@ -103,7 +107,9 @@ class UserProfile {
       longitude: map['longitude']?.toDouble(),
       distance: 0.0, // Calculate later based on lat/long
       createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
+      createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
       lastActive: (map['lastActive'] as Timestamp? ?? Timestamp.now()).toDate(),
+      blockedUsers: List<String>.from(map['blockedUsers'] ?? []),
     );
   }
 }
