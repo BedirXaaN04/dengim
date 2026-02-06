@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models/story_model.dart';
 import '../../core/providers/story_provider.dart';
 import '../../core/providers/user_provider.dart';
+import '../../features/chats/services/chat_service.dart';
 import '../../core/theme/app_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,6 +32,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
   int _currentStoryIndex = 0;
   
   final TextEditingController _replyController = TextEditingController();
+  final ChatService _chatService = ChatService();
 
   @override
   void initState() {
@@ -297,7 +300,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
     );
   }
 
-  Widget _buildOtherActions() {
+  Widget _buildOtherActions(Story story, String targetUserId) {
     return Row(
       children: [
         Expanded(
@@ -319,13 +322,25 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
                 border: InputBorder.none,
                 isDense: true,
               ),
-              onSubmitted: (value) {
+              onSubmitted: (value) async {
                 if (value.isNotEmpty) {
-                  // TODO: Send message functionality
-                  _replyController.clear();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Mesaj gönderildi')),
-                  );
+                  final currentUser = context.read<UserProvider>().currentUser;
+                  if (currentUser != null) {
+                    await _chatService.sendMessage(
+                      targetUserId, 
+                      value,
+                      currentUser.uid,
+                      currentUser.name,
+                      currentUser.photoUrls.isNotEmpty ? currentUser.photoUrls.first : '',
+                      type: 'text' // Story reply olarak özel tip eklenebilir ama text kalsın
+                    );
+                    _replyController.clear();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Mesaj gönderildi')),
+                      );
+                    }
+                  }
                 }
               },
             ),
@@ -334,7 +349,8 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
         const SizedBox(width: 16),
         GestureDetector(
           onTap: () {
-            // Like animation
+            context.read<StoryProvider>().likeStory(story.id, targetUserId);
+            // Like animation UI
             ScaffoldMessenger.of(context).showSnackBar(
                const SnackBar(content: Text('Hikaye beğenildi ❤️')),
             );
@@ -342,7 +358,25 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
           child: const Icon(Icons.favorite_border, color: Colors.white, size: 28),
         ),
         const SizedBox(width: 16),
-        const Icon(Icons.send, color: Colors.white, size: 28),
+        GestureDetector(
+          onTap: () async {
+             // Send heart emoji as message
+             final currentUser = context.read<UserProvider>().currentUser;
+             if (currentUser != null) {
+                await _chatService.sendMessage(
+                  targetUserId, 
+                  "❤️",
+                  currentUser.uid,
+                  currentUser.name,
+                  currentUser.photoUrls.isNotEmpty ? currentUser.photoUrls.first : '',
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('❤️ gönderildi')),
+                );
+             }
+          },
+          child: const Icon(Icons.send, color: Colors.white, size: 28)
+        ),
       ],
     );
   }
@@ -352,47 +386,101 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF1E1E1E),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Görüntüleyenler',
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (_, controller) => Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E1E1E),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Görüntüleyenler (${viewerIds.length})',
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            if (viewerIds.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Center(
-                  child: Text(
-                    'Henüz kimse görmedi.',
-                    style: GoogleFonts.plusJakartaSans(color: Colors.white38),
+              const SizedBox(height: 16),
+              if (viewerIds.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Center(
+                    child: Text(
+                      'Henüz kimse görmedi.',
+                      style: GoogleFonts.plusJakartaSans(color: Colors.white38),
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: FutureBuilder<List<DocumentSnapshot>>(
+                    future: _fetchViewers(viewerIds),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+                      }
+                      
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                         return Center(child: Text("Yüklenemedi", style: TextStyle(color: Colors.white54)));
+                      }
+
+                      final users = snapshot.data!;
+                      return ListView.builder(
+                        controller: controller,
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          final data = users[index].data() as Map<String, dynamic>;
+                          final photoUrl = (data['photoUrls'] as List?)?.firstOrNull ?? '';
+                          final name = data['name'] ?? 'Kullanıcı';
+                          
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
+                              backgroundColor: Colors.grey[800],
+                              child: photoUrl.isEmpty ? Text(name[0]) : null,
+                            ),
+                            title: Text(name, style: const TextStyle(color: Colors.white)),
+                            subtitle: Text('Hikayeni gördü', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                          );
+                        },
+                      );
+                    }
                   ),
                 ),
-              )
-            else
-              Text(
-                '${viewerIds.length} kişi gördü',
-                style: GoogleFonts.plusJakartaSans(color: Colors.white),
-              ),
-            // TODO: List viewer details here if needed
-          ],
+            ],
+          ),
         ),
       ),
     ).whenComplete(() {
       _animController.forward(); // Resume
     });
+  }
+
+  Future<List<DocumentSnapshot>> _fetchViewers(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    // Firestore limitation: whereIn supports max 10. 
+    // We take first 10 for simplicity in this iteration.
+    final limitedIds = ids.take(10).toList();
+    if (limitedIds.isEmpty) return [];
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where(FieldPath.documentId, whereIn: limitedIds)
+          .get();
+      return snapshot.docs;
+    } catch (e) {
+      print("Error fetching viewers: $e");
+      return [];
+    }
   }
 
   String _getTimeAgo(DateTime date) {

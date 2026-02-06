@@ -274,11 +274,31 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               ),
             ),
             
-            // Sağ: Filtre (HTML tasarımı gibi)
-            GestureDetector(
-              onTap: _showFilters,
-              child: const Icon(Icons.tune_rounded, color: AppColors.primary, size: 24),
+            // Sağ: Refresh ve Filtre
+            Row(
+              children: [
+                GestureDetector(
+                   onTap: () {
+                     HapticFeedback.lightImpact();
+                     _loadInitialData();
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       const SnackBar(
+                         content: Text("Yenileniyor...", style: TextStyle(color: Colors.white)), 
+                         backgroundColor: AppColors.surfaceLight,
+                         duration: Duration(seconds: 1)
+                        )
+                      );
+                   },
+                   child: Icon(Icons.refresh_rounded, color: Colors.white.withOpacity(0.8), size: 24),
+                ),
+                const SizedBox(width: 16),
+                GestureDetector(
+                  onTap: _showFilters,
+                  child: const Icon(Icons.tune_rounded, color: AppColors.primary, size: 24),
+                ),
+              ],
             ),
+
           ],
         ),
       ),

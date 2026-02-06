@@ -106,4 +106,9 @@ class StoryProvider extends ChangeNotifier {
   Future<void> viewStory(String storyId) async {
     await _storyService.viewStory(storyId);
   }
+
+  Future<void> likeStory(String storyId, String targetUserId) async {
+    await _storyService.likeStory(storyId, targetUserId);
+  }
+
 }

@@ -147,4 +147,30 @@ class StoryService {
       LogService.e("Error marking story as viewed", e);
     }
   }
+
+  Future<void> likeStory(String storyId, String targetUserId) async {
+    final uid = _currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      await _firestore.collection('stories').doc(storyId).update({
+        'likes': FieldValue.arrayUnion([uid]),
+      });
+
+      if (uid != targetUserId) {
+        await _firestore.collection('users').doc(targetUserId).collection('notifications').add({
+          'type': 'story_like',
+          'senderId': uid,
+          'title': 'Hikaye Beğenisi',
+          'body': 'Hikayen beğenildi ❤️',
+          'data': {'storyId': storyId},
+          'isRead': false,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      LogService.e("Error liking story", e);
+    }
+  }
+
 }

@@ -111,12 +111,16 @@ class DiscoveryService {
           .doc(targetUserId)
           .set({
         'type': isLike ? 'like' : 'dislike',
+        'targetId': targetUserId,
         'timestamp': FieldValue.serverTimestamp(),
       });
+
+      LogService.i("Swipe recorded for $targetUserId: ${isLike ? 'like' : 'dislike'}");
 
       if (!isLike) return false;
 
       // 2. Check for Match
+      LogService.i("Checking for match with $targetUserId...");
       final matchDoc = await _firestore
           .collection('users')
           .doc(targetUserId)
@@ -124,7 +128,14 @@ class DiscoveryService {
           .doc(user.uid)
           .get();
 
+      if (matchDoc.exists) {
+         LogService.i("Match doc found. Type: ${matchDoc.data()?['type']}");
+      } else {
+         LogService.w("Match doc NOT found at users/$targetUserId/swipes/${user.uid}");
+      }
+
       if (matchDoc.exists && matchDoc.data()?['type'] == 'like') {
+        LogService.i("creating match...");
         await _createMatch(user.uid, targetUserId);
         
         // Notifications
@@ -141,6 +152,7 @@ class DiscoveryService {
       LogService.e("Swipe Error", e);
       return false;
     }
+
   }
 
   Future<void> sendNotification(String targetUid, {required String type, required String title, required String body}) async {
