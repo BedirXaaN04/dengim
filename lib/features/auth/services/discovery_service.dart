@@ -80,8 +80,13 @@ class DiscoveryService {
           .where((profile) => profile != null)
           .cast<UserProfile>()
           .where((profile) {
+            // Filter out test accounts (name or email contains 'test')
+            if (profile.name.toLowerCase().contains('test') || 
+                profile.email.toLowerCase().contains('test')) {
+              return false;
+            }
+            
             // Client-side age filtering - only apply if we have enough users
-            // If we have very few users, be more lenient with age
             if (snapshot.docs.length > 5) {
               if (minAge != null && profile.age < minAge) return false;
               if (maxAge != null && profile.age > maxAge) return false;
@@ -90,6 +95,7 @@ class DiscoveryService {
           })
           .take(limit)
           .toList();
+
 
       LogService.i("Final discovery fetch: Found ${users.length} users (Original raw docs: ${snapshot.docs.length})");
       return users;
