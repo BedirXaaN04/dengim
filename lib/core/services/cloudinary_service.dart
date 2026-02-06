@@ -6,8 +6,9 @@ import 'package:flutter/foundation.dart';
 
 class CloudinaryService {
   // Demo amaçlı kamuya açık bir preset kullanıyoruz
-  static const String _cloudName = "dmx9yvgvx";
+  static const String _cloudName = "dl0sbmno0";
   static const String _uploadPreset = "dengim_preset";
+
 
   static Future<String?> uploadImage(XFile file) async {
     try {
