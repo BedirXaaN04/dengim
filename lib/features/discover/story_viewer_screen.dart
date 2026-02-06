@@ -326,19 +326,21 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
                 if (value.isNotEmpty) {
                   final currentUser = context.read<UserProvider>().currentUser;
                   if (currentUser != null) {
-                    await _chatService.sendMessage(
-                      targetUserId, 
-                      value,
-                      currentUser.uid,
-                      currentUser.name,
-                      currentUser.photoUrls.isNotEmpty ? currentUser.photoUrls.first : '',
-                      type: 'text' // Story reply olarak özel tip eklenebilir ama text kalsın
-                    );
-                    _replyController.clear();
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Mesaj gönderildi')),
+                    try {
+                      final chatId = await _chatService.startChat(targetUserId);
+                      await _chatService.sendMessage(
+                        chatId, 
+                        value,
+                        targetUserId
                       );
+                      _replyController.clear();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Mesaj gönderildi')),
+                        );
+                      }
+                    } catch (e) {
+                      debugPrint("Message error: $e");
                     }
                   }
                 }
@@ -363,16 +365,19 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
              // Send heart emoji as message
              final currentUser = context.read<UserProvider>().currentUser;
              if (currentUser != null) {
-                await _chatService.sendMessage(
-                  targetUserId, 
-                  "❤️",
-                  currentUser.uid,
-                  currentUser.name,
-                  currentUser.photoUrls.isNotEmpty ? currentUser.photoUrls.first : '',
-                );
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('❤️ gönderildi')),
-                );
+                try {
+                  final chatId = await _chatService.startChat(targetUserId);
+                  await _chatService.sendMessage(
+                    chatId, 
+                    "❤️",
+                    targetUserId
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('❤️ gönderildi')),
+                  );
+                } catch (e) {
+                   debugPrint("Message error: $e");
+                }
              }
           },
           child: const Icon(Icons.send, color: Colors.white, size: 28)
