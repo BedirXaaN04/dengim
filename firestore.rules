@@ -34,8 +34,10 @@ service cloud.firestore {
       
       // Swipes (Sub-collection)
       match /swipes/{targetId} {
-        allow read, write: if isAuthenticated() && isOwner(userId);
+        allow read: if isAuthenticated(); // Needed for client-side matching check
+        allow write: if isAuthenticated() && isOwner(userId);
       }
+
 
       // Notifications (Sub-collection)
       match /notifications/{notifId} {

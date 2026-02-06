@@ -2,183 +2,406 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/story_model.dart';
 import '../../core/providers/story_provider.dart';
+import '../../core/providers/user_provider.dart';
 import '../../core/theme/app_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class StoryViewerScreen extends StatefulWidget {
-  final UserStories userStories;
+  final List<UserStories> stories;
+  final int initialIndex;
 
-  const StoryViewerScreen({super.key, required this.userStories});
+  const StoryViewerScreen({
+    super.key, 
+    required this.stories, 
+    this.initialIndex = 0
+  });
 
   @override
   State<StoryViewerScreen> createState() => _StoryViewerScreenState();
 }
 
-class _StoryViewerScreenState extends State<StoryViewerScreen> with SingleTickerProviderStateMixin {
-  late PageController _pageController;
-  int _currentIndex = 0;
-  late AnimationController _animationController;
+class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProviderStateMixin {
+  late PageController _userPageController;
+  late PageController _storyPageController;
+  late AnimationController _animController;
+  
+  int _currentUserIndex = 0;
+  int _currentStoryIndex = 0;
+  
+  final TextEditingController _replyController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
-    _animationController = AnimationController(vsync: this);
+    _currentUserIndex = widget.initialIndex;
+    _userPageController = PageController(initialPage: widget.initialIndex);
+    _storyPageController = PageController();
     
-    _loadStory(index: 0);
-  }
-
-  void _loadStory({required int index, bool animateToPage = true}) {
-    _animationController.stop();
-    _animationController.reset();
-    _animationController.duration = const Duration(seconds: 5);
-    _animationController.forward().whenComplete(() {
-      _onNext();
-    });
-
-    if (animateToPage) {
-      _pageController.jumpToPage(index);
-    }
+    _animController = AnimationController(vsync: this);
     
-    // Mark as viewed
-    context.read<StoryProvider>().viewStory(widget.userStories.stories[index].id);
-  }
-
-  void _onNext() {
-    if (_currentIndex < widget.userStories.stories.length - 1) {
-      setState(() {
-        _currentIndex++;
-      });
-      _loadStory(index: _currentIndex);
-    } else {
-      Navigator.pop(context);
-    }
-  }
-
-  void _onPrevious() {
-    if (_currentIndex > 0) {
-      setState(() {
-        _currentIndex--;
-      });
-      _loadStory(index: _currentIndex);
-    }
+    _loadStory(storyIndex: 0);
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
-    _animationController.dispose();
+    _userPageController.dispose();
+    _storyPageController.dispose();
+    _animController.dispose();
+    _replyController.dispose();
     super.dispose();
+  }
+
+  void _loadStory({required int storyIndex, bool animate = true}) {
+    _animController.stop();
+    _animController.reset();
+    _animController.duration = const Duration(seconds: 5);
+    
+    _animController.forward().whenComplete(() {
+      _onNextStory();
+    });
+
+    if (animate && _storyPageController.hasClients) {
+      _storyPageController.jumpToPage(storyIndex);
+    }
+    
+    _currentStoryIndex = storyIndex;
+    
+    // Mark as viewed
+    final currentStories = widget.stories[_currentUserIndex];
+    if (_currentStoryIndex < currentStories.stories.length) {
+      context.read<StoryProvider>().viewStory(currentStories.stories[_currentStoryIndex].id);
+    }
+  }
+
+  void _onNextStory() {
+    final currentStories = widget.stories[_currentUserIndex];
+    
+    if (_currentStoryIndex < currentStories.stories.length - 1) {
+      setState(() {
+        _currentStoryIndex++;
+      });
+      _loadStory(storyIndex: _currentStoryIndex);
+    } else {
+      // Go to next user
+      if (_currentUserIndex < widget.stories.length - 1) {
+        _userPageController.nextPage(
+          duration: const Duration(milliseconds: 300), 
+          curve: Curves.easeInOut
+        );
+      } else {
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  void _onPrevStory() {
+    if (_currentStoryIndex > 0) {
+      setState(() {
+        _currentStoryIndex--;
+      });
+      _loadStory(storyIndex: _currentStoryIndex);
+    } else {
+      // Go to prev user
+      if (_currentUserIndex > 0) {
+        _userPageController.previousPage(
+          duration: const Duration(milliseconds: 300), 
+          curve: Curves.easeInOut
+        );
+      }
+    }
+  }
+
+  void _onUserChanged(int index) {
+    setState(() {
+      _currentUserIndex = index;
+      _currentStoryIndex = 0;
+    });
+    _loadStory(storyIndex: 0, animate: false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final story = widget.userStories.stories[_currentIndex];
-
     return Scaffold(
       backgroundColor: Colors.black,
-      body: GestureDetector(
-        onTapDown: (details) {
-          final width = MediaQuery.of(context).size.width;
-          if (details.globalPosition.dx < width / 3) {
-            _onPrevious();
-          } else if (details.globalPosition.dx > 2 * width / 3) {
-            _onNext();
-          }
+      body: PageView.builder(
+        controller: _userPageController,
+        itemCount: widget.stories.length,
+        onPageChanged: _onUserChanged,
+        itemBuilder: (context, userIndex) {
+          final userStory = widget.stories[userIndex];
+          return _buildUserStoryView(userStory);
         },
-        onVerticalDragEnd: (details) {
-          if (details.primaryVelocity! > 500) {
-            Navigator.pop(context);
-          }
-        },
-        child: Stack(
-          children: [
-            // Story Image
-            CachedNetworkImage(
-              imageUrl: story.imageUrl,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
-              placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-            ),
+      ),
+    );
+  }
 
-            // Top Gradient
-            Container(
-              height: 160,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-                ),
+  Widget _buildUserStoryView(UserStories userStory) {
+    final story = userStory.stories[_currentStoryIndex];
+    final isMe = context.read<UserProvider>().currentUser?.uid == userStory.userId;
+
+    return GestureDetector(
+      onTapDown: (details) {
+        final width = MediaQuery.of(context).size.width;
+        if (details.globalPosition.dx < width / 3) {
+          _onPrevStory();
+        } else if (details.globalPosition.dx > 2 * width / 3) {
+          _onNextStory();
+        }
+      },
+      onVerticalDragEnd: (details) {
+        if (details.primaryVelocity! > 500) {
+          Navigator.pop(context);
+        }
+      },
+      child: Stack(
+        children: [
+          // Image
+           CachedNetworkImage(
+            imageUrl: story.imageUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+            placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+            errorWidget: (context, url, error) => const Center(child: Icon(Icons.error, color: Colors.white)),
+          ),
+
+          // Gradient Overlay
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.transparent,
+                  Colors.transparent,
+                  Colors.black.withOpacity(isMe ? 0.3 : 0.6),
+                ],
+                stops: const [0.0, 0.2, 0.8, 1.0],
               ),
             ),
+          ),
 
-            // Top Info & Progress
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Column(
-                  children: [
-                    // Progress Bars
-                    Row(
-                      children: List.generate(widget.userStories.stories.length, (index) {
-                        return Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            child: AnimatedBuilder(
-                              animation: _animationController,
-                              builder: (context, child) {
-                                double value = 0.0;
-                                if (index < _currentIndex) {
-                                  value = 1.0;
-                                } else if (index == _currentIndex) {
-                                  value = _animationController.value;
-                                }
-                                return LinearProgressIndicator(
-                                  value: value,
-                                  backgroundColor: Colors.white24,
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                                  minHeight: 2,
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 12),
-                    // User Info
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundImage: CachedNetworkImageProvider(widget.userStories.userAvatar),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          widget.userStories.userName,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+          // Progress & Header
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Column(
+                children: [
+                  // Progress Bars
+                  Row(
+                    children: List.generate(userStory.stories.length, (index) {
+                      return Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: AnimatedBuilder(
+                            animation: _animController,
+                            builder: (context, child) {
+                              double value = 0.0;
+                              if (index < _currentStoryIndex) {
+                                value = 1.0;
+                              } else if (index == _currentStoryIndex) {
+                                value = _animController.value;
+                              }
+                              return LinearProgressIndicator(
+                                value: value,
+                                backgroundColor: Colors.white24,
+                                valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                                minHeight: 2,
+                              );
+                            },
                           ),
                         ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Header
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundImage: CachedNetworkImageProvider(userStory.userAvatar),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        userStory.userName,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _getTimeAgo(story.createdAt),
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
+
+          // Bottom Actions
+          Positioned(
+            bottom: 24,
+            left: 16,
+            right: 16,
+            child: SafeArea(
+              child: isMe ? _buildMyActions(story) : _buildOtherActions(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMyActions(Story story) {
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          // Show Viewers Bottom Sheet
+          _showViewers(story.viewers);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black54,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.visibility_outlined, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                '${story.viewers.length} görüntülenme',
+                style: GoogleFonts.plusJakartaSans(color: Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  Widget _buildOtherActions() {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white30),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            alignment: Alignment.centerLeft,
+            child: TextField(
+              controller: _replyController,
+              style: const TextStyle(color: Colors.white),
+              cursorColor: AppColors.primary,
+              decoration: const InputDecoration(
+                hintText: 'Mesaj gönder...',
+                hintStyle: TextStyle(color: Colors.white54),
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              onSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  // TODO: Send message functionality
+                  _replyController.clear();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Mesaj gönderildi')),
+                  );
+                }
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        GestureDetector(
+          onTap: () {
+            // Like animation
+            ScaffoldMessenger.of(context).showSnackBar(
+               const SnackBar(content: Text('Hikaye beğenildi ❤️')),
+            );
+          },
+          child: const Icon(Icons.favorite_border, color: Colors.white, size: 28),
+        ),
+        const SizedBox(width: 16),
+        const Icon(Icons.send, color: Colors.white, size: 28),
+      ],
+    );
+  }
+
+  void _showViewers(List<String> viewerIds) {
+    _animController.stop(); // Pause animation
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Görüntüleyenler',
+              style: GoogleFonts.plusJakartaSans(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (viewerIds.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Center(
+                  child: Text(
+                    'Henüz kimse görmedi.',
+                    style: GoogleFonts.plusJakartaSans(color: Colors.white38),
+                  ),
+                ),
+              )
+            else
+              Text(
+                '${viewerIds.length} kişi gördü',
+                style: GoogleFonts.plusJakartaSans(color: Colors.white),
+              ),
+            // TODO: List viewer details here if needed
+          ],
+        ),
+      ),
+    ).whenComplete(() {
+      _animController.forward(); // Resume
+    });
+  }
+
+  String _getTimeAgo(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inMinutes < 60) {
+      return '${diff.inMinutes}d';
+    } else {
+      return '${diff.inHours}s';
+    }
+  }
 }
+

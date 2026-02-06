@@ -147,13 +147,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           const SnackBar(content: Text('Hikayen yükleniyor...'), duration: Duration(seconds: 2))
         );
         
-        await storyProvider.uploadStory(
-          image, 
+        final bytes = await image.readAsBytes();
+        
+        await storyProvider.uploadStoryBytes(
+          bytes,
           user.name, 
           user.imageUrl,
           isPremium: user.isPremium,
           isVerified: user.isVerified,
         );
+
 
         
         if (mounted) {
@@ -283,97 +286,173 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   Widget _buildStoriesTray(List<UserStories> activeStories) {
-    return Container(
-      height: 110,
-      padding: const EdgeInsets.only(top: 16),
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: activeStories.length + 1,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            // Ekle Butonu
-            return Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: _pickAndUploadStory,
-                    child: Container(
-                      width: 65,
-                      height: 65,
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.08)),
-                      ),
-                      child: const Icon(Icons.add, color: AppColors.primary, size: 24),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text('SİZ', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white24, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-                ],
-              ),
-            );
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, _) {
+        final currentUser = userProvider.currentUser;
+        
+        UserStories? myStories;
+        final List<UserStories> otherStories = [];
+
+        for (var s in activeStories) {
+          if (s.userId == currentUser?.uid) {
+            myStories = s;
+          } else {
+            otherStories.add(s);
           }
-          
-          final userStories = activeStories[index - 1];
-          final name = userStories.userName.toUpperCase();
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StoryViewerScreen(userStories: userStories),
+        }
+        
+        // Combine for viewer (My Story first if exists)
+        final List<UserStories> allViewableStories = [];
+        if (myStories != null) allViewableStories.add(myStories);
+        allViewableStories.addAll(otherStories);
+
+        return Container(
+          height: 110,
+          padding: const EdgeInsets.only(top: 16),
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: otherStories.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                // My Story Slot
+                if (myStories != null) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StoryViewerScreen(
+                              stories: allViewableStories,
+                              initialIndex: 0,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.primary, width: 2),
+                            ),
+                            child: CircleAvatar(
+                              radius: 28,
+                              backgroundColor: Colors.grey[900],
+                              backgroundImage: NetworkImage(myStories!.userAvatar),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'SİZ',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(2.5),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: AppColors.goldGradient,
                     ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.scaffold, width: 2),
-                      ),
-                      child: ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: userStories.userAvatar,
-                          width: 56,
-                          height: 56,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(color: AppColors.surface),
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: _pickAndUploadStory,
+                          child: Container(
+                            width: 65,
+                            height: 65,
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withOpacity(0.08)),
+                            ),
+                            child: const Icon(Icons.add, color: AppColors.primary, size: 24),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text('SİZ', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white24, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                      ],
+                    ),
+                  );
+                }
+              }
+
+              // Other Users
+              final userStories = otherStories[index - 1];
+              final name = userStories.userName.toUpperCase();
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        // Find correct index in allViewableStories
+                        final viewIndex = allViewableStories.indexOf(userStories);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StoryViewerScreen(
+                              stories: allViewableStories,
+                              initialIndex: viewIndex,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(2.5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: userStories.stories.any((s) => s.isPremium) 
+                              ? AppColors.goldGradient 
+                              : AppColors.storyGradient,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.scaffold, width: 2),
+                          ),
+                          child: ClipOval(
+                             child: CachedNetworkImage(
+                              imageUrl: userStories.userAvatar,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(color: AppColors.surface),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      name.length > 8 ? '${name.substring(0, 7)}..' : name, 
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10, 
+                        color: Colors.white, 
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      )
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  name.length > 8 ? '${name.substring(0, 7)}..' : name, 
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10, 
-                    color: Colors.white, 
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  )
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      }
     );
   }
+
 
 
 

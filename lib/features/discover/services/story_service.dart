@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,12 +7,50 @@ import '../../../core/utils/log_service.dart';
 import '../../../core/services/config_service.dart';
 import '../../../core/services/cloudinary_service.dart';
 
-
 class StoryService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? get _currentUser => _auth.currentUser;
+
+  Future<void> uploadStoryBytes(
+    Uint8List bytes, 
+    String userName, 
+    String userAvatar, {
+    bool isPremium = false,
+    bool isVerified = false,
+  }) async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    try {
+      // 1. Upload Bytes to Cloudinary
+      final imageUrl = await CloudinaryService.uploadImageBytes(bytes);
+      
+      if (imageUrl == null) {
+        throw Exception('Görsel yüklenemedi (Byte Upload)');
+      }
+
+      // 2. Create Story Record in Firestore
+      await _firestore.collection('stories').add({
+        'userId': user.uid,
+        'userName': userName,
+        'userAvatar': userAvatar.isNotEmpty 
+            ? userAvatar 
+            : 'https://ui-avatars.com/api/?name=${userName.substring(0, 1)}&background=D4AF37&color=fff&size=200',
+        'imageUrl': imageUrl,
+        'createdAt': FieldValue.serverTimestamp(),
+        'viewers': [],
+        'isPremium': isPremium,
+        'isVerified': isVerified,
+      });
+
+      LogService.i("Story bytes upload success.");
+    } catch (e) {
+      LogService.e("Story byte upload failed", e);
+      rethrow;
+    }
+  }
 
   Future<void> uploadStory(
     XFile file, 

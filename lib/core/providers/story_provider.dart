@@ -1,10 +1,10 @@
+import 'dart:typed_data';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../features/discover/models/story_model.dart';
 import '../../features/discover/services/story_service.dart';
 import '../utils/log_service.dart';
-
-import 'dart:async';
 import '../../features/auth/services/discovery_service.dart';
 
 class StoryProvider extends ChangeNotifier {
@@ -39,6 +39,33 @@ class StoryProvider extends ChangeNotifier {
         LogService.e("Stories stream error", e);
       });
     });
+  }
+
+  Future<void> uploadStoryBytes(
+    Uint8List bytes, 
+    String userName, 
+    String userAvatar, {
+    bool isPremium = false, 
+    bool isVerified = false
+  }) async {
+    _isUploading = true;
+    notifyListeners();
+
+    try {
+      await _storyService.uploadStoryBytes(
+        bytes, 
+        userName, 
+        userAvatar,
+        isPremium: isPremium,
+        isVerified: isVerified,
+      );
+    } catch (e) {
+      LogService.e("Provider story byte upload error", e);
+      rethrow;
+    } finally {
+      _isUploading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> uploadStory(
