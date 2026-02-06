@@ -1,22 +1,23 @@
+// Stub file for web - AdService
+// google_mobile_ads is not supported on web
+
 import 'package:flutter/foundation.dart';
 import '../../../core/services/config_service.dart';
 import '../../../core/utils/log_service.dart';
-
-// Conditional import - only import google_mobile_ads on mobile
-import 'ad_service_mobile.dart' if (dart.library.html) 'ad_service_web.dart' as ads;
 
 class AdService {
   static final AdService _instance = AdService._internal();
   factory AdService() => _instance;
   AdService._internal();
 
-  final ads.AdService _platformService = ads.AdService();
-
   Future<void> init() async {
-    await _platformService.init();
+    if (kIsWeb) {
+      LogService.i("AdService: Web platform - ads disabled.");
+      return;
+    }
   }
 
-  void showRewardedAd({required Function(int) onReward}) {
+  void showRewardedAd({required FunctionOnReward onReward}) {
     if (kIsWeb) {
       LogService.w("Ads are not supported on web.");
       return;
@@ -25,9 +26,7 @@ class AdService {
       LogService.w("Ads are globally disabled via admin panel.");
       return;
     }
-    _platformService.showRewardedAd(onReward: onReward);
   }
 }
 
 typedef FunctionOnReward = void Function(int amount);
-
