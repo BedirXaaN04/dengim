@@ -263,7 +263,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
             left: 16,
             right: 16,
             child: SafeArea(
-              child: isMe ? _buildMyActions(story) : _buildOtherActions(),
+              child: isMe ? _buildMyActions(story) : _buildOtherActions(story, userStory.userId),
             ),
           ),
         ],

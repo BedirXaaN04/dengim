@@ -40,13 +40,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
+    });
+  }
+
+  void _loadInitialData() {
       context.read<DiscoveryProvider>().loadDiscoveryUsers(
         gender: _filterSettings.gender,
         minAge: _filterSettings.ageRange.start.toInt(),
         maxAge: _filterSettings.ageRange.end.toInt(),
       );
-    });
-
   }
 
   Future<bool> _onSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) async {
@@ -560,10 +563,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ],
                   ),
                 ),
-              ),
 
 
-              // Alt Panel (Glassmorphism)
+
               Positioned(
                 bottom: 24,
                 left: 24,
