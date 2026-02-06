@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'dart:io';
+import 'dart:io' if (dart.library.html) 'dart:ui';
 
 
 class PurchaseService {
@@ -20,6 +21,7 @@ class PurchaseService {
 
   /// Servisi Başlat
   Future<void> init() async {
+    if (kIsWeb) return;
     await Purchases.setLogLevel(LogLevel.debug);
 
     PurchasesConfiguration configuration;

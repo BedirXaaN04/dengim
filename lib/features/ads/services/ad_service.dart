@@ -1,6 +1,6 @@
-import 'dart:io';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'dart:io' if (dart.library.html) 'dart:ui';
 import '../../../core/services/config_service.dart';
 import '../../../core/utils/log_service.dart';
 
@@ -21,12 +21,14 @@ class AdService {
   static const String _iosRewardedAdUnitId = 'ca-app-pub-3940256099942544/1712485313';
 
   String get _rewardedAdUnitId {
+    if (kIsWeb) return ''; 
     if (Platform.isAndroid) return _androidRewardedAdUnitId;
     if (Platform.isIOS) return _iosRewardedAdUnitId;
-    return 'ca-app-pub-3940256099942544/5224354917'; // Fallback to android test id
+    return _androidRewardedAdUnitId;
   }
 
   Future<void> init() async {
+    if (kIsWeb) return;
     await MobileAds.instance.initialize();
     _createRewardedAd();
   }
