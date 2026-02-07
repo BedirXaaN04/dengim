@@ -220,17 +220,32 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       label: 'Meslek',
                       placeholder: 'Finans Direktörü',
                     ),
+                    _buildSectionHeader('YAŞ'),
+                    _buildModernInput(
+                      controller: _ageController,
+                      label: 'Yaşınız',
+                      placeholder: '25',
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Yaş gereklidir';
+                        }
+                        final age = int.tryParse(value);
+                        if (age == null) {
+                          return 'Geçerli bir yaş girin';
+                        }
+                        if (age < 18) {
+                          return 'En az 18 yaşında olmalısınız';
+                        }
+                        if (age > 100) {
+                          return 'Geçerli bir yaş girin (max 100)';
+                        }
+                        return null;
+                      },
+                    ),
                     Row(
                       children: [
-                        Expanded(
-                          child: _buildModernInput(
-                            controller: _ageController,
-                            label: 'Yaş',
-                            placeholder: '28',
-                            keyboardType: TextInputType.number,
-                            validator: (v) => v!.isEmpty ? 'Gerekli' : null,
-                          ),
-                        ),
                         Expanded(
                           child: _buildModernInput(
                             controller: _countryController,
