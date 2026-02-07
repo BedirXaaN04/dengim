@@ -11,6 +11,7 @@ class UserProfile {
   final String? bio;
   final String? job;
   final String? education;
+  final String? relationshipGoal; // New field
   final List<String>? photoUrls;
   
   // Özellikler
@@ -41,6 +42,7 @@ class UserProfile {
     this.bio,
     this.job,
     this.education,
+    this.relationshipGoal,
     this.photoUrls,
     this.isPremium = false,
     this.credits = 0,
@@ -86,6 +88,7 @@ class UserProfile {
       'bio': bio,
       'job': job,
       'education': education,
+      'relationshipGoal': relationshipGoal,
       'photoUrls': photoUrls,
       'isPremium': isPremium,
       'credits': credits,
@@ -94,8 +97,6 @@ class UserProfile {
       'latitude': latitude,
       'longitude': longitude,
       'createdAt': Timestamp.fromDate(createdAt),
-      'createdAt': Timestamp.fromDate(createdAt),
-      'lastActive': Timestamp.fromDate(lastActive),
       'lastActive': Timestamp.fromDate(lastActive),
       'blockedUsers': blockedUsers,
       'fcmToken': fcmToken,
@@ -109,15 +110,14 @@ class UserProfile {
       name: map['name'] ?? '',
       birthDate: map['birthDate'] != null 
         ? (map['birthDate'] as Timestamp).toDate()
-        : (map['age'] != null 
-            ? DateTime.now().subtract(Duration(days: 365 * (map['age'] as int)))  // Backward compat
-            : null),
+        : null,
       gender: map['gender'] ?? '',
       country: map['country'] ?? '',
       interests: List<String>.from(map['interests'] ?? []),
       bio: map['bio'],
       job: map['job'],
       education: map['education'],
+      relationshipGoal: map['relationshipGoal'],
       photoUrls: map['photoUrls'] != null ? List<String>.from(map['photoUrls']) : null,
       isPremium: map['isPremium'] ?? false,
       credits: map['credits']?.toInt() ?? 0,

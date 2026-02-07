@@ -95,7 +95,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
   // State variables
   String? _selectedGender;
+  String? _selectedRelationshipGoal;
   final List<String> _selectedInterests = [];
+  
+  final List<Map<String, String>> _relationshipGoals = [
+    {'id': 'serious', 'label': 'Ciddi İlişki 💍', 'desc': 'Uzun vadeli partner'},
+    {'id': 'casual', 'label': 'Eğlence 🥂', 'desc': 'Kısa vadeli takılmaca'},
+    {'id': 'chat', 'label': 'Sohbet ☕', 'desc': 'Yeni arkadaşlar'},
+    {'id': 'unsure', 'label': 'Belirsiz 🤷‍♂️', 'desc': 'Henüz karar vermedim'},
+  ];
   final List<XFile?> _profilePhotos = [null, null, null, null, null, null]; 
   final Map<int, Uint8List> _photoBytes = {}; 
   
@@ -174,6 +182,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         gender: _selectedGender ?? 'Diğer',
         country: _countryController.text.trim(),
         interests: _selectedInterests,
+        relationshipGoal: _selectedRelationshipGoal,
         photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://ui-avatars.com/api/?name=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}&size=500'],
         bio: _bioController.text.trim(),
         job: _jobController.text.trim(),
@@ -454,6 +463,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     _buildSectionHeader('İLGİ ALANLARI'),
                     _buildInterestsGrid(),
 
+                    // Relationship Goal Section
+                    _buildSectionHeader('İLİŞKİ HEDEFİ'),
+                    _buildRelationshipGoalSelector(),
+
                     // Bio Section
                     _buildSectionHeader('BİYOGRAFİ'),
                     _buildModernInput(
@@ -694,6 +707,63 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
                     ),
                   ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildRelationshipGoalSelector() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: _relationshipGoals.map((goal) {
+          final isSelected = _selectedRelationshipGoal == goal['id'];
+          return GestureDetector(
+            onTap: () {
+              setState(() => _selectedRelationshipGoal = goal['id']);
+            },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          goal['label']!,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          goal['desc']!,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white54,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isSelected)
+                    const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 24),
                 ],
               ),
             ),

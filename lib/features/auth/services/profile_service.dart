@@ -20,6 +20,7 @@ class ProfileService {
     required String gender,
     required String country,
     required List<String> interests,
+    String? relationshipGoal,
     List<String>? photoUrls,
     String? bio,
     String? job,
@@ -36,6 +37,7 @@ class ProfileService {
       'gender': gender,
       'country': country,
       'interests': interests,
+      'relationshipGoal': relationshipGoal,
       'bio': bio,
       'job': job,
       'education': education,
@@ -169,6 +171,7 @@ class ProfileService {
     int? age,
     String? country,
     List<String>? interests,
+    String? relationshipGoal,
     List<String>? photoUrls,
     bool? isPremium,
     bool? isVerified,
@@ -187,6 +190,7 @@ class ProfileService {
     if (age != null) updates['age'] = age;
     if (country != null) updates['country'] = country;
     if (interests != null) updates['interests'] = interests;
+    if (relationshipGoal != null) updates['relationshipGoal'] = relationshipGoal;
     if (photoUrls != null) updates['photoUrls'] = photoUrls;
     if (isPremium != null) updates['isPremium'] = isPremium;
     if (isVerified != null) updates['isVerified'] = isVerified;
@@ -199,6 +203,34 @@ class ProfileService {
       rethrow;
     }
   }
+
+  Future<void> requestVerification(XFile selfieImage) async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    try {
+      // 1. Upload selfie to secure storage (using Cloudinary for now)
+      // Note: Ideally this should go to a private bucket
+      final imageUrl = await CloudinaryService.uploadImage(selfieImage);
+      
+      if (imageUrl == null) throw Exception("Selfie upload failed");
+
+      // 2. Create verification request
+      await _firestore.collection('verification_requests').add({
+        'userId': user.uid,
+        'email': user.email,
+        'selfieUrl': imageUrl,
+        'status': 'pending', // pending, approved, rejected
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      
+      LogService.i("Verification requested for: ${user.uid}");
+    } catch (e) {
+      LogService.e("Verification request failed", e);
+      rethrow;
+    }
+  }
+
   Future<void> updateFcmToken(String token) async {
     final uid = _currentUser?.uid;
     if (uid == null) return;

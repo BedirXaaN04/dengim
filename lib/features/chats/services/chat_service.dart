@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/chat_models.dart';
 import '../../auth/models/user_profile.dart'; // UserProfile için
 import '../../../core/utils/log_service.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../core/services/cloudinary_service.dart';
 
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -134,6 +136,21 @@ class ChatService {
       'lastMessageSenderId': user.uid,
       'unreadCounts.$receiverId': FieldValue.increment(1), // Karşı taraf için 1 artır
     });
+  }
+
+  /// Fotoğraf Gönder
+  Future<void> sendImage(String chatId, XFile imageFile, String receiverId) async {
+    try {
+      final imageUrl = await CloudinaryService.uploadImage(imageFile);
+      if (imageUrl != null) {
+        await sendMessage(chatId, imageUrl, receiverId, type: MessageType.image);
+      } else {
+        throw Exception("Fotoğraf yüklenemedi");
+      }
+    } catch (e) {
+      LogService.e("Send image error", e);
+      rethrow;
+    }
   }
 
   /// Yeni Sohbet Başlat veya Mevcut Olanı Getir

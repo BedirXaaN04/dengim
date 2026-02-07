@@ -5,7 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/chat_models.dart';
 import '../services/chat_service.dart';
+import '../../auth/services/report_service.dart'; // Import ReportService
 import '../widgets/chat_widgets.dart';
+import '../widgets/chat_widgets.dart';
+import 'package:image_picker/image_picker.dart';
+import 'call_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String chatId;
@@ -29,6 +33,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final ChatService _chatService = ChatService();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  bool _isUploading = false; // State for upload loading
 
   @override
   void initState() {
@@ -53,6 +58,31 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       widget.otherUserId,
     );
     _messageController.clear();
+  }
+
+  Future<void> _pickAndSendImage() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+
+    if (image != null) {
+      setState(() => _isUploading = true);
+      try {
+        ScaffoldMessenger.of(context).showSnackBar(
+           const SnackBar(content: Text('Fotoğraf gönderiliyor...'), duration: Duration(seconds: 1)),
+        );
+        
+        await _chatService.sendImage(widget.chatId, image, widget.otherUserId);
+        
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Fotoğraf gönderilemedi.')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isUploading = false);
+      }
+    }
   }
 
   void _showMessageOptions(ChatMessage message) {
@@ -99,6 +129,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ListTile(
+              leading: const Icon(Icons.flag_outlined, color: Colors.amber),
+              title: Text(
+                'Kullanıcıyı Raporla',
+                style: GoogleFonts.plusJakartaSans(color: Colors.amber),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _showReportDialog();
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.block, color: Colors.orange),
               title: Text(
@@ -221,16 +262,30 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           IconButton(
             icon: const Icon(Icons.call, color: Colors.white),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Sesli arama yakında gelecek')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CallScreen(
+                    userName: widget.otherUserName,
+                    userAvatar: widget.otherUserAvatar,
+                    isVideo: false,
+                  ),
+                ),
               );
             },
           ),
           IconButton(
             icon: const Icon(Icons.videocam, color: Colors.white),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Görüntülü arama yakında gelecek')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CallScreen(
+                    userName: widget.otherUserName,
+                    userAvatar: widget.otherUserAvatar,
+                    isVideo: true,
+                  ),
+                ),
               );
             },
           ),
@@ -294,12 +349,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.image, color: AppColors.primary),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Fotoğraf gönderme yakında eklenecek')),
-                    );
-                  },
+                  icon: _isUploading 
+                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                      : const Icon(Icons.image, color: AppColors.primary),
+                  onPressed: _isUploading ? null : _pickAndSendImage,
                 ),
                 Expanded(
                   child: TextField(
@@ -341,5 +394,73 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ],
       ),
     );
+  }
+
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('Rapor Nedeni', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: ReportReason.values.length,
+            itemBuilder: (context, index) {
+              final reason = ReportReason.values[index];
+              if (reason == ReportReason.other) return const SizedBox.shrink(); 
+              
+              return ListTile(
+                title: Text(reason.displayName, style: GoogleFonts.plusJakartaSans(color: Colors.white70)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _submitReport(reason);
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submitReport(ReportReason reason) async {
+    try {
+      final success = await ReportService().reportUser(
+        reportedUserId: widget.otherUserId,
+        reason: reason,
+      );
+
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Raporunuz alındı. Teşekkür ederiz.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Bu kullanıcıyı zaten raporladınız veya bir hata oluştu.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bir hata oluştu.')),
+        );
+      }
+    }
   }
 }

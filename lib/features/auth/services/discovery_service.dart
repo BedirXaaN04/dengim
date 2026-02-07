@@ -98,9 +98,14 @@ class DiscoveryService {
   }
 
 
-  Future<bool> swipeUser(String targetUserId, bool isLike) async {
+  Future<bool> swipeUser(String targetUserId, {String swipeType = 'like'}) async {
     final user = _currentUser;
     if (user == null) return false;
+
+    // Map boolean logic for backward compatibility if needed, but here we use string type
+    // swipeType values: 'like', 'dislike', 'super_like'
+    
+    final isLike = swipeType == 'like' || swipeType == 'super_like';
 
     try {
       // 1. Record Swipe
@@ -110,7 +115,7 @@ class DiscoveryService {
           .collection('swipes')
           .doc(targetUserId)
           .set({
-        'type': isLike ? 'like' : 'dislike',
+        'type': swipeType,
         'targetId': targetUserId,
         'timestamp': FieldValue.serverTimestamp(),
       });

@@ -10,6 +10,7 @@ import '../auth/login_screen.dart';
 import 'blocked_users_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/user_provider.dart';
+import 'verification_screen.dart'; // Import verification screen
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -63,6 +64,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _buildSettingItem(
                   context, 
+                  "Hesap Doğrulama (Mavi Tik)", 
+                  Icons.verified_user_outlined,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const VerificationScreen()),
+                  ),
+                ),
+                _buildSettingItem(
+                  context,
+                _buildSettingItem(
+                  context, 
                   "Şifre Değiştir", 
                   Icons.lock_outline,
                   onTap: _showChangePasswordDialog,
@@ -105,13 +117,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context, 
                   "Kullanım Koşulları", 
                   Icons.description_outlined,
-                  onTap: () => _launchUrl("https://dengim-kim.web.app/terms"),
+                  onTap: () => _launchUrl("https://www.dengimapp.com/terms"),
                 ),
                 _buildSettingItem(
                   context, 
                   "Gizlilik Politikası", 
                   Icons.policy_outlined,
-                  onTap: () => _launchUrl("https://dengim-kim.web.app/privacy"),
+                  onTap: () => _launchUrl("https://www.dengimapp.com/privacy"),
                 ),
 
                 const SizedBox(height: 32),

@@ -190,15 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
                         onTap: _isLoading ? null : _signInWithGoogle,
                       ),
-                      const SizedBox(height: 16),
-                      _LoginButton(
-                        icon: Icons.apple,
-                        text: 'Apple ile Devam Et',
-                        color: Colors.white.withOpacity(0.05),
-                        textColor: Colors.white,
-                        borderColor: Colors.white.withOpacity(0.1),
-                        onTap: () {},
-                      ),
+
                     ],
                   ),
                 ),

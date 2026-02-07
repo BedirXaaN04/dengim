@@ -10,6 +10,7 @@ import 'edit_profile_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/user_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
 
 
 class ProfileScreen extends StatefulWidget {
@@ -171,7 +172,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildActionBtn(
                         icon: Icons.share_outlined,
                         label: 'Profili Paylaş',
-                        onTap: () {},
+                        onTap: () {
+                          if (profile != null) {
+                            Share.share('DENGİM uygulamasında beni bul! Kullanıcı Adım: ${profile.name} \n\nHemen indir: https://dengimapp.com');
+                          }
+                        },
                       ),
                       const SizedBox(height: 12),
                       _buildActionBtn(

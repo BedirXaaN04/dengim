@@ -79,11 +79,9 @@ class DiscoveryProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> swipeUser(String targetUserId, bool isLike) async {
-
-    
+  Future<bool> swipeUser(String targetUserId, String swipeType) async {    
     try {
-      return await _discoveryService.swipeUser(targetUserId, isLike);
+      return await _discoveryService.swipeUser(targetUserId, swipeType: swipeType);
     } catch (e) {
       LogService.e("Error swiping user", e);
       return false;

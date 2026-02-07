@@ -22,6 +22,7 @@ import '../notifications/notifications_screen.dart';
 import 'story_viewer_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'models/story_model.dart';
+import '../payment/premium_offer_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -71,10 +72,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     
     final discoveryProvider = context.read<DiscoveryProvider>();
     final targetUser = discoveryProvider.users[previousIndex];
-    final isLike = direction == CardSwiperDirection.right || direction == CardSwiperDirection.top;
+    String swipeType = 'dislike';
+    if (direction == CardSwiperDirection.right) swipeType = 'like';
+    if (direction == CardSwiperDirection.top) swipeType = 'super_like';
     
     try {
-      final isMatch = await discoveryProvider.swipeUser(targetUser.uid, isLike);
+      final isMatch = await discoveryProvider.swipeUser(targetUser.uid, swipeType);
       if (isMatch) {
         _showMatchAnimation(targetUser);
       }
@@ -106,7 +109,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   UserProfile? _matchedUser;
   
   // Timer for auto-refresh
-  // Timer? _autoRefreshTimer; // This line is commented out as it requires 'dart:async' import and was not explicitly requested to be added.
+
   
   bool _showMatch = false;
 
@@ -127,8 +130,36 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _cardController.swipe(CardSwiperDirection.left);
   }
 
-  void _onSuperLike() {
+  void _onSuperLike() async {
+    final userProvider = context.read<UserProvider>();
+    final currentUser = userProvider.currentUser;
+
+    if (currentUser?.isPremium != true) {
+      // Show Premium Offer
+      final result = await Navigator.push(
+        context, 
+        MaterialPageRoute(builder: (_) => const PremiumOfferScreen())
+      );
+      
+      if (result == true) {
+         // If purchased, proceed
+         _performSuperLike();
+      }
+    } else {
+      _performSuperLike();
+    }
+  }
+
+  void _performSuperLike() {
     HapticFeedback.heavyImpact();
+    // Show visual feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🌟 Super Like gönderildi!'),
+        backgroundColor: AppColors.secondary,
+        duration: Duration(seconds: 1),
+      )
+    );
     _cardController.swipe(CardSwiperDirection.top);
   }
 
@@ -768,6 +799,56 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       Text(
                         '${user.name}, ${user.age}',
                         style: GoogleFonts.plusJakartaSans(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      if (user.relationshipGoal != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white30),
+                          ),
+                          child: Text(
+                            _getGoalLabel(user.relationshipGoal),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (user.isVerified) ...[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.verified, color: Colors.blue, size: 20),
+                      ],
+                    ],
+                  ),
+                  if (user.relationshipGoal != null) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+                      ),
+                      child: Text(
+                        _getGoalLabel(user.relationshipGoal),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -939,6 +1020,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ),
       ),
     );
+  }
+
+  String _getGoalLabel(String? key) {
+    switch (key) {
+      case 'serious': return '💍 Ciddi';
+      case 'casual': return '🥂 Eğlence';
+      case 'chat': return '☕ Sohbet';
+      case 'unsure': return '🤷‍♂️ Belirsiz';
+      default: return '';
+    }
   }
 }
 

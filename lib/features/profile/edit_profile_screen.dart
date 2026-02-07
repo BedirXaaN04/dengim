@@ -37,6 +37,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'Fitness', 'Moda', 'Doğa', 'Teknoloji', 'Girişimcilik',
   ];
 
+  String? _selectedRelationshipGoal;
+  final List<Map<String, String>> _relationshipGoals = [
+    {'id': 'serious', 'label': 'Ciddi İlişki 💍', 'desc': 'Uzun vadeli partner'},
+    {'id': 'casual', 'label': 'Eğlence 🥂', 'desc': 'Rahat takılmaca'},
+    {'id': 'chat', 'label': 'Sohbet ☕', 'desc': 'Arkadaşlık ve sohbet'},
+    {'id': 'unsure', 'label': 'Belirsiz 🤷‍♂️', 'desc': 'Henüz karar vermedim'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +56,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _countryController = TextEditingController(text: widget.profile.country);
     _photoUrls = List.from(widget.profile.photoUrls ?? []);
     _selectedInterests = List.from(widget.profile.interests);
+    _selectedRelationshipGoal = widget.profile.relationshipGoal;
   }
 
   @override
@@ -132,6 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         country: _countryController.text.trim(),
         photoUrls: _photoUrls,
         interests: _selectedInterests,
+        relationshipGoal: _selectedRelationshipGoal,
       );
 
       // Refresh provider
@@ -211,6 +221,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildTextField("İsim", _nameController, Icons.person_outline),
             _buildTextField("Yaş", _ageController, Icons.cake_outlined, keyboardType: TextInputType.number),
             _buildTextField("Konum", _countryController, Icons.location_on_outlined),
+            
+            const SizedBox(height: 32),
+
+            // Relationship Goal
+            _buildSectionHeader("İLİŞKİ HEDEFİ"),
+            const SizedBox(height: 16),
+            _buildRelationshipGoalSelector(),
             
             const SizedBox(height: 32),
             
@@ -417,6 +434,63 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 fontSize: 13,
               ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildRelationshipGoalSelector() {
+    return Column(
+      children: _relationshipGoals.map((goal) {
+        final isSelected = _selectedRelationshipGoal == goal['id'];
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedRelationshipGoal = goal['id'];
+              _hasChanges = true;
+            });
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : Colors.transparent,
+                width: 2,
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        goal['label']!,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        goal['desc']!,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white54,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isSelected)
+                  const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 24),
+              ],
             ),
           ),
         );
