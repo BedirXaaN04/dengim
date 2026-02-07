@@ -21,6 +21,7 @@ import 'core/providers/user_provider.dart';
 import 'core/providers/discovery_provider.dart';
 import 'core/providers/chat_provider.dart';
 import 'core/providers/connectivity_provider.dart';
+import 'core/providers/badge_provider.dart';
 import 'core/providers/likes_provider.dart';
 import 'core/providers/map_provider.dart';
 import 'core/providers/story_provider.dart';
@@ -85,8 +86,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
-        ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()), // Kept ChatProvider as it was not explicitly removed in the instruction's text, only in the malformed code block.
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()..initialize()), // Modified ConnectivityProvider
+        ChangeNotifierProvider(create: (_) => BadgeProvider()..initialize()), // Added BadgeProvider
         ChangeNotifierProvider(create: (_) => LikesProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),
         ChangeNotifierProvider(create: (_) => StoryProvider()),
