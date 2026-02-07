@@ -54,6 +54,7 @@ dependencies:
   intl: ^0.19.0
   url_launcher: ^6.2.4
   http: ^1.2.0
+  share_plus: ^10.1.4
 
   # Animasyonlar
   shimmer: ^3.0.0

@@ -72,8 +72,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 _buildSettingItem(
-                  context,
-                _buildSettingItem(
                   context, 
                   "Şifre Değiştir", 
                   Icons.lock_outline,

@@ -804,28 +804,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           color: Colors.white,
                         ),
                       ),
-                      if (user.relationshipGoal != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white30),
-                          ),
-                          child: Text(
-                            _getGoalLabel(user.relationshipGoal),
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 10,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
                       if (user.isVerified) ...[
                         const SizedBox(width: 8),
-                        const Icon(Icons.verified, color: Colors.blue, size: 20),
+                        const Icon(Icons.verified, color: AppColors.primary, size: 22),
                       ],
                     ],
                   ),
@@ -848,16 +829,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       ),
                     ),
                   ],
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.verified, color: AppColors.primary, size: 22),
-                    ],
-                  ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
