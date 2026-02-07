@@ -642,8 +642,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               ),
 
               // Swipe Etiketleri
-              if (showLike) Positioned(top: 60, left: 30, child: _buildSwipeLabel('LIKE', AppColors.success, percentX.abs())),
-              if (showNope) Positioned(top: 60, right: 30, child: _buildSwipeLabel('NOPE', AppColors.error, percentX.abs())),
+              ...showLike ? [Positioned(top: 60, left: 30, child: _buildSwipeLabel('LIKE', AppColors.success, percentX.abs()))] : [],
+              ...showNope ? [Positioned(top: 60, right: 30, child: _buildSwipeLabel('NOPE', AppColors.error, percentX.abs()))] : [],
             ],
           ),
         ),
