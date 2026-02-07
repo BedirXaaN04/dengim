@@ -49,4 +49,8 @@ class NotificationService {
       LogService.w('User declined permission');
     }
   }
+
+  static Future<void> updateToken() async {
+    await NotificationService().initialize();
+  }
 }

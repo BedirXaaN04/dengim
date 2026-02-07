@@ -64,7 +64,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       location: widget.initialSettings.location,
       interests: widget.initialSettings.interests,
     );
-    );
   }
 
   @override

@@ -111,8 +111,6 @@ class UserProfile {
       longitude: map['longitude']?.toDouble(),
       distance: 0.0, // Calculate later based on lat/long
       createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
-      createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
-      lastActive: (map['lastActive'] as Timestamp? ?? Timestamp.now()).toDate(),
       lastActive: (map['lastActive'] as Timestamp? ?? Timestamp.now()).toDate(),
       blockedUsers: List<String>.from(map['blockedUsers'] ?? []),
       fcmToken: map['fcmToken'],

@@ -85,8 +85,6 @@ class ChatMessage {
   final String senderId;
   final String content;
   final DateTime timestamp;
-  final String content;
-  final DateTime timestamp;
   final bool isRead;
   final MessageType type;
 
@@ -98,7 +96,6 @@ class ChatMessage {
     required this.senderId,
     required this.content,
     required this.timestamp,
-    required this.timestamp,
     this.isRead = false,
     this.type = MessageType.text,
   });
@@ -107,7 +104,6 @@ class ChatMessage {
     return {
       'senderId': senderId,
       'content': content,
-      'timestamp': Timestamp.fromDate(timestamp),
       'timestamp': Timestamp.fromDate(timestamp),
       'isRead': isRead,
       'type': type.name,
@@ -120,7 +116,6 @@ class ChatMessage {
       id: doc.id,
       senderId: data['senderId'] ?? '',
       content: data['content'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp? ?? Timestamp.now()).toDate(),
       timestamp: (data['timestamp'] as Timestamp? ?? Timestamp.now()).toDate(),
       isRead: data['isRead'] ?? false,
       type: MessageType.values.firstWhere((e) => e.name == (data['type'] ?? 'text'), orElse: () => MessageType.text),
