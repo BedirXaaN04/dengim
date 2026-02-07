@@ -11,78 +11,98 @@ class CloudinaryService {
 
 
   static Future<String?> uploadImage(XFile file) async {
-    try {
-      final url = Uri.parse("https://api.cloudinary.com/v1_1/$_cloudName/image/upload");
-      
-      // Web ve mobil için farklı yükleme stratejisi
-      http.MultipartRequest request = http.MultipartRequest("POST", url)
-        ..fields['upload_preset'] = _uploadPreset;
-      
-      if (kIsWeb) {
-        // Web için bytes kullan
-        final bytes = await file.readAsBytes();
-        request.files.add(http.MultipartFile.fromBytes(
-          'file',
-          bytes,
-          filename: file.name,
-        ));
-      } else {
-        // Mobil için path kullan
-        request.files.add(await http.MultipartFile.fromPath('file', file.path));
+    return _uploadWithRetry(() async {
+      try {
+        final url = Uri.parse("https://api.cloudinary.com/v1_1/$_cloudName/image/upload");
+        
+        // Web ve mobil için farklı yükleme stratejisi
+        http.MultipartRequest request = http.MultipartRequest("POST", url)
+          ..fields['upload_preset'] = _uploadPreset;
+        
+        if (kIsWeb) {
+          // Web için bytes kullan
+          final bytes = await file.readAsBytes();
+          request.files.add(http.MultipartFile.fromBytes(
+            'file',
+            bytes,
+            filename: file.name,
+          ));
+        } else {
+          // Mobil için path kullan
+          request.files.add(await http.MultipartFile.fromPath('file', file.path));
+        }
+
+        final response = await request.send();
+        final responseData = await response.stream.toBytes();
+        final responseString = String.fromCharCodes(responseData);
+        final jsonResponse = jsonDecode(responseString);
+
+        if (response.statusCode == 200) {
+          LogService.i("Cloudinary upload success: ${jsonResponse['secure_url']}");
+          return jsonResponse['secure_url'];
+        } else {
+          LogService.e("Cloudinary Upload Failed (Status: ${response.statusCode})");
+          LogService.e("Response: $responseString");
+          throw Exception("Upload failed with status ${response.statusCode}");
+        }
+
+      } catch (e) {
+        LogService.e("Cloudinary upload attempt failed", e);
+        rethrow;
       }
+    });
+  }
 
-      final response = await request.send();
-      final responseData = await response.stream.toBytes();
-      final responseString = String.fromCharCodes(responseData);
-      final jsonResponse = jsonDecode(responseString);
-
-      if (response.statusCode == 200) {
-        LogService.i("Cloudinary upload success: ${jsonResponse['secure_url']}");
-        return jsonResponse['secure_url'];
-      } else {
-        LogService.e("Cloudinary Upload Failed (Status: ${response.statusCode})");
-        LogService.e("Response: $responseString");
-        LogService.e("URL: $url");
-        return null;
+  static Future<String?> _uploadWithRetry(Future<String?> Function() uploadFn, {int maxAttempts = 3}) async {
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        return await uploadFn();
+      } catch (e) {
+        if (attempt == maxAttempts - 1) {
+          LogService.e("Upload failed after $maxAttempts attempts", e);
+          return null;
+        }
+        // Exponential backoff: 1s, 2s, 4s
+        final delay = Duration(seconds: 1 << attempt);
+        LogService.i("Retry upload in ${delay.inSeconds}s (attempt ${attempt + 1}/$maxAttempts)");
+        await Future.delayed(delay);
       }
-
-    } catch (e) {
-      LogService.e("Cloudinary Catch Error", e);
-      return null;
     }
+    return null;
   }
 
   static Future<String?> uploadImageBytes(Uint8List bytes, {String filename = 'image.jpg'}) async {
-    try {
-      final url = Uri.parse("https://api.cloudinary.com/v1_1/$_cloudName/image/upload");
-      final request = http.MultipartRequest("POST", url);
+    return _uploadWithRetry(() async {
+      try {
+        final url = Uri.parse("https://api.cloudinary.com/v1_1/$_cloudName/image/upload");
+        final request = http.MultipartRequest("POST", url);
 
-      request.fields['upload_preset'] = _uploadPreset;
-      
-      // Upload raw bytes
-      request.files.add(http.MultipartFile.fromBytes(
-        'file', 
-        bytes, 
-        filename: filename
-      ));
+        request.fields['upload_preset'] = _uploadPreset;
+        
+        // Upload raw bytes
+        request.files.add(http.MultipartFile.fromBytes(
+          'file', 
+          bytes, 
+          filename: filename
+        ));
 
-      final response = await request.send();
-      final responseData = await response.stream.toBytes();
-      final responseString = String.fromCharCodes(responseData);
-      final jsonResponse = jsonDecode(responseString);
+        final response = await request.send();
+        final responseData = await response.stream.toBytes();
+        final responseString = String.fromCharCodes(responseData);
+        final jsonResponse = jsonDecode(responseString);
 
-      if (response.statusCode == 200) {
-        LogService.i("Cloudinary bytes upload success: ${jsonResponse['secure_url']}");
-        return jsonResponse['secure_url'];
-      } else {
-        LogService.e("Cloudinary Bytes Upload Failed (Status: ${response.statusCode})");
-        LogService.e("Response: $responseString");
-        return null;
+        if (response.statusCode == 200) {
+          LogService.i("Cloudinary bytes upload success: ${jsonResponse['secure_url']}");
+          return jsonResponse['secure_url'];
+        } else {
+          LogService.e("Cloudinary Bytes Upload Failed (Status: ${response.statusCode})");
+          throw Exception("Bytes upload failed with status ${response.statusCode}");
+        }
+      } catch (e) {
+        LogService.e("Cloudinary bytes upload attempt failed", e);
+        rethrow;
       }
-    } catch (e) {
-      LogService.e("Cloudinary Bytes Catch Error", e);
-      return null;
-    }
+    });
   }
 }
 
