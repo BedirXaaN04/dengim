@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../core/theme/app_colors.dart';
-import 'models/chat_models.dart';
-import 'services/chat_service.dart';
-import 'widgets/chat_widgets.dart';
+import '../../../core/theme/app_colors.dart';
+import '../models/chat_models.dart';
+import '../services/chat_service.dart';
+import '../widgets/chat_widgets.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String chatId;
