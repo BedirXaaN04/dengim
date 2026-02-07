@@ -87,6 +87,8 @@ class ChatMessage {
   final DateTime timestamp;
   final bool isRead;
   final MessageType type;
+  final List<String> deletedFor; // YENİ: Soft delete
+  final Map<String, dynamic>? storyReply; // YENİ: Story context
 
   // UI Yardımcısı
   bool isMe(String currentUserId) => senderId == currentUserId;
@@ -98,6 +100,8 @@ class ChatMessage {
     required this.timestamp,
     this.isRead = false,
     this.type = MessageType.text,
+    this.deletedFor = const [],
+    this.storyReply,
   });
 
   Map<String, dynamic> toMap() {
