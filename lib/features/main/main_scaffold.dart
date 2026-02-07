@@ -8,6 +8,9 @@ import '../map/map_screen.dart';
 import '../chats/chats_screen.dart';
 import '../profile/profile_screen.dart';
 import '../likes/likes_screen.dart';
+import 'package:provider/provider.dart';
+import '../../core/providers/connectivity_provider.dart';
+import '../../core/widgets/offline_banner.dart';
 
 /// MainScaffold - Ana uygulama iskeleti
 class MainScaffold extends StatefulWidget {
@@ -73,12 +76,24 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final connectivityProvider = context.watch<ConnectivityProvider>();
+    
     return Scaffold(
       backgroundColor: AppColors.scaffold,
       extendBody: true, // Bottom nav overlap
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: Column(
+        children: [
+          // Offline banner
+          if (!connectivityProvider.isConnected)
+            const OfflineBanner(),
+          // Main content
+          Expanded(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _screens,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: _buildBottomNav(),
     );
