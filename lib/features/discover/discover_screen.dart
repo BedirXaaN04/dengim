@@ -47,11 +47,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   void _loadInitialData() {
+    try {
       context.read<DiscoveryProvider>().loadDiscoveryUsers(
         gender: _filterSettings.gender,
         minAge: _filterSettings.ageRange.start.toInt(),
         maxAge: _filterSettings.ageRange.end.toInt(),
       );
+    } catch (e) {
+      LogService.e("Failed to load initial discovery data", e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Kullanıcılar yüklenemedi. Lütfen internet bağlantınızı kontrol edin.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   Future<bool> _onSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) async {
