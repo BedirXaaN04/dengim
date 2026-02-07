@@ -118,8 +118,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       return;
     }
 
-    if (_birthDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen doğum tarihinizi seçiniz')));
+    if (_getBirthDateFromFields() == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen doğum tarihinizi giriniz')));
       return;
     }
 
