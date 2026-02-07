@@ -219,6 +219,22 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.call, color: Colors.white),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Sesli arama yakında gelecek')),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.videocam, color: Colors.white),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Görüntülü arama yakında gelecek')),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onPressed: _showChatOptions,
           ),
@@ -277,6 +293,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ),
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.image, color: AppColors.primary),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Fotoğraf gönderme yakında eklenecek')),
+                    );
+                  },
+                ),
                 Expanded(
                   child: TextField(
                     controller: _messageController,

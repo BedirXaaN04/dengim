@@ -27,6 +27,14 @@ class ChatService {
           final chats = <ChatConversation>[];
           
           for (var doc in snapshot.docs) {
+            final data = doc.data();
+            final deletedFor = List<String>.from(data['deletedFor'] ?? []);
+            
+            // Skip if current user deleted this conversation
+            if (deletedFor.contains(user.uid)) {
+              continue;
+            }
+            
             var chat = ChatConversation.fromFirestore(doc, user.uid);
             
             if (chat.otherUserId.isNotEmpty) {
