@@ -94,7 +94,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _confettiController.play();
   }
 
+  // Swipe State
+  Offset _cardPosition = Offset.zero;
+  bool _isDragging = false;
+  
+  // Photo Index
+  int _currentPhotoIndex = 0;
+
+  // UI State
+  bool _isLoading = true;
   UserProfile? _matchedUser;
+  
+  // Timer for auto-refresh
+  // Timer? _autoRefreshTimer; // This line is commented out as it requires 'dart:async' import and was not explicitly requested to be added.
+  
   bool _showMatch = false;
 
   @override
@@ -639,19 +652,29 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   List<Widget> _buildStackChildren(UserProfile user, bool showLike, bool showNope, double percentX) {
+    final photoUrls = user.photoUrls ?? [user.imageUrl];
     final children = <Widget>[
-      CachedNetworkImage(
-        imageUrl: user.imageUrl,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Shimmer.fromColors(
-          baseColor: Colors.white10,
-          highlightColor: Colors.white24,
-          child: Container(color: Colors.white),
-        ),
-        errorWidget: (context, url, error) => Container(
-          color: AppColors.surface,
-          child: const Icon(Icons.person, size: 80, color: Colors.white10),
-        ),
+      // Multi-photo PageView
+      PageView.builder(
+        itemCount: photoUrls.length,
+        onPageChanged: (index) {
+          setState(() => _currentPhotoIndex = index);
+        },
+        itemBuilder: (context, index) {
+          return CachedNetworkImage(
+            imageUrl: photoUrls[index],
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Shimmer.fromColors(
+              baseColor: Colors.white10,
+              highlightColor: Colors.white24,
+              child: Container(color: Colors.white),
+            ),
+            errorWidget: (context, url, error) => Container(
+              color: AppColors.surface,
+              child: const Icon(Icons.person, size: 80, color: Colors.white10),
+            ),
+          );
+        },
       ),
       Container(
         decoration: BoxDecoration(
@@ -696,6 +719,31 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           ),
         ),
       ),
+      // Photo Indicators
+      if (photoUrls.length > 1)
+        Positioned(
+          top: 12,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              photoUrls.length,
+              (index) => Container(
+                width: 6,
+                height: 6,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentPhotoIndex == index
+                    ? AppColors.primary
+                    : Colors.white.withOpacity(0.5),
+                ),
+              ),
+            ),
+          ),
+        ),
+      // User Info
       Positioned(
         bottom: 24,
         left: 24,
