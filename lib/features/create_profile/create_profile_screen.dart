@@ -48,6 +48,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
+  final TextEditingController _dayController = TextEditingController();
+  final TextEditingController _monthController = TextEditingController();
+  final TextEditingController _yearController = TextEditingController();
   
   @override
   void dispose() {
@@ -55,37 +58,33 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _countryController.dispose();
     _bioController.dispose();
     _jobController.dispose();
+    _dayController.dispose();
+    _monthController.dispose();
+    _yearController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectBirthDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1924),
-      lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)), // En az 18 yaşında
-      locale: const Locale('tr'),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
-              primary: AppColors.primary,
-              onPrimary: Colors.black,
-              surface: AppColors.surface,
-              onSurface: Colors.white,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
+  DateTime? _getBirthDateFromFields() {
+    final day = int.tryParse(_dayController.text);
+    final month = int.tryParse(_monthController.text);
+    final year = int.tryParse(_yearController.text);
     
-    if (picked != null && picked != _birthDate) {
-      setState(() => _birthDate = picked);
+    if (day == null || month == null || year == null) return null;
+    if (day < 1 || day > 31) return null;
+    if (month < 1 || month > 12) return null;
+    if (year < 1924 || year > DateTime.now().year) return null;
+    
+    try {
+      return DateTime(year, month, day);
+    } catch (e) {
+      return null;
     }
   }
 
-  int _calculateAge(DateTime birthDate) {
+  int? _calculateAge() {
+    final birthDate = _getBirthDateFromFields();
+    if (birthDate == null) return null;
+    
     final now = DateTime.now();
     int age = now.year - birthDate.year;
     if (now.month < birthDate.month || 
@@ -95,7 +94,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     return age;
   }
   // State variables
-  DateTime? _birthDate; // ← YENİ
   String? _selectedGender;
   final List<String> _selectedInterests = [];
   final List<XFile?> _profilePhotos = [null, null, null, null, null, null]; 
@@ -172,7 +170,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       // Firestore kaydı
       await _profileService.createProfile(
         name: _nameController.text.trim(),
-        birthDate: _birthDate, // ← YENİ
+        birthDate: _getBirthDateFromFields(),
         gender: _selectedGender ?? 'Diğer',
         country: _countryController.text.trim(),
         interests: _selectedInterests,
@@ -272,56 +270,132 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     ),
                     // Birth Date Selection
                     _buildSectionHeader('DOĞUM TARİHİ'),
+                    // Birth Date - Simple Text Inputs
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: GestureDetector(
-                        onTap: () => _selectBirthDate(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: _birthDate == null 
-                                ? Colors.red.withOpacity(0.5)
-                                : Colors.white.withOpacity(0.1),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _birthDate == null
-                                      ? 'Doğum Tarihinizi Seçin'
-                                      : '${_birthDate!.day}/${_birthDate!.month}/${_birthDate!.year}',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 16,
-                                      color: _birthDate == null
-                                        ? Colors.white.withOpacity(0.5)
-                                        : Colors.white,
-                                      fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _dayController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                                  decoration: InputDecoration(
+                                    labelText: 'Gün',
+                                    hintText: '01',
+                                    filled: true,
+                                    fillColor: AppColors.surface,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      borderSide: BorderSide.none,
                                     ),
+                                    labelStyle: GoogleFonts.plusJakartaSans(color: Colors.white54),
+                                    hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
                                   ),
-                                  if (_birthDate != null)
-                                    Text(
-                                      '${_calculateAge(_birthDate!)} yaşında',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 12,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                ],
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) return 'Gün gerekli';
+                                    final day = int.tryParse(value);
+                                    if (day == null || day < 1 || day > 31) return 'Geçersiz gün';
+                                    return null;
+                                  },
+                                  onChanged: (_) => setState(() {}),
+                                ),
                               ),
-                              Icon(
-                                Icons.calendar_today,
-                                color: AppColors.primary,
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _monthController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                                  decoration: InputDecoration(
+                                    labelText: 'Ay',
+                                    hintText: '12',
+                                    filled: true,
+                                    fillColor: AppColors.surface,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    labelStyle: GoogleFonts.plusJakartaSans(color: Colors.white54),
+                                    hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) return 'Ay gerekli';
+                                    final month = int.tryParse(value);
+                                    if (month == null || month < 1 || month > 12) return 'Geçersiz ay';
+                                    return null;
+                                  },
+                                  onChanged: (_) => setState(() {}),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                flex: 2,
+                                child: TextFormField(
+                                  controller: _yearController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(4),
+                                  ],
+                                  style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                                  decoration: InputDecoration(
+                                    labelText: 'Yıl',
+                                    hintText: '2000',
+                                    filled: true,
+                                    fillColor: AppColors.surface,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    labelStyle: GoogleFonts.plusJakartaSans(color: Colors.white54),
+                                    hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) return 'Yıl gerekli';
+                                    final year = int.tryParse(value);
+                                    final currentYear = DateTime.now().year;
+                                    if (year == null || year < 1924 || year > currentYear) {
+                                      return 'Geçersiz yıl';
+                                    }
+                                    
+                                    // 18 yaş kontrolü
+                                    final age = _calculateAge();
+                                    if (age != null && age < 18) {
+                                      return 'En az 18 yaşında olmalısınız';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (_) => setState(() {}),
+                                ),
                               ),
                             ],
                           ),
-                        ),
+                          if (_calculateAge() != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                '${_calculateAge()} yaşındasınız',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: _calculateAge()! >= 18 
+                                      ? AppColors.primary 
+                                      : Colors.red,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     Row(
