@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/theme/app_colors.dart';
+import 'package:dengim/core/theme/app_colors.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../auth/services/report_service.dart';
 import '../../auth/services/block_service.dart';
