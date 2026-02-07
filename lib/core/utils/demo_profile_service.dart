@@ -19,11 +19,15 @@ class DemoProfileService {
       final Map<String, dynamic> data = json.decode(jsonString);
       
       final profiles = (data['profiles'] as List).map((p) {
+        // Calculate birthDate from age
+        final age = p['age'] ?? 25;
+        final birthDate = DateTime.now().subtract(Duration(days: age * 365));
+        
         return UserProfile(
           uid: p['uid'] ?? '',
           email: '${p['uid']}@demo.dengim.app',
           name: p['name'] ?? '',
-          age: p['age'] ?? 18,
+          birthDate: birthDate,
           gender: p['gender'] ?? '',
           country: p['country'] ?? '',
           interests: List<String>.from(p['interests'] ?? []),

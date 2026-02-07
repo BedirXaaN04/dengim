@@ -231,6 +231,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
            borderRadius: BorderRadius.circular(14),
            border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
-        child: Icon(icon, color: Colors.white70,        );
-      },
+        child: Icon(icon, color: Colors.white70, size: 22),
+      ),
     );
+  }
+}
