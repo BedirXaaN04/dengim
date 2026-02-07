@@ -259,10 +259,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     return GestureDetector(
                       onLongPress: isMe ? () => _showMessageOptions(message) : null,
                       child: ChatBubble(
-                        message: message.content,
-                        isMe: isMe,
-                        timestamp: message.timestamp,
-                        storyReply: message.storyReply,
+                        message: message,
                       ),
                     );
                   },
