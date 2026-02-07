@@ -52,6 +52,7 @@ export const UserService = {
                     matchCount: data.matchCount || 0,
                     messageCount: data.messageCount || 0,
                     bio: data.bio || '',
+                    relationshipGoal: data.relationshipGoal || undefined,
                     createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
                     updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
                     phone: data.phoneNumber || data.phone || undefined,
@@ -151,12 +152,25 @@ export const UserService = {
     },
 
     // Kullanıcı durumunu güncelle
-    updateUserStatus: async (userId: string, action: 'ban' | 'verify' | 'suspend') => {
+    updateUserStatus: async (userId: string, action: 'ban' | 'verify' | 'suspend' | 'activate') => {
         try {
             const updates: any = {};
-            if (action === 'ban') { updates.isBanned = true; updates.status = 'banned'; }
-            else if (action === 'verify') { updates.isVerified = true; updates.status = 'verified'; }
-            else if (action === 'suspend') { updates.isBanned = true; updates.status = 'suspended'; }
+            if (action === 'ban') {
+                updates.isBanned = true;
+                updates.status = 'banned';
+            }
+            else if (action === 'verify') {
+                updates.isVerified = true;
+                updates.status = 'active'; // or 'verified' if you prefer
+            }
+            else if (action === 'suspend') {
+                updates.isBanned = true;
+                updates.status = 'suspended';
+            }
+            else if (action === 'activate') {
+                updates.isBanned = false;
+                updates.status = 'active';
+            }
 
             const userRef = doc(db, USERS_COLLECTION, userId);
             await updateDoc(userRef, {

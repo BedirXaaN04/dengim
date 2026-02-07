@@ -9,12 +9,14 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { UserService } from '@/services/userService';
-import { User } from '@/types';
+import { VerificationService } from '@/services/verificationService';
+import { User, VerificationRequest } from '@/types';
 
 export default function ModerationPage() {
-    const [activeTab, setActiveTab] = useState<'photos' | 'bios' | 'settings'>('photos');
+    const [activeTab, setActiveTab] = useState<'photos' | 'bios' | 'id_verify' | 'settings'>('photos');
     const [pendingUsers, setPendingUsers] = useState<User[]>([]);
     const [pendingBios, setPendingBios] = useState<User[]>([]);
+    const [verificationRequests, setVerificationRequests] = useState<VerificationRequest[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -22,6 +24,8 @@ export default function ModerationPage() {
             fetchPending();
         } else if (activeTab === 'bios') {
             fetchBios();
+        } else if (activeTab === 'id_verify') {
+            fetchVerifications();
         }
     }, [activeTab]);
 
@@ -49,10 +53,36 @@ export default function ModerationPage() {
         }
     };
 
-    const handleVerify = async (userId: string, status: 'verify' | 'ban') => {
+    const fetchVerifications = async () => {
+        setLoading(true);
+        try {
+            const data = await VerificationService.getPendingRequests();
+            setVerificationRequests(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyUser = async (userId: string, status: 'verify' | 'ban') => {
         try {
             await UserService.updateUserStatus(userId, status);
             setPendingUsers(prev => prev.filter(u => u.id !== userId));
+        } catch (error) {
+            alert('Hata oluştu');
+        }
+    };
+
+    const handleVerificationAction = async (requestId: string, userId: string, action: 'approve' | 'reject') => {
+        try {
+            if (action === 'approve') {
+                await VerificationService.approveRequest(requestId, userId);
+            } else {
+                const reason = prompt('Reddetme nedeni:') || 'Düşük kaliteli selfie veya yetersiz bilgi';
+                await VerificationService.rejectRequest(requestId, userId, reason);
+            }
+            setVerificationRequests(prev => prev.filter(r => r.id !== requestId));
         } catch (error) {
             alert('Hata oluştu');
         }
@@ -97,6 +127,7 @@ export default function ModerationPage() {
                     <div className="flex border-b border-white/10 px-4 gap-6 sticky top-0 bg-background-dark z-10">
                         {[
                             { key: 'photos', label: 'Fotoğraf Onayı', count: pendingUsers.length },
+                            { key: 'id_verify', label: 'Mavi Tik Onayı', count: verificationRequests.length },
                             { key: 'bios', label: 'İçerik Kontrol' },
                             { key: 'settings', label: 'Kurallar' },
                         ].map((tab) => (
@@ -144,13 +175,13 @@ export default function ModerationPage() {
                                                     )}
                                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                                                         <button
-                                                            onClick={() => handleVerify(user.id, 'verify')}
+                                                            onClick={() => handleVerifyUser(user.id, 'verify')}
                                                             className="h-14 w-14 rounded-full bg-emerald-500 flex items-center justify-center text-white hover:bg-emerald-400"
                                                         >
                                                             <span className="material-symbols-outlined">check</span>
                                                         </button>
                                                         <button
-                                                            onClick={() => handleVerify(user.id, 'ban')}
+                                                            onClick={() => handleVerifyUser(user.id, 'ban')}
                                                             className="h-14 w-14 rounded-full bg-rose-500 flex items-center justify-center text-white hover:bg-rose-400"
                                                         >
                                                             <span className="material-symbols-outlined">close</span>
@@ -166,6 +197,44 @@ export default function ModerationPage() {
                                             <div className="col-span-full py-20 text-center text-white/20">
                                                 <span className="material-symbols-outlined text-6xl mb-4">verified</span>
                                                 <p>Onay bekleyen içerik bulunmuyor.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {activeTab === 'id_verify' && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                        {verificationRequests.length > 0 ? verificationRequests.map((req) => (
+                                            <div key={req.id} className="bg-surface-dark rounded-2xl border border-white/10 overflow-hidden group">
+                                                <div className="aspect-[3/4] relative bg-white/5">
+                                                    <img src={req.selfieUrl} alt={req.email} className="w-full h-full object-cover" />
+                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                                                        <button
+                                                            onClick={() => handleVerificationAction(req.id, req.userId, 'approve')}
+                                                            className="h-14 w-14 rounded-full bg-emerald-500 flex items-center justify-center text-white hover:bg-emerald-400"
+                                                            title="Onayla"
+                                                        >
+                                                            <span className="material-symbols-outlined">check</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleVerificationAction(req.id, req.userId, 'reject')}
+                                                            className="h-14 w-14 rounded-full bg-rose-500 flex items-center justify-center text-white hover:bg-rose-400"
+                                                            title="Reddet"
+                                                        >
+                                                            <span className="material-symbols-outlined">close</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="p-4">
+                                                    <h4 className="font-bold text-white text-sm truncate">{req.email}</h4>
+                                                    <p className="text-xs text-white/40">{formatRelativeTime(req.createdAt)}</p>
+                                                    <Badge className="mt-2" variant="warning">Onay Bekliyor</Badge>
+                                                </div>
+                                            </div>
+                                        )) : (
+                                            <div className="col-span-full py-20 text-center text-white/20">
+                                                <span className="material-symbols-outlined text-6xl mb-4">face</span>
+                                                <p>Onay bekleyen kimlik doğrulaması bulunmuyor.</p>
                                             </div>
                                         )}
                                     </div>

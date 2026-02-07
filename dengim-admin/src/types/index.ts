@@ -19,12 +19,25 @@ export interface User {
     premiumTier?: 'basic' | 'gold' | 'platinum';
     premiumExpiry?: Date;
     isVerified: boolean;
+    relationshipGoal?: 'serious' | 'casual' | 'chat' | 'unsure' | string;
     reportCount: number;
     matchCount: number;
     messageCount: number;
     lastActive: Date;
     createdAt: Date;
     updatedAt: Date;
+}
+
+// Verification Types
+export interface VerificationRequest {
+    id: string;
+    userId: string;
+    email: string;
+    selfieUrl: string;
+    status: 'pending' | 'approved' | 'rejected';
+    createdAt: Date;
+    resolvedAt?: Date;
+    rejectionReason?: string;
 }
 
 // Report Types

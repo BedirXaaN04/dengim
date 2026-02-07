@@ -18,6 +18,7 @@ export const AnalyticsService = {
             const usersColl = collection(db, "users");
             const reportsColl = collection(db, "reports");
             const supportColl = collection(db, "support_tickets");
+            const verificationsColl = collection(db, "verification_requests");
 
             const [
                 pendingReports,
@@ -25,7 +26,7 @@ export const AnalyticsService = {
                 openTickets
             ] = await Promise.all([
                 getCountFromServer(query(reportsColl, where("status", "==", "pending"))),
-                getCountFromServer(query(usersColl, where("isVerified", "==", false))),
+                getCountFromServer(query(verificationsColl, where("status", "==", "pending"))),
                 getCountFromServer(query(supportColl, where("status", "==", "open")))
             ]);
 
@@ -56,6 +57,7 @@ export const AnalyticsService = {
                 totalUsersSnap,
                 premiumUsersSnap,
                 reportsSnap,
+                verificationRequestsSnap,
                 matchesSnap,
                 todayUsersSnap,
                 weekUsersSnap,
@@ -64,6 +66,7 @@ export const AnalyticsService = {
                 getCountFromServer(usersColl),
                 getCountFromServer(query(usersColl, where("isPremium", "==", true))),
                 getCountFromServer(query(reportsColl, where("status", "==", "pending"))),
+                getCountFromServer(query(collection(db, "verification_requests"), where("status", "==", "pending"))),
                 getCountFromServer(matchesColl),
                 getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(todayStart)))),
                 getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(weekStart)))),
@@ -77,7 +80,7 @@ export const AnalyticsService = {
                 totalMatches: matchesSnap.data().count,
                 totalMessages: 0, // Requires messages subcollection or count
                 pendingReports: reportsSnap.data().count,
-                pendingVerifications: 0,
+                pendingVerifications: verificationRequestsSnap.data().count,
                 newUsersToday: todayUsersSnap.data().count,
                 newUsersThisWeek: weekUsersSnap.data().count,
                 newUsersThisMonth: monthUsersSnap.data().count,

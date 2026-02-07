@@ -259,12 +259,26 @@ export default function UsersPage() {
                                     <select
                                         value={editingUser.status}
                                         onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as any })}
-                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary"
+                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary appearance-none [&>option]:bg-surface-dark"
                                     >
                                         <option value="active">Aktif</option>
                                         <option value="verified">Doğrulanmış</option>
                                         <option value="pending">Beklemede</option>
                                         <option value="banned">Yasaklı</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">İlişki Hedefi</label>
+                                    <select
+                                        value={editingUser.relationshipGoal || ''}
+                                        onChange={(e) => setEditingUser({ ...editingUser, relationshipGoal: e.target.value })}
+                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary appearance-none [&>option]:bg-surface-dark"
+                                    >
+                                        <option value="">Belirtilmemiş</option>
+                                        <option value="serious">Ciddi Bir İlişki</option>
+                                        <option value="casual">Kısa Süreli Eğlence</option>
+                                        <option value="chat">Sadece Sohbet</option>
+                                        <option value="unsure">Henüz Kararsızım</option>
                                     </select>
                                 </div>
                                 <div className="flex gap-3 pt-4">
