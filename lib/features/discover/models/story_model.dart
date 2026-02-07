@@ -8,6 +8,7 @@ class Story {
   final String imageUrl;
   final DateTime createdAt;
   final List<String> viewers;
+  final List<String> likes; // Liked user IDs
   final bool isPremium;
   final bool isVerified;
 
@@ -19,6 +20,7 @@ class Story {
     required this.imageUrl,
     required this.createdAt,
     this.viewers = const [],
+    this.likes = const [],
     this.isPremium = false,
     this.isVerified = false,
   });
@@ -34,6 +36,7 @@ class Story {
       'imageUrl': imageUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'viewers': viewers,
+      'likes': likes,
       'isPremium': isPremium,
       'isVerified': isVerified,
     };
@@ -48,6 +51,7 @@ class Story {
       imageUrl: map['imageUrl'] ?? '',
       createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
       viewers: List<String>.from(map['viewers'] ?? []),
+      likes: List<String>.from(map['likes'] ?? []),
       isPremium: map['isPremium'] ?? false,
       isVerified: map['isVerified'] ?? false,
     );

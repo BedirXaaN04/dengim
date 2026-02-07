@@ -196,33 +196,77 @@ class ChatBubble extends StatelessWidget {
             )
           ] : null,
         ),
-        child: message.type == MessageType.image
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: CachedNetworkImage(
-                  imageUrl: message.content,
-                  placeholder: (context, url) => Container(
-                    height: 200, width: 250,
-                    color: Colors.black12,
-                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  ),
-                  errorWidget: (context, url, error) => const SizedBox(
-                    height: 100, width: 100,
-                    child: Icon(Icons.broken_image, color: Colors.white),
-                  ),
-                  fit: BoxFit.cover,
-                  width: 250,
+        child: Column(
+          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            if (message.storyReply != null)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white12),
                 ),
-              )
-            : Text(
-                message.content,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 15,
-                  color: isMe ? const Color(0xFF1F1F1F) : Colors.white.withOpacity(0.9),
-                  fontWeight: isMe ? FontWeight.w600 : FontWeight.normal,
-                  height: 1.4,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (message.storyReply!['storyUrl'] != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: message.storyReply!['storyUrl'],
+                          width: 40,
+                          height: 60,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(color: Colors.grey[800]),
+                          errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 20, color: Colors.white54),
+                        ),
+                      ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Hikayeye Yanıt", style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white54, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 2),
+                          const Icon(Icons.reply, color: Colors.white54, size: 14),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                 ),
               ),
+            message.type == MessageType.image
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: CachedNetworkImage(
+                      imageUrl: message.content,
+                      placeholder: (context, url) => Container(
+                        height: 200, width: 250,
+                        color: Colors.black12,
+                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+                      errorWidget: (context, url, error) => const SizedBox(
+                        height: 100, width: 100,
+                        child: Icon(Icons.broken_image, color: Colors.white),
+                      ),
+                      fit: BoxFit.cover,
+                      width: 250,
+                    ),
+                  )
+                : Text(
+                    message.content,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      color: isMe ? const Color(0xFF1F1F1F) : Colors.white.withOpacity(0.9),
+                      fontWeight: isMe ? FontWeight.w600 : FontWeight.normal,
+                      height: 1.4,
+                    ),
+                  ),
+          ],
+        ),
       ),
     );
   }

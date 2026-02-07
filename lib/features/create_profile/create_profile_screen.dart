@@ -398,16 +398,43 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildModernInput(
-                            controller: _countryController,
-                            label: 'Ülke',
-                            placeholder: 'Türkiye',
+                    // Country Dropdown
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: DropdownButtonFormField<String>(
+                        value: _countryController.text.isEmpty ? null : _countryController.text,
+                        decoration: InputDecoration(
+                          labelText: 'Ülke',
+                          filled: true,
+                          fillColor: AppColors.surface,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
                           ),
+                          labelStyle: GoogleFonts.plusJakartaSans(color: Colors.white54),
                         ),
-                      ],
+                        dropdownColor: AppColors.surface,
+                        style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                        items: [
+                          'Türkiye 🇹🇷',
+                          'Kurdistan 🟥⚪🟩',
+                          'Almanya 🇩🇪',
+                          'Fransa 🇫🇷',
+                          'İngiltere 🇬🇧',
+                          'ABD 🇺🇸',
+                          'Hollanda 🇳🇱',
+                          'Belçika 🇧🇪',
+                          'İsveç 🇸🇪',
+                          'Norveç 🇳🇴',
+                          'Diğer',
+                        ].map((country) => DropdownMenuItem(
+                          value: country,
+                          child: Text(country),
+                        )).toList(),
+                        onChanged: (value) {
+                          setState(() => _countryController.text = value ?? '');
+                        },
+                      ),
                     ),
                     
                     // Gender Section

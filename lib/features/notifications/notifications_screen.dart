@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/user_provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../chats/screens/chat_detail_screen.dart';
+import '../likes/likes_screen.dart';
+import '../discover/user_profile_detail_screen.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -116,7 +119,8 @@ class NotificationsScreen extends StatelessWidget {
                       if (!isRead) {
                         doc.reference.update({'isRead': true});
                       }
-                      // Navigation logic can be added here
+                      
+                      _handleNotificationTap(context, data);
                     },
                   ),
                 ),
@@ -136,6 +140,66 @@ class NotificationsScreen extends StatelessWidget {
       case 'story_like': return Icon(Icons.favorite_border, color: Colors.red, size: size);
       case 'message': return Icon(Icons.message, color: Colors.green, size: size);
       default: return Icon(Icons.notifications, color: Colors.white, size: size);
+    }
+  }
+
+  void _handleNotificationTap(BuildContext context, Map<String, dynamic> data) {
+    final type = data['type'];
+    final payload = data['data'] as Map<String, dynamic>? ?? {};
+    final senderId = data['senderId'];
+
+    switch (type) {
+      case 'message':
+      case 'match':
+      case 'story_reply':
+        if (payload['chatId'] != null) {
+          // ChatDetailScreen requires other user details. 
+          // Ideally we fetch them or pass minimal data.
+          // For now, if we have senderId, we can try to rely on ChatService to fetch details or passed data
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatDetailScreen(
+                chatId: payload['chatId'],
+                otherUserId: senderId ?? '',
+                otherUserName: payload['senderName'] ?? 'Kullanıcı',
+                otherUserAvatar: payload['senderAvatar'] ?? '',
+              ),
+            ),
+          );
+        } else if (senderId != null) {
+          // If no chatId, try to go to profile or chats list
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => UserProfileDetailScreen(userId: senderId)),
+          );
+        }
+        break;
+      
+      case 'like':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const LikesScreen()),
+        );
+        break;
+
+      case 'story_like':
+        if (senderId != null) {
+           Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => UserProfileDetailScreen(userId: senderId)),
+          );
+        }
+        break;
+        
+      default:
+        // Default to profile if sender exists
+        if (senderId != null) {
+           Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => UserProfileDetailScreen(userId: senderId)),
+          );
+        }
     }
   }
 

@@ -10,6 +10,7 @@ import '../profile/profile_screen.dart';
 import '../likes/likes_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/connectivity_provider.dart';
+import '../../core/providers/badge_provider.dart';
 import '../../core/widgets/offline_banner.dart';
 
 /// MainScaffold - Ana uygulama iskeleti
@@ -139,6 +140,15 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget _buildNavItem(int index) {
     final isSelected = _currentIndex == index;
     final item = _navItems[index];
+    final badgeProvider = context.watch<BadgeProvider>();
+    
+    // Determine badge count based on index
+    int badgeCount = 0;
+    if (index == 2) { // Chats
+      badgeCount = badgeProvider.chatBadge;
+    } else if (index == 1) { // Likes  
+      badgeCount = badgeProvider.likesBadge;
+    }
 
     return GestureDetector(
       onTap: () => _onTabTapped(index),
@@ -146,10 +156,40 @@ class _MainScaffoldState extends State<MainScaffold> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            isSelected ? item.activeIcon : item.icon,
-            size: 24,
-            color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.3),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                isSelected ? item.activeIcon : item.icon,
+                size: 24,
+                color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.3),
+              ),
+              if (badgeCount > 0)
+                Positioned(
+                  right: -8,
+                  top: -4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      badgeCount > 9 ? '9+' : '$badgeCount',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 6),
           Text(

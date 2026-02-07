@@ -8,6 +8,7 @@ import '../../features/chats/services/chat_service.dart';
 import '../../core/theme/app_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'user_profile_detail_screen.dart';
 
 class StoryViewerScreen extends StatefulWidget {
   final List<UserStories> stories;
@@ -276,7 +277,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
       child: GestureDetector(
         onTap: () {
           // Show Viewers Bottom Sheet
-          _showViewers(story.viewers);
+          _showViewers(story);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -331,7 +332,12 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
                       await _chatService.sendMessage(
                         chatId, 
                         value,
-                        targetUserId
+                        targetUserId,
+                        storyReply: {
+                          'storyId': story.id,
+                          'storyUrl': story.imageUrl,
+                          'timestamp': FieldValue.serverTimestamp(),
+                        }
                       );
                       _replyController.clear();
                       if (mounted) {
@@ -386,7 +392,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
     );
   }
 
-  void _showViewers(List<String> viewerIds) {
+  void _showViewers(Story story) {
     _animController.stop(); // Pause animation
     showModalBottomSheet(
       context: context,
@@ -406,7 +412,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Görüntüleyenler (${viewerIds.length})',
+                'Görüntüleyenler (${story.viewers.length})',
                 style: GoogleFonts.plusJakartaSans(
                   color: Colors.white,
                   fontSize: 18,
@@ -414,7 +420,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
                 ),
               ),
               const SizedBox(height: 16),
-              if (viewerIds.isEmpty)
+              if (story.viewers.isEmpty)
                 Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Center(
@@ -427,14 +433,14 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
               else
                 Expanded(
                   child: FutureBuilder<List<DocumentSnapshot>>(
-                    future: _fetchViewers(viewerIds),
+                    future: _fetchViewers(story.viewers),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator(color: AppColors.primary));
                       }
                       
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                         return Center(child: Text("Yüklenemedi", style: TextStyle(color: Colors.white54)));
+                         return const Center(child: Text("Yüklenemedi", style: TextStyle(color: Colors.white54)));
                       }
 
                       final users = snapshot.data!;
@@ -443,17 +449,30 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
                         itemCount: users.length,
                         itemBuilder: (context, index) {
                           final data = users[index].data() as Map<String, dynamic>;
+                          final userId = users[index].id;
                           final photoUrl = (data['photoUrls'] as List?)?.firstOrNull ?? '';
                           final name = data['name'] ?? 'Kullanıcı';
+                          final hasLiked = story.likes.contains(userId);
                           
                           return ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => UserProfileDetailScreen(userId: userId),
+                                ),
+                              );
+                            },
                             leading: CircleAvatar(
                               backgroundImage: photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
                               backgroundColor: Colors.grey[800],
-                              child: photoUrl.isEmpty ? Text(name[0]) : null,
+                              child: photoUrl.isEmpty ? Text(name.isNotEmpty ? name[0] : '?') : null,
                             ),
                             title: Text(name, style: const TextStyle(color: Colors.white)),
-                            subtitle: Text('Hikayeni gördü', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                            subtitle: Text('Hikayeni gördü', style: const TextStyle(color: Colors.white38, fontSize: 12)),
+                            trailing: hasLiked 
+                                ? const Icon(Icons.favorite, color: Colors.red, size: 20)
+                                : null,
                           );
                         },
                       );

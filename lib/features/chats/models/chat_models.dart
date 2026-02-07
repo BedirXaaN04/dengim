@@ -111,6 +111,7 @@ class ChatMessage {
       'timestamp': Timestamp.fromDate(timestamp),
       'isRead': isRead,
       'type': type.name,
+      'storyReply': storyReply,
     };
   }
 
@@ -123,6 +124,8 @@ class ChatMessage {
       timestamp: (data['timestamp'] as Timestamp? ?? Timestamp.now()).toDate(),
       isRead: data['isRead'] ?? false,
       type: MessageType.values.firstWhere((e) => e.name == (data['type'] ?? 'text'), orElse: () => MessageType.text),
+      storyReply: data['storyReply'] != null ? Map<String, dynamic>.from(data['storyReply']) : null,
+      deletedFor: List<String>.from(data['deletedFor'] ?? []),
     );
   }
 }

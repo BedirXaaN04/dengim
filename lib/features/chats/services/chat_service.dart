@@ -85,7 +85,13 @@ class ChatService {
   }
 
   /// Mesaj Gönder
-  Future<void> sendMessage(String chatId, String content, String receiverId, {MessageType type = MessageType.text}) async {
+  Future<void> sendMessage(
+    String chatId, 
+    String content, 
+    String receiverId, { // receiverId is kept for backward compat but inside update we use it for unread count
+    MessageType type = MessageType.text,
+    Map<String, dynamic>? storyReply,
+  }) async {
     final user = currentUser;
     if (user == null) return;
 
@@ -97,20 +103,28 @@ class ChatService {
       lastMessagePreview = "📷 Fotoğraf";
     } else if (type == MessageType.audio) {
       lastMessagePreview = "🎤 Ses";
+    } else if (storyReply != null) {
+      lastMessagePreview = "💬 Hikayeye yanıt";
     }
 
     // 1. Mesajı alt koleksiyona ekle
-    await _firestore
-        .collection('conversations')
-        .doc(chatId)
-        .collection('messages')
-        .add({
+    final messageData = {
       'senderId': user.uid,
       'content': content,
       'timestamp': timestamp,
       'isRead': false,
       'type': type.name,
-    });
+    };
+    
+    if (storyReply != null) {
+      messageData['storyReply'] = storyReply;
+    }
+
+    await _firestore
+        .collection('conversations')
+        .doc(chatId)
+        .collection('messages')
+        .add(messageData);
 
     // 2. Ana sohbet belgesini güncelle (son mesaj, okunmamış sayısı vb.)
     // Okunmamış sayısını artırmak için receiverId'yi kullanarak map'i güncelle

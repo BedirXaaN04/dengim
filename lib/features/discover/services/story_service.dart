@@ -41,6 +41,7 @@ class StoryService {
         'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
         'viewers': [],
+        'likes': [], // Init likes
         'isPremium': isPremium,
         'isVerified': isVerified,
       });
@@ -80,6 +81,7 @@ class StoryService {
         'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
         'viewers': [],
+        'likes': [], // Init likes
         'isPremium': isPremium,
         'isVerified': isVerified,
       });
