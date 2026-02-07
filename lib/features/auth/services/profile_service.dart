@@ -16,23 +16,23 @@ class ProfileService {
 
   Future<void> createProfile({
     required String name,
-    required int age,
+    DateTime? birthDate,
     required String gender,
     required String country,
     required List<String> interests,
-    required List<String> photoUrls,
+    List<String>? photoUrls,
     String? bio,
     String? job,
     String? education,
   }) async {
     final user = _currentUser;
-    if (user == null) return;
+    if (user == null) throw Exception("Kullanıcı bulunamadı");
 
     final userProfile = {
       'uid': user.uid,
       'email': user.email ?? '',
       'name': name,
-      'age': age,
+      'birthDate': birthDate != null ? Timestamp.fromDate(birthDate) : null,
       'gender': gender,
       'country': country,
       'interests': interests,

@@ -4,7 +4,7 @@ class UserProfile {
   final String uid;
   final String email;
   final String name;
-  final int age;
+  final DateTime? birthDate; // ← YENİ: Doğum tarihi
   final String gender;
   final String country;
   final List<String> interests;
@@ -34,7 +34,7 @@ class UserProfile {
     required this.uid,
     required this.email,
     required this.name,
-    required this.age,
+    this.birthDate,
     required this.gender,
     required this.country,
     required this.interests,
@@ -51,9 +51,21 @@ class UserProfile {
     this.longitude,
     required this.createdAt,
     required this.lastActive,
-    this.blockedUsers = const [],
+    required this.blockedUsers,
     this.fcmToken,
   });
+
+  // Calculated age from birthDate
+  int get age {
+    if (birthDate == null) return 25; // Default fallback
+    final now = DateTime.now();
+    int calculatedAge = now.year - birthDate!.year;
+    if (now.month < birthDate!.month || 
+        (now.month == birthDate!.month && now.day < birthDate!.day)) {
+      calculatedAge--;
+    }
+    return calculatedAge;
+  }
 
   // UI Yardımcıları
   String get imageUrl => (photoUrls != null && photoUrls!.isNotEmpty) 
@@ -67,7 +79,7 @@ class UserProfile {
       'uid': uid,
       'email': email,
       'name': name,
-      'age': age,
+      'birthDate': birthDate != null ? Timestamp.fromDate(birthDate!) : null,
       'gender': gender,
       'country': country,
       'interests': interests,
@@ -95,7 +107,11 @@ class UserProfile {
       uid: map['uid'] ?? '',
       email: map['email'] ?? '',
       name: map['name'] ?? '',
-      age: map['age']?.toInt() ?? 18,
+      birthDate: map['birthDate'] != null 
+        ? (map['birthDate'] as Timestamp).toDate()
+        : (map['age'] != null 
+            ? DateTime.now().subtract(Duration(days: 365 * (map['age'] as int)))  // Backward compat
+            : null),
       gender: map['gender'] ?? '',
       country: map['country'] ?? '',
       interests: List<String>.from(map['interests'] ?? []),

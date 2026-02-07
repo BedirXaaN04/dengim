@@ -45,12 +45,57 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   
   // Controllers
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
   
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _countryController.dispose();
+    _bioController.dispose();
+    _jobController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectBirthDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1924),
+      lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)), // En az 18 yaşında
+      locale: const Locale('tr'),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: AppColors.primary,
+              onPrimary: Colors.black,
+              surface: AppColors.surface,
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    
+    if (picked != null && picked != _birthDate) {
+      setState(() => _birthDate = picked);
+    }
+  }
+
+  int _calculateAge(DateTime birthDate) {
+    final now = DateTime.now();
+    int age = now.year - birthDate.year;
+    if (now.month < birthDate.month || 
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      age--;
+    }
+    return age;
+  }
   // State variables
+  DateTime? _birthDate; // ← YENİ
   String? _selectedGender;
   final List<String> _selectedInterests = [];
   final List<XFile?> _profilePhotos = [null, null, null, null, null, null]; 
@@ -72,6 +117,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   void _submitProfile() async {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen isminizi giriniz')));
+      return;
+    }
+
+    if (_birthDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen doğum tarihinizi seçiniz')));
       return;
     }
 
@@ -122,7 +172,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       // Firestore kaydı
       await _profileService.createProfile(
         name: _nameController.text.trim(),
-        age: int.tryParse(_ageController.text.trim()) ?? 25,
+        birthDate: _birthDate, // ← YENİ
         gender: _selectedGender ?? 'Diğer',
         country: _countryController.text.trim(),
         interests: _selectedInterests,
@@ -220,29 +270,59 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       label: 'Meslek',
                       placeholder: 'Finans Direktörü',
                     ),
-                    _buildSectionHeader('YAŞ'),
-                    _buildModernInput(
-                      controller: _ageController,
-                      label: 'Yaşınız',
-                      placeholder: '25',
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Yaş gereklidir';
-                        }
-                        final age = int.tryParse(value);
-                        if (age == null) {
-                          return 'Geçerli bir yaş girin';
-                        }
-                        if (age < 18) {
-                          return 'En az 18 yaşında olmalısınız';
-                        }
-                        if (age > 100) {
-                          return 'Geçerli bir yaş girin (max 100)';
-                        }
-                        return null;
-                      },
+                    // Birth Date Selection
+                    _buildSectionHeader('DOĞUM TARİHİ'),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: GestureDetector(
+                        onTap: () => _selectBirthDate(context),
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: _birthDate == null 
+                                ? Colors.red.withOpacity(0.5)
+                                : Colors.white.withOpacity(0.1),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _birthDate == null
+                                      ? 'Doğum Tarihinizi Seçin'
+                                      : '${_birthDate!.day}/${_birthDate!.month}/${_birthDate!.year}',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 16,
+                                      color: _birthDate == null
+                                        ? Colors.white.withOpacity(0.5)
+                                        : Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  if (_birthDate != null)
+                                    Text(
+                                      '${_calculateAge(_birthDate!)} yaşında',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              Icon(
+                                Icons.calendar_today,
+                                color: AppColors.primary,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                     Row(
                       children: [
