@@ -152,6 +152,7 @@ class ChatService {
     return docRef.id;
   }
   
+  
   /// Mesajları okundu olarak işaretle
   Future<void> markAsRead(String chatId) async {
     final user = currentUser;
@@ -160,5 +161,58 @@ class ChatService {
     await _firestore.collection('conversations').doc(chatId).update({
       'unreadCounts.${user.uid}': 0,
     });
+  }
+
+  /// Mesaj Sil (Soft Delete - sadece kendi tarafında)
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore
+          .collection('conversations')
+          .doc(chatId)
+          .collection('messages')
+          .doc(messageId)
+          .update({
+        'deletedFor': FieldValue.arrayUnion([user.uid]),
+      });
+      LogService.i("Message deleted for user: ${user.uid}");
+    } catch (e) {
+      LogService.e("Delete message error", e);
+      rethrow;
+    }
+  }
+
+  /// Sohbet Sil (Conversation'ı kullanıcı için gizle)
+  Future<void> deleteConversation(String chatId) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore.collection('conversations').doc(chatId).update({
+        'deletedFor': FieldValue.arrayUnion([user.uid]),
+      });
+      LogService.i("Conversation deleted for user: ${user.uid}");
+    } catch (e) {
+      LogService.e("Delete conversation error", e);
+      rethrow;
+    }
+  }
+
+  /// Kullanıcıyı Engelle (Chat'ten)
+  Future<void> blockUser(String blockedUserId) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore.collection('users').doc(user.uid).update({
+        'blockedUsers': FieldValue.arrayUnion([blockedUserId]),
+      });
+      LogService.i("User blocked: $blockedUserId");
+    } catch (e) {
+      LogService.e("Block user error", e);
+      rethrow;
+    }
   }
 }
