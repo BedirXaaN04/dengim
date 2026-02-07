@@ -18,7 +18,7 @@ class DemoProfileService {
       final jsonString = await rootBundle.loadString('assets/demo_profiles/profiles.json');
       final Map<String, dynamic> data = json.decode(jsonString);
       
-      final profiles = (data['profiles'] as List).map((p) {
+      final profiles = (data['profiles'] as List).map<UserProfile>((p) {
         // Calculate birthDate from age
         final age = p['age'] ?? 25;
         final birthDate = DateTime.now().subtract(Duration(days: age * 365));
@@ -40,6 +40,7 @@ class DemoProfileService {
           isOnline: p['isOnline'] ?? false,
           latitude: (p['latitude'] as num?)?.toDouble(),
           longitude: (p['longitude'] as num?)?.toDouble(),
+          blockedUsers: const [],
           createdAt: DateTime.now(),
           lastActive: DateTime.now(),
         );

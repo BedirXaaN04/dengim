@@ -87,7 +87,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()), // Kept ChatProvider as it was not explicitly removed in the instruction's text, only in the malformed code block.
-        ChangeNotifierProvider(create: (_) => ConnectivityProvider()..initialize()), // Modified ConnectivityProvider
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => BadgeProvider()..initialize()), // Added BadgeProvider
         ChangeNotifierProvider(create: (_) => LikesProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),
