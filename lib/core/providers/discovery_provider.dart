@@ -3,7 +3,7 @@ import '../../features/auth/models/user_profile.dart';
 import '../../features/auth/services/discovery_service.dart';
 import '../../features/auth/services/profile_service.dart';
 import '../utils/log_service.dart';
-import '../utils/demo_profile_service.dart';
+
 
 class DiscoveryProvider extends ChangeNotifier {
   List<UserProfile> _users = [];
@@ -17,15 +17,17 @@ class DiscoveryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   /// Minimum kullanıcı sayısı (bu sayının altındaysa demo profiller eklenir)
-  static const int _minUsersThreshold = 3;
+
 
   Future<void> loadDiscoveryUsers({
     String? gender,
     int? minAge,
     int? maxAge,
     List<String>? interests,
+    bool forceRefresh = false,
   }) async {
-    if (_isLoading) return;
+    // forceRefresh değilse ve zaten yükleniyorsa çık
+    if (_isLoading && !forceRefresh) return;
     
     _isLoading = true;
     notifyListeners();

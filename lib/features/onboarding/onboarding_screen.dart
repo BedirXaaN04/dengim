@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/login_screen.dart';
 
@@ -65,7 +67,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               return Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(_pages[index].imageUrl, fit: BoxFit.cover),
+                  CachedNetworkImage(
+                    imageUrl: _pages[index].imageUrl,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: AppColors.surface,
+                      highlightColor: AppColors.surfaceLight,
+                      child: Container(color: AppColors.scaffold),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.scaffold,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.favorite_rounded,
+                              size: 80,
+                              color: AppColors.primary.withOpacity(0.3),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'DENGİM',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary.withOpacity(0.5),
+                                letterSpacing: 4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   _buildGradientOverlay(),
                 ],
               );

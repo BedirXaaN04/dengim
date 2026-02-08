@@ -25,6 +25,7 @@ import 'core/providers/badge_provider.dart';
 import 'core/providers/likes_provider.dart';
 import 'core/providers/map_provider.dart';
 import 'core/providers/story_provider.dart';
+import 'core/providers/system_config_provider.dart';
 import 'core/utils/log_service.dart';
 
 import 'features/auth/services/profile_service.dart';
@@ -92,6 +93,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LikesProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),
         ChangeNotifierProvider(create: (_) => StoryProvider()),
+        ChangeNotifierProvider(create: (_) => SystemConfigProvider()),
       ],
       child: const DengimApp(),
     ),
@@ -194,7 +196,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   Future<void> _checkFirstTime() async {
     // Biraz bekleyelim ki animasyon tadı çıksın
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     try {
       final prefs = await SharedPreferences.getInstance();

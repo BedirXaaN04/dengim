@@ -1,0 +1,45 @@
+﻿
+Running Gradle task 'assembleDebug'...                          
+flutter : 
+At line:1 char:1
++ flutter build apk --debug 2>&1 | Out-File -
+FilePath build_errors.txt  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified:  
+   (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandE 
+   rror
+ 
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file 'C:\Users\USER\OneDrive\Masa├╝st├╝
+\dengim\dengim\android\app\build.gradle.kts' 
+line: 1
+
+* What went wrong:
+An exception occurred applying plugin request
+ [id: 'com.android.application']
+> Failed to apply plugin 'com.android.interna
+l.application'.
+   > Your project path contains non-ASCII cha
+racters. This will most likely cause the buil
+d to fail on Windows. Please move your projec
+t to a different directory. See http://b.andr
+oid.com/95744 for details. This warning can b
+e disabled by adding the line 'android.overri
+dePathCheck=true' to gradle.properties file i
+n the project directory.
+
+* Try:
+> Run with --stacktrace option to get the sta
+ck trace.
+> Run with --info or --debug option to get mo
+re log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 4s
+Running Gradle task 'assembleDebug'...                              5,6s
+Gradle task assembleDebug failed with exit co
+de 1

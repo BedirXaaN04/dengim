@@ -212,6 +212,88 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     }
   }
 
+  /// Minimum bilgilerle profil oluştur (sadece isim gerekli)
+  void _submitProfileMinimal() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      final userProvider = context.read<UserProvider>();
+      final name = _nameController.text.trim().isNotEmpty 
+          ? _nameController.text.trim() 
+          : 'Kullanıcı';
+      
+      await _profileService.createProfile(
+        name: name,
+        birthDate: _getBirthDateFromFields() ?? DateTime(2000, 1, 1),
+        gender: _selectedGender ?? 'Belirtilmemiş',
+        country: _countryController.text.trim(),
+        interests: _selectedInterests,
+        relationshipGoal: _selectedRelationshipGoal,
+        photoUrls: ['https://ui-avatars.com/api/?name=${name[0]}&size=500&background=D4AF37&color=fff'],
+        bio: _bioController.text.trim(),
+        job: _jobController.text.trim(),
+        education: '',
+      );
+
+      await userProvider.loadCurrentUser();
+
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainScaffold()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      LogService.e("Minimal profile creation failed", e);
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const MainScaffold()),
+          (route) => false,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  /// Profil tamamlanma yüzdesi hesapla
+  int _calculateCompletionPercentage() {
+    int completed = 0;
+    int total = 7;
+    
+    if (_nameController.text.trim().isNotEmpty) completed++;
+    if (_getBirthDateFromFields() != null) completed++;
+    if (_selectedGender != null) completed++;
+    if (_countryController.text.trim().isNotEmpty) completed++;
+    if (_selectedInterests.isNotEmpty) completed++;
+    if (_selectedRelationshipGoal != null) completed++;
+    if (_photoBytes.isNotEmpty) completed++;
+    
+    return ((completed / total) * 100).round();
+  }
+
+  Widget _buildProgressIndicator() {
+    final percentage = _calculateCompletionPercentage();
+    return Container(
+      width: 100,
+      height: 4,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: percentage / 100,
+        child: Container(
+          decoration: BoxDecoration(
+            color: percentage >= 70 ? AppColors.success : AppColors.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -220,14 +302,66 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         backgroundColor: AppColors.scaffold,
         elevation: 0,
         centerTitle: true,
-        title: Text(
-          'PROFİLİNİ OLUŞTUR',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 2.0,
-            color: Colors.white,
+        leading: TextButton(
+          onPressed: _isLoading ? null : () {
+            // Daha sonra tamamla - minimum bilgilerle devam et
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                backgroundColor: AppColors.surface,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                title: Text(
+                  'Daha Sonra Tamamla?',
+                  style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                content: Text(
+                  'Profilini daha sonra tamamlayabilirsin. Ancak tamamlanmamış profiller daha az görünürlük alır.',
+                  style: GoogleFonts.plusJakartaSans(color: Colors.white70),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text('Kapat', style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _submitProfileMinimal();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.black,
+                    ),
+                    child: Text('Devam Et', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            );
+          },
+          child: Text(
+            'SONRA',
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white54,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+        ),
+        title: Column(
+          children: [
+            Text(
+              'PROFİLİNİ OLUŞTUR',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2.0,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 4),
+            // İlerleme göstergesi
+            _buildProgressIndicator(),
+          ],
         ),
         actions: [
           Container(

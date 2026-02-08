@@ -118,7 +118,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 ),
               ),
               const Spacer(),
-              _buildIconButton(Icons.edit_note_rounded, () {}),
+              _buildIconButton(Icons.more_vert_rounded, () {
+                // Menü göster
+                HapticFeedback.lightImpact();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Daha fazla seçenek yakında!'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 24),
@@ -146,6 +155,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
+              onChanged: (value) {
+                // Arama filtreleme
+                context.read<ChatProvider>().filterChats(value);
+              },
               decoration: InputDecoration(
                 hintText: "Sohbetlerde ara...",
                 hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white.withOpacity(0.4), fontSize: 13),
@@ -153,6 +166,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
               ),
               style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
             ),
+          ),
+          // Arama temizle butonu
+          Consumer<ChatProvider>(
+            builder: (context, provider, _) {
+              if (provider.searchQuery.isEmpty) return const SizedBox.shrink();
+              return GestureDetector(
+                onTap: () {
+                  provider.clearSearch();
+                },
+                child: Icon(Icons.close_rounded, color: Colors.white.withOpacity(0.4), size: 20),
+              );
+            },
           ),
         ],
       ),

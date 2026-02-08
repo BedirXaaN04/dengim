@@ -6,11 +6,14 @@ import '../utils/log_service.dart';
 
 class ChatProvider extends ChangeNotifier {
   List<ChatConversation> _conversations = [];
+  List<ChatConversation> _allConversations = []; // Orijinal liste
   bool _isLoading = false;
+  String _searchQuery = '';
   StreamSubscription? _conversationsSubscription;
 
   List<ChatConversation> get conversations => _conversations;
   bool get isLoading => _isLoading;
+  String get searchQuery => _searchQuery;
 
   final ChatService _chatService = ChatService();
 
@@ -21,7 +24,8 @@ class ChatProvider extends ChangeNotifier {
     _conversationsSubscription?.cancel();
     _conversationsSubscription = _chatService.getConversations().listen(
       (chats) {
-        _conversations = chats;
+        _allConversations = chats;
+        _applyFilter();
         _isLoading = false;
         notifyListeners();
       },
@@ -31,6 +35,31 @@ class ChatProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  /// Sohbetlerde arama yap
+  void filterChats(String query) {
+    _searchQuery = query.trim().toLowerCase();
+    _applyFilter();
+    notifyListeners();
+  }
+
+  /// Aramayı temizle
+  void clearSearch() {
+    _searchQuery = '';
+    _conversations = List.from(_allConversations);
+    notifyListeners();
+  }
+
+  void _applyFilter() {
+    if (_searchQuery.isEmpty) {
+      _conversations = List.from(_allConversations);
+    } else {
+      _conversations = _allConversations.where((chat) {
+        return chat.otherUserName.toLowerCase().contains(_searchQuery) ||
+               (chat.lastMessage?.toLowerCase().contains(_searchQuery) ?? false);
+      }).toList();
+    }
   }
 
   @override

@@ -38,6 +38,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   );
   
   FilterSettings _filterSettings = FilterSettings();
+  bool _isRefreshing = false;
 
   @override
   void initState() {
@@ -67,6 +68,61 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
   }
 
+  /// Pull-to-refresh fonksiyonu
+  Future<void> _refreshData() async {
+    if (_isRefreshing) return;
+    
+    setState(() => _isRefreshing = true);
+    
+    try {
+      // Haptic feedback
+      HapticFeedback.mediumImpact();
+      
+      // Hikayeleri yenile
+      await context.read<StoryProvider>().loadStories();
+      
+      // Kullanıcıları yenile
+      await context.read<DiscoveryProvider>().loadDiscoveryUsers(
+        gender: _filterSettings.gender,
+        minAge: _filterSettings.ageRange.start.toInt(),
+        maxAge: _filterSettings.ageRange.end.toInt(),
+        forceRefresh: true,
+      );
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                const Text('Yenilendi! 🔄'),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            duration: const Duration(milliseconds: 1200),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.only(bottom: 120, left: 20, right: 20),
+          ),
+        );
+      }
+    } catch (e) {
+      LogService.e("Refresh error", e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Yenileme başarısız oldu'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isRefreshing = false);
+      }
+    }
+  }
+
   Future<bool> _onSwipe(int previousIndex, int? currentIndex, CardSwiperDirection direction) async {
     HapticFeedback.mediumImpact();
     
@@ -78,6 +134,22 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     
     try {
       final isMatch = await discoveryProvider.swipeUser(targetUser.uid, swipeType);
+      
+      // Geri bildirim göster (match değilse)
+      if (mounted && !isMatch) {
+        if (direction == CardSwiperDirection.right) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('💛 ${targetUser.name} beğenildi!'),
+              backgroundColor: AppColors.surfaceLight,
+              duration: const Duration(milliseconds: 800),
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.only(bottom: 120, left: 20, right: 20),
+            ),
+          );
+        }
+      }
+      
       if (isMatch) {
         _showMatchAnimation(targetUser);
       }
@@ -97,20 +169,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _confettiController.play();
   }
 
-  // Swipe State
-  Offset _cardPosition = Offset.zero;
-  bool _isDragging = false;
-  
-  // Photo Index
-  int _currentPhotoIndex = 0;
-
-  // UI State
-  bool _isLoading = true;
   UserProfile? _matchedUser;
-  
-  // Timer for auto-refresh
-
-  
   bool _showMatch = false;
 
   @override
@@ -246,40 +305,105 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         builder: (context, provider, storyProvider, child) {
           return Stack(
             children: [
-              Column(
-                children: [
-                  _buildTopBar(),
-                  _buildStoriesTray(storyProvider.activeStories),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: provider.isLoading 
-                        ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-                        : provider.users.isEmpty
-                            ? _buildEmptyState()
-                        : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: CardSwiper(
-                              controller: _cardController,
-                              cardsCount: provider.users.length,
-                              numberOfCardsDisplayed: 3,
-                              backCardOffset: const Offset(0, 30),
-                              padding: EdgeInsets.zero,
-                              onSwipe: _onSwipe,
-                              allowedSwipeDirection: const AllowedSwipeDirection.only(
-                                left: true,
-                                right: true,
-                                up: true,
-                              ),
-                              cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
-                                return _buildUserCard(provider.users[index], percentThresholdX.toDouble(), percentThresholdY.toDouble());
-                              },
-                            ),
-                        ),
-                  ),
-                  _buildActionButtons(),
-                  const SizedBox(height: 100), 
-                ],
+              RefreshIndicator(
+                onRefresh: _refreshData,
+                color: AppColors.primary,
+                backgroundColor: AppColors.surfaceLight,
+                displacement: 40,
+                strokeWidth: 3,
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          _buildTopBar(),
+                          _buildStoriesTray(storyProvider.activeStories),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: provider.isLoading && !_isRefreshing
+                                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                                : provider.users.isEmpty
+                                    ? _buildEmptyState()
+                                : Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: CardSwiper(
+                                      controller: _cardController,
+                                      cardsCount: provider.users.length,
+                                      numberOfCardsDisplayed: 3,
+                                      backCardOffset: const Offset(0, 30),
+                                      padding: EdgeInsets.zero,
+                                      onSwipe: _onSwipe,
+                                      allowedSwipeDirection: const AllowedSwipeDirection.only(
+                                        left: true,
+                                        right: true,
+                                        up: true,
+                                      ),
+                                      cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                                        return _buildUserCard(provider.users[index], percentThresholdX.toDouble(), percentThresholdY.toDouble());
+                                      },
+                                    ),
+                                ),
+                          ),
+                          _buildActionButtons(),
+                          const SizedBox(height: 100), 
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              
+              // Yenileme göstergesi
+              if (_isRefreshing)
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 60,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceLight,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Yenileniyor...',
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               
               if (storyProvider.isUploading)
                 Container(
@@ -316,12 +440,41 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Sol: Menü (HTML tasarımı gibi)
-            GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
+            // Sol: Kullanıcı Profil Avatarı
+            Consumer<UserProvider>(
+              builder: (context, userProvider, _) {
+                final user = userProvider.currentUser;
+                return GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    // Profil sayfasına git (bottom nav index 4)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Profilini görmek için alt menüden Profil sekmesine git!'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.primary.withOpacity(0.5), width: 2),
+                    ),
+                    child: ClipOval(
+                      child: user?.imageUrl != null
+                          ? CachedNetworkImage(
+                              imageUrl: user!.imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => Container(color: AppColors.surface),
+                              errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.white54, size: 18),
+                            )
+                          : const Icon(Icons.person, color: Colors.white54, size: 18),
+                    ),
+                  ),
+                );
               },
-              child: Icon(Icons.menu_rounded, color: Colors.white.withOpacity(0.4), size: 24),
             ),
             
             // Orta: DENGIM (Luxury style)
@@ -429,7 +582,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             child: CircleAvatar(
                               radius: 28,
                               backgroundColor: Colors.grey[900],
-                              backgroundImage: NetworkImage(myStories!.userAvatar),
+                              backgroundImage: NetworkImage(myStories.userAvatar),
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -960,11 +1113,65 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircleAvatar(radius: 60, backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=me')),
+                    // Kullanıcının kendi avatarı (dinamik)
+                    Consumer<UserProvider>(
+                      builder: (context, userProvider, _) {
+                        final myAvatar = userProvider.currentUser?.imageUrl ?? '';
+                        return Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 3),
+                          ),
+                          child: ClipOval(
+                            child: myAvatar.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl: myAvatar,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => Container(
+                                      color: AppColors.surface,
+                                      child: const Icon(Icons.person, size: 40, color: Colors.white24),
+                                    ),
+                                    errorWidget: (_, __, ___) => Container(
+                                      color: AppColors.surface,
+                                      child: const Icon(Icons.person, size: 40, color: Colors.white24),
+                                    ),
+                                  )
+                                : Container(
+                                    color: AppColors.surface,
+                                    child: const Icon(Icons.person, size: 40, color: Colors.white24),
+                                  ),
+                          ),
+                        );
+                      },
+                    ),
                     const SizedBox(width: 24),
                     const Icon(Icons.favorite_rounded, color: AppColors.primary, size: 40),
                     const SizedBox(width: 24),
-                    CircleAvatar(radius: 60, backgroundImage: NetworkImage(_matchedUser!.imageUrl)),
+                    // Eşleşilen kullanıcının avatarı
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 3),
+                      ),
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: _matchedUser!.imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => Container(
+                            color: AppColors.surface,
+                            child: const Icon(Icons.person, size: 40, color: Colors.white24),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            color: AppColors.surface,
+                            child: const Icon(Icons.person, size: 40, color: Colors.white24),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 80),

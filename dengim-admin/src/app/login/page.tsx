@@ -9,10 +9,42 @@ import {
     GoogleAuthProvider,
     signInWithPopup
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import { useAdminStore } from '@/store/adminStore';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+
+// Admin kontrolü için yardımcı fonksiyon
+const checkAdminAccess = async (email: string): Promise<{ isAdmin: boolean; role: string; name: string }> => {
+    try {
+        // Firestore'da admin koleksiyonunu kontrol et
+        const adminDoc = await getDoc(doc(db, 'admins', email));
+        if (adminDoc.exists()) {
+            const data = adminDoc.data();
+            return { isAdmin: true, role: data.role || 'admin', name: data.name || email.split('@')[0] };
+        }
+
+        // İlk kurulum için: Eğer hiç admin yoksa, belirli email'i otomatik admin yap
+        const masterEmails = ['omerbedirhano@gmail.com'];
+        if (masterEmails.includes(email)) {
+            // Master admin'i Firestore'a kaydet
+            await setDoc(doc(db, 'admins', email), {
+                email,
+                name: 'Ömer Bedirhan',
+                role: 'super_admin',
+                createdAt: new Date(),
+                lastLogin: new Date()
+            });
+            return { isAdmin: true, role: 'super_admin', name: 'Ömer Bedirhan' };
+        }
+
+        return { isAdmin: false, role: '', name: '' };
+    } catch (error) {
+        console.error('Admin check error:', error);
+        return { isAdmin: false, role: '', name: '' };
+    }
+};
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -28,25 +60,27 @@ export default function LoginPage() {
         setLoading(true);
         setError('');
 
-        // 🚨 Master Admin Bypass (Geçici)
-        if (email === 'omerbedirhano@gmail.com' && password === 'admin123') {
-            setCurrentAdmin({
-                id: 'master-admin',
-                name: 'Ömer Bedirhan',
-                email: email,
-                role: 'super_admin',
-            });
-            router.push('/');
-            return;
-        }
-
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+            // Admin yetkisi kontrolü
+            const adminCheck = await checkAdminAccess(userCredential.user.email || '');
+            if (!adminCheck.isAdmin) {
+                setError('Bu hesap admin yetkisine sahip değil.');
+                setLoading(false);
+                return;
+            }
+
+            // Son giriş zamanını güncelle
+            await setDoc(doc(db, 'admins', userCredential.user.email || ''), {
+                lastLogin: new Date()
+            }, { merge: true });
+
             setCurrentAdmin({
                 id: userCredential.user.uid,
-                name: userCredential.user.displayName || email.split('@')[0],
+                name: adminCheck.name,
                 email: userCredential.user.email || '',
-                role: 'super_admin',
+                role: adminCheck.role,
             });
             router.push('/');
         } catch (err: any) {
@@ -73,18 +107,27 @@ export default function LoginPage() {
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
-            // Sadece belirli maillere admin yetkisi ver (Güvenlik için)
-            if (result.user.email === 'omerbedirhano@gmail.com') {
-                setCurrentAdmin({
-                    id: result.user.uid,
-                    name: result.user.displayName || 'Admin',
-                    email: result.user.email || '',
-                    role: 'super_admin',
-                });
-                router.push('/');
-            } else {
+
+            // Firestore'dan admin yetkisi kontrolü
+            const adminCheck = await checkAdminAccess(result.user.email || '');
+            if (!adminCheck.isAdmin) {
                 setError('Bu Google hesabı admin yetkisine sahip değil.');
+                setLoading(false);
+                return;
             }
+
+            // Son giriş zamanını güncelle
+            await setDoc(doc(db, 'admins', result.user.email || ''), {
+                lastLogin: new Date()
+            }, { merge: true });
+
+            setCurrentAdmin({
+                id: result.user.uid,
+                name: adminCheck.name || result.user.displayName || 'Admin',
+                email: result.user.email || '',
+                role: adminCheck.role,
+            });
+            router.push('/');
         } catch (err: any) {
             console.error("Google Login Error:", err);
             if (err.code === 'auth/popup-closed-by-user') {
@@ -100,25 +143,28 @@ export default function LoginPage() {
     };
 
     const tryCreateAccount = async () => {
-        if (email === 'omerbedirhano@gmail.com') {
-            try {
-                const newUser = await createUserWithEmailAndPassword(auth, email, password);
-                setCurrentAdmin({
-                    id: newUser.user.uid,
-                    name: 'Ömer Bedirhan',
-                    email: newUser.user.email || '',
-                    role: 'super_admin',
-                });
-                router.push('/');
-            } catch (createErr: any) {
-                if (createErr.code === 'auth/email-already-in-use') {
-                    setError('Bu e-posta kayıtlı ancak şifre yanlış. Lütfen "admin123" ile deneyin.');
-                } else {
-                    setError('Hesap oluşturulamadı: ' + createErr.message);
-                }
-            }
-        } else {
+        // Admin yetkisi kontrolü
+        const adminCheck = await checkAdminAccess(email);
+        if (!adminCheck.isAdmin) {
             setError('E-posta veya şifre hatalı.');
+            return;
+        }
+
+        try {
+            const newUser = await createUserWithEmailAndPassword(auth, email, password);
+            setCurrentAdmin({
+                id: newUser.user.uid,
+                name: adminCheck.name,
+                email: newUser.user.email || '',
+                role: adminCheck.role,
+            });
+            router.push('/');
+        } catch (createErr: any) {
+            if (createErr.code === 'auth/email-already-in-use') {
+                setError('Bu e-posta kayıtlı ancak şifre yanlış. Lütfen "admin123" ile deneyin.');
+            } else {
+                setError('Hesap oluşturulamadı: ' + createErr.message);
+            }
         }
     };
 

@@ -27,6 +27,16 @@ export default function SettingsPage() {
     const [isCreditsEnabled, setIsCreditsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
+    // Yeni state'ler - tüm ayarları kaydetmek için
+    const [minimumAge, setMinimumAge] = useState(18);
+    const [maxDistance, setMaxDistance] = useState(100);
+    const [dailyLikeLimit, setDailyLikeLimit] = useState(25);
+    const [locationWeight, setLocationWeight] = useState(35);
+    const [interestsWeight, setInterestsWeight] = useState(40);
+    const [activityWeight, setActivityWeight] = useState(25);
+    const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
+    const [maintenanceMessage, setMaintenanceMessage] = useState('');
+
     // Initial load from Firestore
     useEffect(() => {
         const loadConfig = async () => {
@@ -36,6 +46,15 @@ export default function SettingsPage() {
                 setIsVipEnabled(data.isVipEnabled ?? false);
                 setIsAdsEnabled(data.isAdsEnabled ?? true);
                 setIsCreditsEnabled(data.isCreditsEnabled ?? false);
+                // Yeni alanları yükle
+                setMinimumAge(data.minimumAge ?? 18);
+                setMaxDistance(data.maxDistance ?? 100);
+                setDailyLikeLimit(data.dailyLikeLimit ?? 25);
+                setLocationWeight(data.locationWeight ?? 35);
+                setInterestsWeight(data.interestsWeight ?? 40);
+                setActivityWeight(data.activityWeight ?? 25);
+                setIsMaintenanceMode(data.isMaintenanceMode ?? false);
+                setMaintenanceMessage(data.maintenanceMessage ?? '');
             }
         };
         loadConfig();
@@ -48,6 +67,15 @@ export default function SettingsPage() {
                 isVipEnabled,
                 isAdsEnabled,
                 isCreditsEnabled,
+                // Yeni alanları kaydet
+                minimumAge,
+                maxDistance,
+                dailyLikeLimit,
+                locationWeight,
+                interestsWeight,
+                activityWeight,
+                isMaintenanceMode,
+                maintenanceMessage,
                 updatedAt: new Date().toISOString()
             }, { merge: true });
 
