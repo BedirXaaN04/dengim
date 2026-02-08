@@ -187,7 +187,12 @@ class ProfileService {
     if (bio != null) updates['bio'] = bio;
     if (job != null) updates['job'] = job;
     if (education != null) updates['education'] = education;
-    if (age != null) updates['age'] = age;
+    if (age != null) {
+      updates['age'] = age;
+      // Yaş güncellenince doğum tarihini de yaklaşık olarak güncelle
+      final estimatedYear = DateTime.now().year - age;
+      updates['birthDate'] = Timestamp.fromDate(DateTime(estimatedYear, 1, 1));
+    }
     if (country != null) updates['country'] = country;
     if (interests != null) updates['interests'] = interests;
     if (relationshipGoal != null) updates['relationshipGoal'] = relationshipGoal;

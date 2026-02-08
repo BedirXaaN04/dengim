@@ -148,31 +148,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           final photo = _profilePhotos[i];
           if (photo != null) {
             if (_photoBytes.containsKey(i)) {
-              // Prefer uploading bytes directly (reliable for web/mobile)
               uploadFutures.add(_profileService.uploadProfilePhotoBytes(_photoBytes[i]!, uid));
             } else {
-              // Fallback to XFile upload
               uploadFutures.add(_profileService.uploadProfilePhoto(photo, uid));
             }
           }
         }
 
-        
         if (uploadFutures.isNotEmpty) {
-          photoUrls = await Future.wait(uploadFutures).timeout(const Duration(seconds: 30)); // 30s timeout
-          
-          // Check if any upload failed (placeholder returned)
-          if (photoUrls.any((url) => url.contains('ui-avatars.com'))) {
-             if (mounted) {
-               ScaffoldMessenger.of(context).showSnackBar(
-                 const SnackBar(content: Text('Not: Bazı fotoğraflar yüklenemedi ve varsayılan görsel atandı.')),
-               );
-             }
-          }
+          photoUrls = await Future.wait(uploadFutures).timeout(const Duration(seconds: 30));
         }
       } catch (e) {
-
-        LogService.e("Photo upload failed, using placeholder", e);
+        LogService.e("Photo upload failed", e);
       }
 
       // Firestore kaydı
@@ -183,7 +170,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         country: _countryController.text.trim(),
         interests: _selectedInterests,
         relationshipGoal: _selectedRelationshipGoal,
-        photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://ui-avatars.com/api/?name=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}&size=500'],
+        photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://ui-avatars.com/api/?name=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}&size=500&background=D4AF37&color=fff'],
         bio: _bioController.text.trim(),
         job: _jobController.text.trim(),
         education: '',
@@ -202,9 +189,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     } catch (e) {
       LogService.e("Unexpected Error in _submitProfile", e);
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const MainScaffold()),
-          (route) => false,
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profil oluşturulamadı: $e')),
         );
       }
     } finally {
@@ -226,7 +212,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         name: name,
         birthDate: _getBirthDateFromFields() ?? DateTime(2000, 1, 1),
         gender: _selectedGender ?? 'Belirtilmemiş',
-        country: _countryController.text.trim(),
+        country: _countryController.text.trim().isNotEmpty ? _countryController.text.trim() : 'Dünya',
         interests: _selectedInterests,
         relationshipGoal: _selectedRelationshipGoal,
         photoUrls: ['https://ui-avatars.com/api/?name=${name[0]}&size=500&background=D4AF37&color=fff'],
@@ -246,9 +232,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     } catch (e) {
       LogService.e("Minimal profile creation failed", e);
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const MainScaffold()),
-          (route) => false,
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e')),
         );
       }
     } finally {

@@ -104,15 +104,30 @@ class UserProfile {
   }
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
+    // If birthDate is missing but age is present (legacy or mismatch), 
+    // we can guestimate a birth year, but it's better to just use null and fallback.
+    DateTime? bDay;
+    if (map['birthDate'] != null) {
+      if (map['birthDate'] is Timestamp) {
+        bDay = (map['birthDate'] as Timestamp).toDate();
+      } else if (map['birthDate'] is String) {
+        bDay = DateTime.tryParse(map['birthDate']);
+      }
+    }
+
+    // Handle name default
+    String nameVal = map['name'] ?? '';
+    if (nameVal.isEmpty && map['email'] != null) {
+      nameVal = map['email'].split('@')[0];
+    }
+
     return UserProfile(
       uid: map['uid'] ?? '',
       email: map['email'] ?? '',
-      name: map['name'] ?? '',
-      birthDate: map['birthDate'] != null 
-        ? (map['birthDate'] as Timestamp).toDate()
-        : null,
-      gender: map['gender'] ?? '',
-      country: map['country'] ?? '',
+      name: nameVal.isEmpty ? 'Kullanıcı' : nameVal,
+      birthDate: bDay,
+      gender: map['gender'] ?? 'Belirtilmedi',
+      country: map['country'] ?? 'Dünya',
       interests: List<String>.from(map['interests'] ?? []),
       bio: map['bio'],
       job: map['job'],
@@ -125,9 +140,13 @@ class UserProfile {
       isOnline: map['isOnline'] ?? false,
       latitude: map['latitude']?.toDouble(),
       longitude: map['longitude']?.toDouble(),
-      distance: 0.0, // Calculate later based on lat/long
-      createdAt: (map['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
-      lastActive: (map['lastActive'] as Timestamp? ?? Timestamp.now()).toDate(),
+      distance: 0.0,
+      createdAt: (map['createdAt'] is Timestamp 
+          ? (map['createdAt'] as Timestamp).toDate() 
+          : DateTime.now()),
+      lastActive: (map['lastActive'] is Timestamp 
+          ? (map['lastActive'] as Timestamp).toDate() 
+          : DateTime.now()),
       blockedUsers: List<String>.from(map['blockedUsers'] ?? []),
       fcmToken: map['fcmToken'],
     );
