@@ -61,4 +61,3 @@ class ConfigService {
     LogService.i("Resources updated from remote.");
   }
 }
-}

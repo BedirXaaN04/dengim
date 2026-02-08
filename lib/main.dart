@@ -33,6 +33,7 @@ import 'core/services/notification_service.dart';
 import 'core/services/config_service.dart';
 
 import 'features/spaces/providers/space_provider.dart';
+import 'core/widgets/maintenance_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -104,7 +105,6 @@ void main() async {
 
 
 
-import 'core/widgets/maintenance_screen.dart';
 
 class DengimApp extends StatefulWidget {
   const DengimApp({super.key});
