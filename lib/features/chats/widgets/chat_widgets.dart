@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/chat_models.dart';
 
@@ -152,8 +154,8 @@ class ChatListItem extends StatelessWidget {
   }
 }
 
-/// Mesaj balonu - Modern "Custom Shape" Tasarım
-class ChatBubble extends StatelessWidget {
+/// Mesaj balonu - Modern "Custom Shape" Tasarım (Ses mesajı destekli)
+class ChatBubble extends StatefulWidget {
   final ChatMessage message;
 
   const ChatBubble({
@@ -162,112 +164,386 @@ class ChatBubble extends StatelessWidget {
   });
 
   @override
+  State<ChatBubble> createState() => _ChatBubbleState();
+}
+
+class _ChatBubbleState extends State<ChatBubble> {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  bool _isPlaying = false;
+  Duration _duration = Duration.zero;
+  Duration _position = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.message.type == MessageType.audio) {
+      _initAudio();
+    }
+  }
+
+  void _initAudio() {
+    // Ses URL'sini ve süresini parse et
+    final parts = widget.message.content.split('|');
+    final audioUrl = parts[0];
+    if (parts.length > 1) {
+      _duration = Duration(seconds: int.tryParse(parts[1]) ?? 0);
+    }
+
+    _audioPlayer.playerStateStream.listen((state) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = state.playing;
+        });
+      }
+    });
+
+    _audioPlayer.positionStream.listen((pos) {
+      if (mounted) {
+        setState(() {
+          _position = pos;
+        });
+      }
+    });
+
+    _audioPlayer.durationStream.listen((dur) {
+      if (dur != null && mounted) {
+        setState(() {
+          _duration = dur;
+        });
+      }
+    });
+  }
+
+  Future<void> _togglePlay() async {
+    final parts = widget.message.content.split('|');
+    final audioUrl = parts[0];
+
+    if (_isPlaying) {
+      await _audioPlayer.pause();
+    } else {
+      try {
+        if (_audioPlayer.audioSource == null) {
+          await _audioPlayer.setUrl(audioUrl);
+        }
+        await _audioPlayer.play();
+      } catch (e) {
+        debugPrint('Audio play error: $e');
+      }
+    }
+  }
+
+  String _formatDuration(Duration d) {
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isMe = message.senderId == FirebaseAuth.instance.currentUser?.uid;
+    final isMe = widget.message.senderId == FirebaseAuth.instance.currentUser?.uid;
+    final hasReactions = widget.message.reactions.isNotEmpty;
+    final hasReply = widget.message.replyToContent != null;
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.fromLTRB(
-          isMe ? 64 : 0,
-          4,
-          isMe ? 0 : 64,
-          4,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        decoration: BoxDecoration(
-          // Gradient for me, glass for other
-          gradient: isMe ? AppColors.goldGradient : null,
-          color: isMe ? null : Colors.white.withOpacity(0.08),
-          borderRadius: BorderRadius.only(
-            topLeft: isMe ? const Radius.circular(20) : const Radius.circular(4),
-            topRight: isMe ? const Radius.circular(4) : const Radius.circular(20),
-            bottomLeft: const Radius.circular(20),
-            bottomRight: const Radius.circular(20),
-          ),
-          border: Border.all(
-            color: isMe ? Colors.transparent : Colors.white.withOpacity(0.05),
-          ),
-          boxShadow: isMe ? [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            )
-          ] : null,
-        ),
-        child: Column(
-          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            if (message.storyReply != null)
-              Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white12),
+      child: Column(
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          // Yanıt gösterimi (varsa)
+          if (hasReply)
+            Container(
+              margin: EdgeInsets.fromLTRB(isMe ? 64 : 0, 4, isMe ? 0 : 64, 2),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border(
+                  left: BorderSide(
+                    color: isMe ? AppColors.primary : Colors.white38,
+                    width: 3,
+                  ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.reply, size: 12, color: Colors.white38),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      widget.message.replyToContent!,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: Colors.white54,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          
+          // Ana mesaj balonu
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                margin: EdgeInsets.fromLTRB(
+                  isMe ? 64 : 0,
+                  4,
+                  isMe ? 0 : 64,
+                  hasReactions ? 12 : 4,
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                decoration: BoxDecoration(
+                  gradient: isMe ? AppColors.goldGradient : null,
+                  color: isMe ? null : Colors.white.withOpacity(0.08),
+                  borderRadius: BorderRadius.only(
+                    topLeft: isMe ? const Radius.circular(20) : const Radius.circular(4),
+                    topRight: isMe ? const Radius.circular(4) : const Radius.circular(20),
+                    bottomLeft: const Radius.circular(20),
+                    bottomRight: const Radius.circular(20),
+                  ),
+                  border: Border.all(
+                    color: isMe ? Colors.transparent : Colors.white.withOpacity(0.05),
+                  ),
+                  boxShadow: isMe ? [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
+                  ] : null,
+                ),
+                child: Column(
+                  crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
-                    if (message.storyReply!['storyUrl'] != null)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: CachedNetworkImage(
-                          imageUrl: message.storyReply!['storyUrl'],
-                          width: 40,
-                          height: 60,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(color: Colors.grey[800]),
-                          errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 20, color: Colors.white54),
+                    if (widget.message.storyReply != null)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.message.storyReply!['storyUrl'] != null)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: CachedNetworkImage(
+                                  imageUrl: widget.message.storyReply!['storyUrl'],
+                                  width: 40,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Container(color: Colors.grey[800]),
+                                  errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 20, color: Colors.white54),
+                                ),
+                              ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Hikayeye Yanıt", style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white54, fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 2),
+                                  const Icon(Icons.reply, color: Colors.white54, size: 14),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
                         ),
                       ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Hikayeye Yanıt", style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white54, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 2),
-                          const Icon(Icons.reply, color: Colors.white54, size: 14),
+                    _buildMessageContent(isMe),
+                    
+                    // Zaman damgası
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _formatTime(widget.message.timestamp),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10,
+                            color: isMe ? Colors.black45 : Colors.white38,
+                          ),
+                        ),
+                        if (isMe) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            widget.message.isRead ? Icons.done_all : Icons.done,
+                            size: 14,
+                            color: widget.message.isRead ? Colors.blue : Colors.black38,
+                          ),
                         ],
-                      ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
                   ],
                 ),
               ),
-            message.type == MessageType.image
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: CachedNetworkImage(
-                      imageUrl: message.content,
-                      placeholder: (context, url) => Container(
-                        height: 200, width: 250,
-                        color: Colors.black12,
-                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                      ),
-                      errorWidget: (context, url, error) => const SizedBox(
-                        height: 100, width: 100,
-                        child: Icon(Icons.broken_image, color: Colors.white),
-                      ),
-                      fit: BoxFit.cover,
-                      width: 250,
+              
+              // Tepkiler (mesajın altında)
+              if (hasReactions)
+                Positioned(
+                  bottom: 0,
+                  right: isMe ? 8 : null,
+                  left: isMe ? null : 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                        ),
+                      ],
                     ),
-                  )
-                : Text(
-                    message.content,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 15,
-                      color: isMe ? const Color(0xFF1F1F1F) : Colors.white.withOpacity(0.9),
-                      fontWeight: isMe ? FontWeight.w600 : FontWeight.normal,
-                      height: 1.4,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: widget.message.reactions.values.map((emoji) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 1),
+                          child: Text(emoji, style: const TextStyle(fontSize: 14)),
+                        );
+                      }).toList(),
                     ),
                   ),
-          ],
-        ),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }
+
+  String _formatTime(DateTime time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  Widget _buildMessageContent(bool isMe) {
+    switch (widget.message.type) {
+      case MessageType.image:
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: CachedNetworkImage(
+            imageUrl: widget.message.content,
+            placeholder: (context, url) => Container(
+              height: 200, width: 250,
+              color: Colors.black12,
+              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            ),
+            errorWidget: (context, url, error) => const SizedBox(
+              height: 100, width: 100,
+              child: Icon(Icons.broken_image, color: Colors.white),
+            ),
+            fit: BoxFit.cover,
+            width: 250,
+          ),
+        );
+      
+      case MessageType.audio:
+        return _buildAudioPlayer(isMe);
+      
+      case MessageType.text:
+      default:
+        return Text(
+          widget.message.content,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 15,
+            color: isMe ? const Color(0xFF1F1F1F) : Colors.white.withOpacity(0.9),
+            fontWeight: isMe ? FontWeight.w600 : FontWeight.normal,
+            height: 1.4,
+          ),
+        );
+    }
+  }
+
+  Widget _buildAudioPlayer(bool isMe) {
+    final progress = _duration.inMilliseconds > 0 
+        ? _position.inMilliseconds / _duration.inMilliseconds 
+        : 0.0;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Play/Pause Button
+        GestureDetector(
+          onTap: _togglePlay,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isMe ? Colors.black.withOpacity(0.2) : AppColors.primary.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+              color: isMe ? Colors.black87 : AppColors.primary,
+              size: 24,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        
+        // Waveform / Progress
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Progress bar
+              Container(
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isMe ? Colors.black.withOpacity(0.1) : Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                child: FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: progress.clamp(0.0, 1.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isMe ? Colors.black87 : AppColors.primary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              // Duration
+              Text(
+                _isPlaying ? _formatDuration(_position) : _formatDuration(_duration),
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  color: isMe ? Colors.black54 : Colors.white54,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        
+        // Microphone icon
+        Icon(
+          Icons.mic,
+          size: 16,
+          color: isMe ? Colors.black38 : Colors.white38,
+        ),
+      ],
+    );
+  }
 }
+

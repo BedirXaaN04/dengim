@@ -32,6 +32,8 @@ import 'features/auth/services/profile_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/config_service.dart';
 
+import 'features/spaces/providers/space_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -68,7 +70,6 @@ void main() async {
     await ConfigService().init();
 
     // Bildirim servisini başlat
-    // Bildirim servisini başlat
     try {
       await NotificationService().initialize();
     } catch (e) {
@@ -87,13 +88,14 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => DiscoveryProvider()),
-        ChangeNotifierProvider(create: (_) => ChatProvider()), // Kept ChatProvider as it was not explicitly removed in the instruction's text, only in the malformed code block.
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
-        ChangeNotifierProvider(create: (_) => BadgeProvider()..initialize()), // Added BadgeProvider
+        ChangeNotifierProvider(create: (_) => BadgeProvider()..initialize()),
         ChangeNotifierProvider(create: (_) => LikesProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),
         ChangeNotifierProvider(create: (_) => StoryProvider()),
         ChangeNotifierProvider(create: (_) => SystemConfigProvider()),
+        ChangeNotifierProvider(create: (_) => SpaceProvider()),
       ],
       child: const DengimApp(),
     ),

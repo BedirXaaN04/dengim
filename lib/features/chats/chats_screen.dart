@@ -2,11 +2,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../core/theme/app_colors.dart';
 import 'models/chat_models.dart';
 import 'widgets/chat_widgets.dart';
 import 'services/chat_service.dart';
-import 'screens/chat_detail_screen.dart'; // YENİ
+import 'screens/chat_detail_screen.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/chat_provider.dart';
@@ -45,6 +46,52 @@ class _ChatsScreenState extends State<ChatsScreen> {
     );
   }
 
+  /// Sohbeti sil (swipe ile)
+  Future<void> _deleteChat(ChatConversation chat) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('Sohbeti Sil?', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+        content: Text(
+          '${chat.otherUserName} ile olan sohbetiniz silinecek. Bu işlem geri alınamaz.',
+          style: GoogleFonts.plusJakartaSans(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('İptal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Sil'),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirm == true) {
+      try {
+        await ChatService().deleteConversation(chat.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${chat.otherUserName} ile sohbet silindi'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sohbet silinemedi')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,9 +123,27 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     physics: const BouncingScrollPhysics(),
                     itemCount: chats.length,
                     itemBuilder: (context, index) {
-                      return ChatListItem(
-                        chat: chats[index],
-                        onTap: () => _onChatTap(chats[index]),
+                      final chat = chats[index];
+                      return Slidable(
+                        key: Key(chat.id),
+                        endActionPane: ActionPane(
+                          motion: const DrawerMotion(),
+                          extentRatio: 0.25,
+                          children: [
+                            SlidableAction(
+                              onPressed: (_) => _deleteChat(chat),
+                              backgroundColor: Colors.red.shade800,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete_rounded,
+                              label: 'Sil',
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ],
+                        ),
+                        child: ChatListItem(
+                          chat: chat,
+                          onTap: () => _onChatTap(chat),
+                        ),
                       );
                     },
                   );

@@ -1,5 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum UserRole {
+  user,
+  moderator,
+  admin,
+}
+
 class UserProfile {
   final String uid;
   final String email;
@@ -19,6 +25,7 @@ class UserProfile {
   final int credits;
   final bool isVerified;
   final bool isOnline;
+  final UserRole role; // YENİ: Rol (user, moderator, admin)
   
   // Konum
   final double distance;
@@ -48,6 +55,7 @@ class UserProfile {
     this.credits = 0,
     this.isVerified = false,
     this.isOnline = false,
+    this.role = UserRole.user,
     this.distance = 0,
     this.latitude,
     this.longitude,
@@ -94,6 +102,7 @@ class UserProfile {
       'credits': credits,
       'isVerified': isVerified,
       'isOnline': isOnline,
+      'role': role.name,
       'latitude': latitude,
       'longitude': longitude,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -138,6 +147,7 @@ class UserProfile {
       credits: map['credits']?.toInt() ?? 0,
       isVerified: map['isVerified'] ?? false,
       isOnline: map['isOnline'] ?? false,
+      role: UserRole.values.firstWhere((e) => e.name == (map['role'] ?? 'user'), orElse: () => UserRole.user),
       latitude: map['latitude']?.toDouble(),
       longitude: map['longitude']?.toDouble(),
       distance: 0.0,

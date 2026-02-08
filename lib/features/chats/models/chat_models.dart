@@ -87,8 +87,11 @@ class ChatMessage {
   final DateTime timestamp;
   final bool isRead;
   final MessageType type;
-  final List<String> deletedFor; // YENİ: Soft delete
-  final Map<String, dynamic>? storyReply; // YENİ: Story context
+  final List<String> deletedFor; // Soft delete
+  final Map<String, dynamic>? storyReply; // Story context
+  final Map<String, String> reactions; // userId -> emoji (Instagram DM like)
+  final String? replyToId; // Yanıt verilen mesaj ID'si
+  final String? replyToContent; // Yanıt verilen mesajın içeriği
 
   // UI Yardımcısı
   bool isMe(String currentUserId) => senderId == currentUserId;
@@ -102,6 +105,9 @@ class ChatMessage {
     this.type = MessageType.text,
     this.deletedFor = const [],
     this.storyReply,
+    this.reactions = const {},
+    this.replyToId,
+    this.replyToContent,
   });
 
   Map<String, dynamic> toMap() {
@@ -112,6 +118,9 @@ class ChatMessage {
       'isRead': isRead,
       'type': type.name,
       'storyReply': storyReply,
+      'reactions': reactions,
+      'replyToId': replyToId,
+      'replyToContent': replyToContent,
     };
   }
 
@@ -126,6 +135,9 @@ class ChatMessage {
       type: MessageType.values.firstWhere((e) => e.name == (data['type'] ?? 'text'), orElse: () => MessageType.text),
       storyReply: data['storyReply'] != null ? Map<String, dynamic>.from(data['storyReply']) : null,
       deletedFor: List<String>.from(data['deletedFor'] ?? []),
+      reactions: data['reactions'] != null ? Map<String, String>.from(data['reactions']) : {},
+      replyToId: data['replyToId'],
+      replyToContent: data['replyToContent'],
     );
   }
 }

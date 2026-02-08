@@ -261,4 +261,36 @@ class ProfileService {
       LogService.e("FCM update error", e);
     }
   }
+
+  /// Kullanıcı arama (isme göre)
+  Future<List<UserProfile>> searchUsers(String query) async {
+    final currentUid = _currentUser?.uid;
+    if (query.isEmpty || currentUid == null) return [];
+
+    try {
+      // İsme göre arama (case-insensitive için küçük harfe dönüştürülmüş alan gerekebilir)
+      // Firestore'da full-text search yok, bu yüzden prefix search yapıyoruz
+      final queryLower = query.toLowerCase();
+      final queryUpper = query.toLowerCase() + '\uf8ff';
+      
+      final snapshot = await _firestore
+          .collection('users')
+          .where('name', isGreaterThanOrEqualTo: query)
+          .where('name', isLessThanOrEqualTo: query + '\uf8ff')
+          .limit(20)
+          .get();
+
+      // Kendini filtrele
+      final results = snapshot.docs
+          .where((doc) => doc.id != currentUid)
+          .map((doc) => UserProfile.fromMap(doc.data()))
+          .toList();
+
+      LogService.i("Search found ${results.length} users for: $query");
+      return results;
+    } catch (e) {
+      LogService.e("Search users error", e);
+      return [];
+    }
+  }
 }

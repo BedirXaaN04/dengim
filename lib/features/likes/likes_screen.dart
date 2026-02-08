@@ -26,8 +26,10 @@ class _LikesScreenState extends State<LikesScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LikesProvider>().loadMatches();
-      context.read<LikesProvider>().loadLikedMeUsers();
+      final provider = context.read<LikesProvider>();
+      provider.initStreams(); // Gerçek zamanlı dinleme
+      provider.loadMatches();
+      provider.loadLikedMeUsers();
     });
   }
 
@@ -51,6 +53,11 @@ class _LikesScreenState extends State<LikesScreen> {
                     slivers: [
                       if (_activeTab == 1) ...[
                         // Eşleşmeler Listesi (Grid)
+                        if (provider.matches.isEmpty)
+                          SliverToBoxAdapter(
+                            child: _buildEmptyMatches(),
+                          )
+                        else
                         SliverPadding(
                           padding: const EdgeInsets.all(20),
                           sliver: SliverGrid(
@@ -61,7 +68,10 @@ class _LikesScreenState extends State<LikesScreen> {
                               mainAxisSpacing: 12,
                             ),
                             delegate: SliverChildBuilderDelegate(
-                              (context, index) => _UnlockedLikeCard(user: provider.matches[index]),
+                              (context, index) => _UnlockedLikeCard(
+                                user: provider.matches[index],
+                                showActions: false, // Eşleşmelerde aksiyon yok
+                              ),
                               childCount: provider.matches.length,
                             ),
                           ),
@@ -302,6 +312,45 @@ class _LikesScreenState extends State<LikesScreen> {
       ),
     );
   }
+
+  Widget _buildEmptyMatches() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.pink.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.favorite, size: 50, color: Colors.pinkAccent),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "Henüz eşleşme yok",
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Keşfet'e gidip insanları beğenmeye başla.\nKarşılıklı beğeniler eşleşme oluşturur!",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white38,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _LockedLikeCard extends StatelessWidget {
@@ -371,83 +420,399 @@ class _LockedLikeCard extends StatelessWidget {
   }
 }
 
+/// Beğeni kartı - Kabul/Ret butonlarıyla etkileşimli
 class _UnlockedLikeCard extends StatelessWidget {
   final UserProfile user;
-  const _UnlockedLikeCard({required this.user});
+  final bool showActions; // Beğeniler için kabul/ret, eşleşmeler için false
+  
+  const _UnlockedLikeCard({
+    required this.user, 
+    this.showActions = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-        image: DecorationImage(
-          image: NetworkImage(user.imageUrl),
-          fit: BoxFit.cover,
-          onError: (_, __) {},
+    return GestureDetector(
+      onTap: () => _showProfileDetail(context),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-      ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.8),
-                  ],
-                  stops: const [0.6, 1.0],
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Profil fotoğrafı
+              CachedNetworkImage(
+                imageUrl: user.imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.white10,
+                  highlightColor: Colors.white24,
+                  child: Container(color: Colors.white),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: AppColors.surface,
+                  child: const Icon(Icons.person, color: Colors.white10, size: 40),
                 ),
               ),
-            ),
+              
+              // Gradient overlay
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.8),
+                      ],
+                      stops: const [0.5, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+              
+              // Kullanıcı bilgileri
+              Positioned(
+                bottom: showActions ? 56 : 12,
+                left: 12,
+                right: 12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${user.name}, ${user.age}",
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (user.location != null) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on, size: 10, color: Colors.white54),
+                          const SizedBox(width: 2),
+                          Expanded(
+                            child: Text(
+                              user.location!,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 10,
+                                color: Colors.white.withOpacity(0.6),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              
+              // Kabul/Ret butonları (sadece beğeniler için)
+              if (showActions)
+                Positioned(
+                  bottom: 8,
+                  left: 12,
+                  right: 12,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Ret butonu
+                      _ActionButton(
+                        icon: Icons.close_rounded,
+                        color: Colors.red,
+                        onTap: () => _rejectLike(context),
+                      ),
+                      // Kabul butonu (Eşleş)
+                      _ActionButton(
+                        icon: Icons.favorite_rounded,
+                        color: AppColors.primary,
+                        isMain: true,
+                        onTap: () => _acceptLike(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // Beğeni kalp ikonu (üst sağ)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.favorite, color: Colors.red, size: 14),
+                ),
+              ),
+            ],
           ),
-          Positioned(
-            bottom: 12,
-            left: 12,
-            right: 12,
+        ),
+      ),
+    );
+  }
+
+  void _acceptLike(BuildContext context) async {
+    final provider = context.read<LikesProvider>();
+    
+    // Loading göster
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+    );
+    
+    final matched = await provider.likeBack(user.uid);
+    Navigator.pop(context); // Loading kapat
+    
+    if (matched) {
+      // Eşleşme animasyonu/bildirimi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.favorite, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '${user.name} ile eşleştiniz! 🎉',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _rejectLike(BuildContext context) async {
+    await context.read<LikesProvider>().rejectLike(user.uid);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${user.name} reddedildi'),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _showProfileDetail(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "${user.name}, ${user.age}",
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                // Handle
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                Text(
-                  user.location ?? "İstanbul",
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    color: Colors.white.withOpacity(0.6),
+                
+                // Profil fotoğrafı
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: CachedNetworkImage(
+                    imageUrl: user.imageUrl,
+                    width: double.infinity,
+                    height: 400,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => Container(
+                      height: 400,
+                      color: Colors.grey[900],
+                      child: const Icon(Icons.person, size: 100, color: Colors.white24),
+                    ),
                   ),
                 ),
+                
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // İsim ve yaş
+                      Text(
+                        "${user.name}, ${user.age}",
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      
+                      if (user.location != null) ...[
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 18, color: AppColors.primary),
+                            const SizedBox(width: 4),
+                            Text(
+                              user.location!,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      
+                      if (user.bio != null && user.bio!.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        Text(
+                          "Hakkında",
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          user.bio!,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 14,
+                            color: Colors.white70,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                      
+                      const SizedBox(height: 32),
+                      
+                      // Aksiyon butonları
+                      if (showActions)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _rejectLike(context);
+                                },
+                                icon: const Icon(Icons.close),
+                                label: const Text("Geç"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red.withOpacity(0.2),
+                                  foregroundColor: Colors.red,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _acceptLike(context);
+                                },
+                                icon: const Icon(Icons.favorite),
+                                label: const Text("Eşleş"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  foregroundColor: Colors.black,
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 40),
               ],
             ),
           ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 4)),
-                ],
-              ),
-              child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 16),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
+
+/// Aksiyon butonu (kabul/ret)
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+  final bool isMain;
+
+  const _ActionButton({
+    required this.icon,
+    required this.color,
+    required this.onTap,
+    this.isMain = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: isMain ? 44 : 36,
+        height: isMain ? 44 : 36,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.2),
+          shape: BoxShape.circle,
+          border: Border.all(color: color, width: isMain ? 2 : 1),
+          boxShadow: isMain ? [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ] : null,
+        ),
+        child: Icon(icon, color: color, size: isMain ? 22 : 18),
+      ),
+    );
+  }
+}
+

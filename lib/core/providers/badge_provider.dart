@@ -19,21 +19,19 @@ class BadgeProvider extends ChangeNotifier {
     final uid = _auth.currentUser?.uid;
     if (uid == null) return;
 
-    // Listen to unread messages
+    // Listen to unread messages (conversations collection with unreadCounts map)
     _firestore
         .collection('conversations')
-        .where('participants', arrayContains: uid)
+        .where('userIds', arrayContains: uid)
         .snapshots()
         .listen((snapshot) {
       int unreadCount = 0;
       for (var doc in snapshot.docs) {
         final data = doc.data();
-        final lastMessage = data['lastMessage'] as String?;
-        final lastSenderId = data['lastSenderId'] as String?;
-        final readBy = List<String>.from(data['readBy'] ?? []);
-        
-        if (lastMessage != null && lastSenderId != uid && !readBy.contains(uid)) {
-          unreadCount++;
+        final unreadCounts = data['unreadCounts'] as Map<String, dynamic>?;
+        if (unreadCounts != null) {
+          final count = unreadCounts[uid] as int? ?? 0;
+          if (count > 0) unreadCount++;
         }
       }
       _chatUnreadCount = unreadCount;
@@ -42,11 +40,11 @@ class BadgeProvider extends ChangeNotifier {
       LogService.e("Badge Provider: Chat listener error", e);
     });
 
-    // Listen to new matches (last 24h)
+    // Listen to new matches (son 24 saat)
     _firestore
         .collection('matches')
-        .where('users', arrayContains: uid)
-        .where('matchedAt', isGreaterThan: Timestamp.fromDate(DateTime.now().subtract(const Duration(hours: 24))))
+        .where('userIds', arrayContains: uid)
+        .where('timestamp', isGreaterThan: Timestamp.fromDate(DateTime.now().subtract(const Duration(hours: 24))))
         .snapshots()
         .listen((snapshot) {
       _matchCount = snapshot.docs.length;

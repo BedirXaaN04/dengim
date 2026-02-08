@@ -104,6 +104,43 @@ class CloudinaryService {
       }
     });
   }
+
+  /// Ses dosyası yükle (m4a, mp3, wav vb.)
+  static Future<String?> uploadAudioBytes(Uint8List bytes, {String filename = 'voice_message.m4a'}) async {
+    return _uploadWithRetry(() async {
+      try {
+        // Ses dosyaları için 'video' veya 'raw' endpoint kullanılır
+        final url = Uri.parse("https://api.cloudinary.com/v1_1/$_cloudName/video/upload");
+        final request = http.MultipartRequest("POST", url);
+
+        request.fields['upload_preset'] = _uploadPreset;
+        request.fields['resource_type'] = 'video'; // Ses için 'video' tipi
+        
+        request.files.add(http.MultipartFile.fromBytes(
+          'file', 
+          bytes, 
+          filename: filename
+        ));
+
+        final response = await request.send();
+        final responseData = await response.stream.toBytes();
+        final responseString = String.fromCharCodes(responseData);
+        final jsonResponse = jsonDecode(responseString);
+
+        if (response.statusCode == 200) {
+          LogService.i("Cloudinary audio upload success: ${jsonResponse['secure_url']}");
+          return jsonResponse['secure_url'];
+        } else {
+          LogService.e("Cloudinary Audio Upload Failed (Status: ${response.statusCode})");
+          LogService.e("Response: $responseString");
+          throw Exception("Audio upload failed with status ${response.statusCode}");
+        }
+      } catch (e) {
+        LogService.e("Cloudinary audio upload attempt failed", e);
+        rethrow;
+      }
+    });
+  }
 }
 
 

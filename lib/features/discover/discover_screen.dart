@@ -23,6 +23,8 @@ import 'story_viewer_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'models/story_model.dart';
 import '../payment/premium_offer_screen.dart';
+import 'user_profile_detail_screen.dart';
+import '../spaces/screens/spaces_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -36,9 +38,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   final ConfettiController _confettiController = ConfettiController(
     duration: const Duration(seconds: 2),
   );
+  final TextEditingController _searchController = TextEditingController();
   
   FilterSettings _filterSettings = FilterSettings();
   bool _isRefreshing = false;
+  bool _showSearchBar = false;
+  String _searchQuery = '';
+  List<UserProfile> _searchResults = [];
+  bool _isSearching = false;
 
   @override
   void initState() {
@@ -177,6 +184,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   void dispose() {
     _cardController.dispose();
     _confettiController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -252,6 +260,44 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
+  /// Profil arama
+  Future<void> _searchUsers(String query) async {
+    if (query.trim().isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+      });
+      return;
+    }
+
+    setState(() => _isSearching = true);
+
+    try {
+      final results = await ProfileService().searchUsers(query.trim());
+      if (mounted) {
+        setState(() {
+          _searchResults = results;
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      LogService.e("Search error", e);
+      if (mounted) {
+        setState(() => _isSearching = false);
+      }
+    }
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() => _searchQuery = value);
+    // Debounce: Kısa arama sorgularında bekle
+    if (value.length >= 2) {
+      _searchUsers(value);
+    } else {
+      setState(() => _searchResults = []);
+    }
+  }
+
   Future<void> _pickAndUploadStory() async {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
@@ -319,7 +365,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       child: Column(
                         children: [
                           _buildTopBar(),
-                          _buildStoriesTray(storyProvider.activeStories),
+                          _buildSearchBar(), // 🔍 Arama barı
+                          if (!_showSearchBar) _buildStoriesTray(storyProvider.activeStories),
                           const SizedBox(height: 8),
                         ],
                       ),
@@ -489,22 +536,41 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               ),
             ),
             
-            // Sağ: Refresh ve Filtre
+            // Sağ: Arama, Spaces, Notifications ve Filtre
             Row(
               children: [
+                // 🎙️ Sesli Odalar (Spaces)
                 GestureDetector(
-                   onTap: () {
-                     HapticFeedback.lightImpact();
-                     _loadInitialData();
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       const SnackBar(
-                         content: Text("Yenileniyor...", style: TextStyle(color: Colors.white)), 
-                         backgroundColor: AppColors.surfaceLight,
-                         duration: Duration(seconds: 1)
-                        )
-                      );
-                   },
-                   child: Icon(Icons.refresh_rounded, color: Colors.white.withOpacity(0.8), size: 24),
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SpacesScreen()),
+                    );
+                  },
+                  child: const Icon(
+                    Icons.graphic_eq_rounded,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // 🔍 Arama butonu
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    setState(() => _showSearchBar = !_showSearchBar);
+                    if (!_showSearchBar) {
+                      _searchController.clear();
+                      _searchResults.clear();
+                      _searchQuery = '';
+                    }
+                  },
+                  child: Icon(
+                    _showSearchBar ? Icons.close : Icons.search_rounded,
+                    color: _showSearchBar ? AppColors.primary : Colors.white.withOpacity(0.8),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 GestureDetector(
@@ -519,6 +585,185 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               ],
             ),
 
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Instagram benzeri arama barı
+  Widget _buildSearchBar() {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      height: _showSearchBar ? null : 0,
+      child: _showSearchBar ? Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
+        ),
+        child: Column(
+          children: [
+            // Arama input
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.scaffold,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                autofocus: true,
+                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 15),
+                decoration: InputDecoration(
+                  hintText: 'Profil ara...',
+                  hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white38, fontSize: 15),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white38, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.white38, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            _onSearchChanged('');
+                          },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
+              ),
+            ),
+            
+            // Arama sonuçları
+            if (_isSearching)
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text('Aranıyor...', style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 12)),
+                  ],
+                ),
+              )
+            else if (_searchResults.isNotEmpty)
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                constraints: const BoxConstraints(maxHeight: 280),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    final user = _searchResults[index];
+                    return _buildSearchResultItem(user);
+                  },
+                ),
+              )
+            else if (_searchQuery.length >= 2)
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Text(
+                  'Sonuç bulunamadı',
+                  style: GoogleFonts.plusJakartaSans(color: Colors.white38, fontSize: 13),
+                ),
+              ),
+          ],
+        ),
+      ) : const SizedBox.shrink(),
+    );
+  }
+
+  /// Arama sonucu öğesi
+  Widget _buildSearchResultItem(UserProfile user) {
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        // Profil detayına git
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => UserProfileDetailScreen(user: user),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.03))),
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 2),
+              ),
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: user.imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(color: AppColors.surface),
+                  errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.white38),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            
+            // İsim ve bilgiler
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        user.name,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (user.isVerified) ...[
+                        const SizedBox(width: 4),
+                        const Icon(Icons.verified, color: Colors.blue, size: 14),
+                      ],
+                      if (user.isPremium) ...[
+                        const SizedBox(width: 4),
+                        ShaderMask(
+                          shaderCallback: (bounds) => AppColors.goldGradient.createShader(bounds),
+                          child: const Icon(Icons.star, color: Colors.white, size: 14),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${user.age} • ${user.location ?? user.country}',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white54,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Ok ikonu
+            Icon(Icons.chevron_right, color: Colors.white24, size: 20),
           ],
         ),
       ),

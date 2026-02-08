@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../core/theme/app_colors.dart';
 import '../auth/services/profile_service.dart';
 import '../auth/services/auth_service.dart';
-import '../auth/screens/login_screen.dart';
+import '../auth/login_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

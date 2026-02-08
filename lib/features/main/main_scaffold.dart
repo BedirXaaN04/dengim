@@ -144,9 +144,9 @@ class _MainScaffoldState extends State<MainScaffold> {
     
     // Determine badge count based on index
     int badgeCount = 0;
-    if (index == 2) { // Chats
+    if (index == 3) { // Sohbetler (Chats) - index 3
       badgeCount = badgeProvider.chatBadge;
-    } else if (index == 1) { // Likes  
+    } else if (index == 2) { // Beğeniler (Likes) - index 2
       badgeCount = badgeProvider.likesBadge;
     }
 

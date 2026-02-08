@@ -61,6 +61,14 @@ dependencies:
   confetti: ^0.7.0
   lottie: ^3.0.0
 
+  # Ses Kaydı & Çalma
+  record: ^5.1.2
+  just_audio: ^0.9.39
+  path_provider: ^2.1.2
+
+  # Swipe Actions
+  flutter_slidable: ^3.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

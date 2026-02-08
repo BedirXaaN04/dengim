@@ -153,6 +153,20 @@ class ChatService {
     }
   }
 
+  /// Ses Mesajı Gönder
+  Future<void> sendVoiceMessage(String chatId, String audioUrl, String receiverId, {int? durationSeconds}) async {
+    try {
+      // Ses dosyası URL'ini ve süresini gönder
+      // İçerik formatı: "audioUrl|duration" şeklinde saklanır
+      final content = durationSeconds != null ? '$audioUrl|$durationSeconds' : audioUrl;
+      await sendMessage(chatId, content, receiverId, type: MessageType.audio);
+      LogService.i("Voice message sent: $audioUrl");
+    } catch (e) {
+      LogService.e("Send voice message error", e);
+      rethrow;
+    }
+  }
+
   /// Yeni Sohbet Başlat veya Mevcut Olanı Getir
   Future<String> startChat(String receiverId) async {
     final user = currentUser;
@@ -252,6 +266,105 @@ class ChatService {
     } catch (e) {
       LogService.e("Block user error", e);
       rethrow;
+    }
+  }
+
+  /// Mesaja tepki ekle/güncelle (Instagram DM like)
+  Future<void> addReaction(String chatId, String messageId, String emoji) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore
+          .collection('conversations')
+          .doc(chatId)
+          .collection('messages')
+          .doc(messageId)
+          .update({
+        'reactions.${user.uid}': emoji,
+      });
+      LogService.i("Reaction added: $emoji to message $messageId");
+    } catch (e) {
+      LogService.e("Add reaction error", e);
+    }
+  }
+
+  /// Tepkiyi kaldır
+  Future<void> removeReaction(String chatId, String messageId) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore
+          .collection('conversations')
+          .doc(chatId)
+          .collection('messages')
+          .doc(messageId)
+          .update({
+        'reactions.${user.uid}': FieldValue.delete(),
+      });
+      LogService.i("Reaction removed from message $messageId");
+    } catch (e) {
+      LogService.e("Remove reaction error", e);
+    }
+  }
+
+  /// Yanıtlı mesaj gönder
+  Future<void> sendReplyMessage(
+    String chatId,
+    String content,
+    String receiverId,
+    String replyToId,
+    String replyToContent,
+  ) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      final messageData = {
+        'senderId': user.uid,
+        'content': content,
+        'timestamp': timestamp,
+        'isRead': false,
+        'type': 'text',
+        'replyToId': replyToId,
+        'replyToContent': replyToContent.length > 50 
+            ? '${replyToContent.substring(0, 50)}...' 
+            : replyToContent,
+      };
+
+      await _firestore
+          .collection('conversations')
+          .doc(chatId)
+          .collection('messages')
+          .add(messageData);
+
+      // Sohbet meta verisini güncelle
+      await _firestore.collection('conversations').doc(chatId).update({
+        'lastMessage': content,
+        'lastMessageTime': timestamp,
+        'unreadCounts.$receiverId': FieldValue.increment(1),
+      });
+
+      LogService.i("Reply message sent successfully");
+    } catch (e) {
+      LogService.e("Send reply message error", e);
+    }
+  }
+
+  /// Typing indicator güncelle
+  Future<void> setTyping(String chatId, bool isTyping) async {
+    final user = currentUser;
+    if (user == null) return;
+
+    try {
+      await _firestore.collection('conversations').doc(chatId).update({
+        'typing.${user.uid}': isTyping,
+      });
+    } catch (e) {
+      // Hata olursa sessizce geç
     }
   }
 }

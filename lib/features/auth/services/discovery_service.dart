@@ -102,13 +102,10 @@ class DiscoveryService {
     final user = _currentUser;
     if (user == null) return false;
 
-    // Map boolean logic for backward compatibility if needed, but here we use string type
-    // swipeType values: 'like', 'dislike', 'super_like'
-    
     final isLike = swipeType == 'like' || swipeType == 'super_like';
 
     try {
-      // 1. Record Swipe
+      // 1. Record Swipe in my swipes collection
       await _firestore
           .collection('users')
           .doc(user.uid)
@@ -124,7 +121,22 @@ class DiscoveryService {
 
       if (!isLike) return false;
 
-      // 2. Check for Match
+      // 2. Add to target user's "likes" collection (who liked them)
+      await _firestore
+          .collection('users')
+          .doc(targetUserId)
+          .collection('likes')
+          .doc(user.uid)
+          .set({
+        'fromUserId': user.uid,
+        'type': swipeType,
+        'timestamp': FieldValue.serverTimestamp(),
+        'viewed': false, // For badge counting
+      });
+
+      LogService.i("Like added to $targetUserId's likes collection");
+
+      // 3. Check for Match (did they also like us?)
       LogService.i("Checking for match with $targetUserId...");
       final matchDoc = await _firestore
           .collection('users')
@@ -133,23 +145,18 @@ class DiscoveryService {
           .doc(user.uid)
           .get();
 
-      if (matchDoc.exists) {
-         LogService.i("Match doc found. Type: ${matchDoc.data()?['type']}");
-      } else {
-         LogService.w("Match doc NOT found at users/$targetUserId/swipes/${user.uid}");
-      }
-
-      if (matchDoc.exists && matchDoc.data()?['type'] == 'like') {
-        LogService.i("creating match...");
+      if (matchDoc.exists && (matchDoc.data()?['type'] == 'like' || matchDoc.data()?['type'] == 'super_like')) {
+        LogService.i("MATCH FOUND! Creating match...");
         await _createMatch(user.uid, targetUserId);
         
-        // Notifications
-        await sendNotification(targetUserId, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var.");
-        await sendNotification(user.uid, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var.");
+        // Send match notifications to both users
+        await sendNotification(targetUserId, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var!");
+        await sendNotification(user.uid, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var!");
 
         return true;
       } else {
-        await sendNotification(targetUserId, type: 'like', title: "Biri seni beğendi 💖", body: "Seni beğenenleri görmek için hemen tıkla.");
+        // No match yet - send like notification
+        await sendNotification(targetUserId, type: 'like', title: "Biri seni beğendi 💖", body: "Seni beğenenleri görmek için hemen tıkla!");
       }
 
       return false;
@@ -157,7 +164,6 @@ class DiscoveryService {
       LogService.e("Swipe Error", e);
       return false;
     }
-
   }
 
   Future<void> sendNotification(String targetUid, {required String type, required String title, required String body}) async {
@@ -269,35 +275,40 @@ class DiscoveryService {
         });
   }
 
-  /// Beni beğenen kullanıcıları getir (Premium özellik)
+  /// Beni beğenen kullanıcıları getir
   Future<List<UserProfile>> getLikedMeUsers() async {
     final user = _currentUser;
     if (user == null) return [];
 
     try {
-      // swipes alt koleksiyonundaki bu kullanıcıyı beğenenleri bul
-      final likedMeSnapshot = await _firestore
-          .collectionGroup('swipes')
-          .where(FieldPath.documentId, isEqualTo: user.uid)
+      // Direkt kendi likes koleksiyonumdan beğenenleri çek
+      final likesSnapshot = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('likes')
+          .orderBy('timestamp', descending: true)
+          .limit(50)
           .get();
 
-      // Bu swipe'ların ana kullanıcı uid'lerini çıkar
-      final likerUids = <String>[];
-      for (final doc in likedMeSnapshot.docs) {
-        if (doc.data()['type'] == 'like') {
-          // Parent path: users/{uid}/swipes/{targetUid}
-          final pathSegments = doc.reference.path.split('/');
-          if (pathSegments.length >= 2) {
-            likerUids.add(pathSegments[1]); // uid at index 1
-          }
-        }
+      if (likesSnapshot.docs.isEmpty) {
+        LogService.i("No likes found for current user");
+        return [];
       }
+
+      // Beğenen kullanıcı ID'lerini çıkar
+      final likerUids = likesSnapshot.docs
+          .map((doc) => doc.data()['fromUserId'] as String?)
+          .where((id) => id != null && id.isNotEmpty)
+          .cast<String>()
+          .toList();
+
+      LogService.i("Found ${likerUids.length} users who liked me");
 
       if (likerUids.isEmpty) return [];
 
-      // Bu kullanıcıların profillerini getir (max 10 chunk)
+      // Profilleri getir (10'arlık chunk'lar halinde)
       final List<UserProfile> likers = [];
-      for (var i = 0; i < likerUids.length && i < 30; i += 10) {
+      for (var i = 0; i < likerUids.length; i += 10) {
         final chunk = likerUids.skip(i).take(10).toList();
         final usersSnapshot = await _firestore
             .collection('users')
@@ -310,6 +321,64 @@ class DiscoveryService {
     } catch (e) {
       LogService.e("Get Liked Me Users Error", e);
       return [];
+    }
+  }
+
+  /// Beğeniyi kabul et (like back) - Eşleşme oluştur
+  Future<bool> likeBack(String targetUserId) async {
+    final user = _currentUser;
+    if (user == null) return false;
+
+    try {
+      // Bu aslında normal bir beğeni, ama zaten bizi beğenmiş biri olduğu için eşleşme olacak
+      final matched = await swipeUser(targetUserId, swipeType: 'like');
+      
+      if (matched) {
+        // Eşleşme olduysa, likes koleksiyonundan kaldırılabilir (viewed olarak işaretle)
+        await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('likes')
+            .doc(targetUserId)
+            .update({'viewed': true, 'matched': true});
+      }
+      
+      return matched;
+    } catch (e) {
+      LogService.e("Like back error", e);
+      return false;
+    }
+  }
+
+  /// Beğeniyi reddet
+  Future<void> rejectLike(String targetUserId) async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    try {
+      // Kendi swipes koleksiyonuma 'dislike' olarak kaydet
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('swipes')
+          .doc(targetUserId)
+          .set({
+        'type': 'dislike',
+        'targetId': targetUserId,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Likes koleksiyonundan kaldır veya işaretle
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('likes')
+          .doc(targetUserId)
+          .delete();
+
+      LogService.i("Rejected like from $targetUserId");
+    } catch (e) {
+      LogService.e("Reject like error", e);
     }
   }
 }
