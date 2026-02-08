@@ -171,6 +171,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   UserProfile? _matchedUser;
   bool _showMatch = false;
+  int _currentPhotoIndex = 0;
 
   @override
   void dispose() {

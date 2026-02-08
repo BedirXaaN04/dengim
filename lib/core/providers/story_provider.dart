@@ -111,4 +111,10 @@ class StoryProvider extends ChangeNotifier {
     await _storyService.likeStory(storyId, targetUserId);
   }
 
+  Future<void> loadStories() async {
+    // Stream tabanlı olduğu için _initStories'i tekrar çağırmak yeterli olacaktır
+    // veya mevcut stream'i tetikleyecek bir işlem yapılabilir.
+    _initStories();
+    notifyListeners();
+  }
 }
