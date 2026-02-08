@@ -38,7 +38,8 @@ class UserProfileDetailScreen extends StatelessWidget {
           final age = data['age'] ?? 18;
           final bio = data['bio'] ?? '';
           final job = data['job'] ?? '';
-          final photos = List<String>.from(data['photoUrls'] ?? []);
+          final photoUrlsFromData = data['photoUrls'] != null ? List<String>.from(data['photoUrls']) : <String>[];
+          final photos = photoUrlsFromData.isNotEmpty ? photoUrlsFromData : [data['imageUrl'] ?? ''];
 
           return Stack(
             children: [
@@ -80,8 +81,8 @@ class UserProfileDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("$name, $age", style: GoogleFonts.plusJakartaSans(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
-                    if (job.isNotEmpty) 
-                       Text(job.toUpperCase(), style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.white70, fontWeight: FontWeight.w600)),
+                    if (job.toString().isNotEmpty) 
+                       Text(job.toString().toUpperCase(), style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.white70, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 16),
                     Text(bio, style: GoogleFonts.plusJakartaSans(fontSize: 16, color: Colors.white)),
                     const SizedBox(height: 30),
@@ -125,6 +126,7 @@ class UserProfileDetailScreen extends StatelessWidget {
                     onSelected: (value) async {
                       if (value == 'report') {
                          final reasonController = TextEditingController();
+                         if (!context.mounted) return;
                          showDialog(context: context, builder: (ctx) => AlertDialog(
                            backgroundColor: const Color(0xFF1E293B),
                            title: const Text("Şikayet Et", style: TextStyle(color: Colors.white)),
@@ -137,7 +139,7 @@ class UserProfileDetailScreen extends StatelessWidget {
                              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("İptal")),
                              TextButton(onPressed: () {
                                if (reasonController.text.isNotEmpty) {
-                                  SafetyService().reportUser(reportedUserId: userId, reason: reasonController.text);
+                                  SafetyService().reportUser(reportedUserId: userId ?? '', reason: reasonController.text);
                                   Navigator.pop(ctx);
                                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Şikayet alındı.")));
                                }
@@ -145,6 +147,7 @@ class UserProfileDetailScreen extends StatelessWidget {
                            ],
                          ));
                       } else if (value == 'block') {
+                         if (!context.mounted) return;
                          showDialog(context: context, builder: (ctx) => AlertDialog(
                            backgroundColor: const Color(0xFF1E293B),
                            title: const Text("Engelle?", style: TextStyle(color: Colors.white)),
@@ -152,8 +155,12 @@ class UserProfileDetailScreen extends StatelessWidget {
                            actions: [
                              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Vazgeç")),
                              TextButton(onPressed: () async {
-                               await SafetyService().blockUser(userId);
+                               if (userId != null) {
+                                 await SafetyService().blockUser(userId!);
+                               }
+                               if (!ctx.mounted) return;
                                Navigator.pop(ctx); // Dialog kapat
+                               if (!context.mounted) return;
                                Navigator.pop(context); // Ekranı kapat
                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Kullanıcı engellendi.")));
                              }, child: const Text("ENGELLE", style: TextStyle(color: Colors.red))),
@@ -177,7 +184,7 @@ class UserProfileDetailScreen extends StatelessWidget {
 
   /// UserProfile objesi ile profil UI oluştur
   Widget _buildProfileUI(BuildContext context, UserProfile profile) {
-    final photos = profile.photoUrls.isNotEmpty ? profile.photoUrls : [profile.imageUrl];
+    final photos = (profile.photoUrls != null && profile.photoUrls!.isNotEmpty) ? profile.photoUrls! : [profile.imageUrl];
     final targetUserId = profile.uid;
 
     return Scaffold(
@@ -237,16 +244,16 @@ class UserProfileDetailScreen extends StatelessWidget {
                     ],
                   ],
                 ),
-                if (profile.job?.isNotEmpty == true) 
+                if (profile.job != null && profile.job!.isNotEmpty) 
                    Text(profile.job!.toUpperCase(), style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.white70, fontWeight: FontWeight.w600)),
-                if (profile.location?.isNotEmpty == true)
+                if (profile.location.isNotEmpty)
                    Padding(
                      padding: const EdgeInsets.only(top: 4),
                      child: Row(
                        children: [
                          const Icon(Icons.location_on, color: Colors.white54, size: 14),
                          const SizedBox(width: 4),
-                         Text(profile.location!, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white54)),
+                         Text(profile.location, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white54)),
                        ],
                      ),
                    ),
@@ -293,6 +300,7 @@ class UserProfileDetailScreen extends StatelessWidget {
                 onSelected: (value) async {
                   if (value == 'report') {
                      final reasonController = TextEditingController();
+                     if (!context.mounted) return;
                      showDialog(context: context, builder: (ctx) => AlertDialog(
                        backgroundColor: const Color(0xFF1E293B),
                        title: const Text("Şikayet Et", style: TextStyle(color: Colors.white)),
@@ -313,6 +321,7 @@ class UserProfileDetailScreen extends StatelessWidget {
                        ],
                      ));
                   } else if (value == 'block') {
+                     if (!context.mounted) return;
                      showDialog(context: context, builder: (ctx) => AlertDialog(
                        backgroundColor: const Color(0xFF1E293B),
                        title: const Text("Engelle?", style: TextStyle(color: Colors.white)),
@@ -321,7 +330,9 @@ class UserProfileDetailScreen extends StatelessWidget {
                          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Vazgeç")),
                          TextButton(onPressed: () async {
                            await SafetyService().blockUser(targetUserId);
+                           if (!ctx.mounted) return;
                            Navigator.pop(ctx); // Dialog kapat
+                           if (!context.mounted) return;
                            Navigator.pop(context); // Ekranı kapat
                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Kullanıcı engellendi.")));
                          }, child: const Text("ENGELLE", style: TextStyle(color: Colors.red))),

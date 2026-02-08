@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +28,14 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
     // Find the current space
     final space = spaceProvider.spaces.firstWhere(
       (s) => s.id == widget.spaceId,
-      orElse: () => spaceProvider.currentSpace ?? const SpaceRoom(id: '', title: '', hostId: '', hostName: '', hostAvatar: '', createdAt: null as any),
+      orElse: () => spaceProvider.currentSpace ?? SpaceRoom(
+        id: '', 
+        title: '', 
+        hostId: '', 
+        hostName: '', 
+        hostAvatar: '', 
+        createdAt: DateTime.now(),
+      ),
     );
 
     if (space.id.isEmpty) {
