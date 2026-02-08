@@ -71,6 +71,11 @@ export function Sidebar() {
             badge: counts.support > 0 ? counts.support : undefined,
         },
         {
+            label: 'Kaynak Yönetimi',
+            icon: 'folder_shared',
+            href: '/resources',
+        },
+        {
             label: 'Ayarlar',
             icon: 'settings',
             href: '/settings',

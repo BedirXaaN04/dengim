@@ -12,24 +12,36 @@ class ConfigService {
   bool isAdsEnabled = true;
   bool isCreditsEnabled = false;
 
+  // Resources
+  String privacyPolicyUrl = "https://dengim.space/privacy";
+  String termsOfServiceUrl = "https://dengim.space/terms";
+  String supportEmail = "support@dengim.space";
+  String appVersion = "1.0.0";
+  bool maintenanceMode = false;
+  String maintenanceMessage = "Bakımdayız.";
+
   Future<void> init() async {
     try {
-      // Get initial config
-      final doc = await _firestore.collection('system').doc('config').get();
-      if (doc.exists) {
-        _updateConfig(doc.data()!);
-      }
+      // 1. Initial config
+      final configDoc = await _firestore.collection('system').doc('config').get();
+      if (configDoc.exists) _updateConfig(configDoc.data()!);
+
+      // 2. Initial resources
+      final resDoc = await _firestore.collection('system').doc('resources').get();
+      if (resDoc.exists) _updateResources(resDoc.data()!);
 
       // Listen for real-time changes
       _firestore.collection('system').doc('config').snapshots().listen((snapshot) {
-        if (snapshot.exists && snapshot.data() != null) {
-          _updateConfig(snapshot.data()!);
-        }
+        if (snapshot.exists && snapshot.data() != null) _updateConfig(snapshot.data()!);
       });
       
-      LogService.i("Config Service initialized.");
+      _firestore.collection('system').doc('resources').snapshots().listen((snapshot) {
+        if (snapshot.exists && snapshot.data() != null) _updateResources(snapshot.data()!);
+      });
+      
+      LogService.i("Config & Resource Services initialized.");
     } catch (e) {
-      LogService.e("Error initializing Config Service", e);
+      LogService.e("Error initializing Config/Resource Service", e);
     }
   }
 
@@ -37,6 +49,16 @@ class ConfigService {
     isVipEnabled = data['isVipEnabled'] ?? false;
     isAdsEnabled = data['isAdsEnabled'] ?? true;
     isCreditsEnabled = data['isCreditsEnabled'] ?? false;
-    LogService.i("Config updated: VIP=$isVipEnabled, Ads=$isAdsEnabled, Credits=$isCreditsEnabled");
   }
+
+  void _updateResources(Map<String, dynamic> data) {
+    privacyPolicyUrl = data['privacyPolicyUrl'] ?? privacyPolicyUrl;
+    termsOfServiceUrl = data['termsOfServiceUrl'] ?? termsOfServiceUrl;
+    supportEmail = data['supportEmail'] ?? supportEmail;
+    appVersion = data['appVersion'] ?? appVersion;
+    maintenanceMode = data['maintenanceMode'] ?? false;
+    maintenanceMessage = data['maintenanceMessage'] ?? maintenanceMessage;
+    LogService.i("Resources updated from remote.");
+  }
+}
 }

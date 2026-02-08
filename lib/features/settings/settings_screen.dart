@@ -41,7 +41,8 @@ class SettingsScreen extends StatelessWidget {
             title: "Gizlilik Sözleşmesi",
             color: Colors.white,
             onTap: () {
-              // Launch URL
+              // TODO: url_launcher ile aç
+              debugPrint("Opening: ${ConfigService().privacyPolicyUrl}");
             },
           ),
            _buildTile(
@@ -49,14 +50,15 @@ class SettingsScreen extends StatelessWidget {
              title: "Kullanım Koşulları (EULA)",
              color: Colors.white,
             onTap: () {
-               // Launch URL
+               // TODO: url_launcher ile aç
+               debugPrint("Opening: ${ConfigService().termsOfServiceUrl}");
             },
           ),
           
           const SizedBox(height: 48),
           Center(
             child: Text(
-              "DENGIM v1.0.0 (Beta)",
+              "DENGIM v${ConfigService().appVersion}",
               style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12),
             ),
           ),

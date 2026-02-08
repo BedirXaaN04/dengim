@@ -8,6 +8,7 @@ import { Card, StatCard } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import { NotificationService } from '@/services/notificationService';
+import { Timestamp } from 'firebase/firestore';
 
 export default function NotificationsPage() {
     const [activeTab, setActiveTab] = useState<'push' | 'email' | 'history'>('push');
@@ -15,6 +16,8 @@ export default function NotificationsPage() {
     const [counts, setCounts] = useState({ all: 0, premium: 0, new: 0, inactive: 0 });
     const [loading, setLoading] = useState(false);
     const [sentStatus, setSentStatus] = useState<string | null>(null);
+    const [history, setHistory] = useState<any[]>([]);
+    const [loadingHistory, setLoadingHistory] = useState(false);
 
     // Form State
     const [title, setTitle] = useState('');
@@ -28,6 +31,18 @@ export default function NotificationsPage() {
         };
         fetchCounts();
     }, []);
+
+    useEffect(() => {
+        if (activeTab === 'history') {
+            const fetchHistory = async () => {
+                setLoadingHistory(true);
+                const data = await NotificationService.getHistory();
+                setHistory(data);
+                setLoadingHistory(false);
+            };
+            fetchHistory();
+        }
+    }, [activeTab]);
 
     const handleSend = async () => {
         if (!title || !body) return alert("Başlık ve içeriği doldurun!");
@@ -57,7 +72,7 @@ export default function NotificationsPage() {
             <Sidebar />
             <div className="flex-1 flex flex-col">
                 <Header />
-                <main className="flex-1 overflow-y-auto pb-24 md:pb-6 custom-scrollbar">
+                <main className="flex-1 overflow-y-auto pb-24 md:pb-6 custom-scrollbar text-white">
                     {/* Stats */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 md:p-6">
                         <StatCard title="Bugün Gönderilen" value="0" borderColor="border-l-primary" />
@@ -167,9 +182,46 @@ export default function NotificationsPage() {
                         )}
 
                         {activeTab === 'history' && (
-                            <div className="text-center py-20 text-white/20">
-                                <span className="material-symbols-outlined text-6xl mb-4">history</span>
-                                <p>Bildirim geçmişi şu an boş.</p>
+                            <div className="space-y-4">
+                                {loadingHistory ? (
+                                    <div className="flex justify-center py-20">
+                                        <div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                                    </div>
+                                ) : history.length > 0 ? (
+                                    history.map((item) => (
+                                        <Card key={item.id} padding="sm">
+                                            <div className="flex items-start gap-4">
+                                                <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+                                                    <span className="material-symbols-outlined text-white/40">notifications</span>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <h4 className="font-bold text-white">{item.title}</h4>
+                                                        <span className="text-[10px] text-white/30">
+                                                            {item.createdAt instanceof Timestamp
+                                                                ? formatRelativeTime(item.createdAt.toDate())
+                                                                : 'Az önce'}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-sm text-white/60 mb-2">{item.body}</p>
+                                                    <div className="flex gap-4 items-center">
+                                                        <span className="text-[10px] font-bold text-primary uppercase tracking-tighter bg-primary/10 px-1.5 py-0.5 rounded">
+                                                            {item.segment}
+                                                        </span>
+                                                        <span className="text-[10px] text-white/30 uppercase tracking-tighter">
+                                                            Durum: <span className="text-emerald-400">{item.status}</span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-24 border border-dashed border-white/10 rounded-3xl opacity-30">
+                                        <span className="material-symbols-outlined text-6xl mb-4">history</span>
+                                        <p>Bildirim geçmişi şu an boş.</p>
+                                    </div>
+                                )}
                             </div>
                         )}
 

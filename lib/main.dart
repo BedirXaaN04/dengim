@@ -104,6 +104,8 @@ void main() async {
 
 
 
+import 'core/widgets/maintenance_screen.dart';
+
 class DengimApp extends StatefulWidget {
   const DengimApp({super.key});
 
@@ -145,14 +147,20 @@ class _DengimAppState extends State<DengimApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DENGİM',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      builder: (context, child) => ResponsiveCenterWrapper(
-        child: NetworkWrapper(child: child!),
-      ),
-      home: const SplashScreen(),
+    return Consumer<SystemConfigProvider>(
+      builder: (context, config, child) {
+        return MaterialApp(
+          title: 'DENGİM',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.darkTheme,
+          builder: (context, child) => ResponsiveCenterWrapper(
+            child: NetworkWrapper(child: child!),
+          ),
+          home: config.isMaintenanceMode 
+              ? const MaintenanceScreen() 
+              : const SplashScreen(),
+        );
+      },
     );
   }
 }

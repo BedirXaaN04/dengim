@@ -4,7 +4,10 @@ import {
     query,
     where,
     Timestamp,
-    addDoc
+    addDoc,
+    orderBy,
+    limit,
+    getDocs
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -44,8 +47,6 @@ export const NotificationService = {
         imageUrl?: string;
     }) => {
         try {
-            // Bildirimi bir 'notification_queue' koleksiyonuna ekliyoruz.
-            // Bir Cloud Function bu kuyruğu dinleyip gerçek FCM gönderimini yapabilir.
             await addDoc(collection(db, "notification_queue"), {
                 ...data,
                 status: 'pending',
@@ -56,6 +57,22 @@ export const NotificationService = {
         } catch (error) {
             console.error("Send notification error:", error);
             return false;
+        }
+    },
+
+    // Bildirim Geçmişini Getir
+    getHistory: async () => {
+        try {
+            const q = query(
+                collection(db, "notification_queue"),
+                orderBy("createdAt", "desc"),
+                limit(20)
+            );
+            const snapshot = await getDocs(q);
+            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } catch (error) {
+            console.error("Get history error:", error);
+            return [];
         }
     }
 };

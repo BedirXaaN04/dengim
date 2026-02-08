@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -26,6 +26,8 @@ export default function ModerationPage() {
             fetchBios();
         } else if (activeTab === 'id_verify') {
             fetchVerifications();
+        } else {
+            setLoading(false);
         }
     }, [activeTab]);
 
@@ -68,7 +70,7 @@ export default function ModerationPage() {
     const handleVerifyUser = async (userId: string, status: 'verify' | 'ban') => {
         try {
             await UserService.updateUserStatus(userId, status);
-            setPendingUsers(prev => prev.filter(u => u.id !== userId));
+            setPendingUsers(prev => prev.filter((u: User) => u.id !== userId));
         } catch (error) {
             alert('Hata oluştu');
         }
@@ -82,7 +84,7 @@ export default function ModerationPage() {
                 const reason = prompt('Reddetme nedeni:') || 'Düşük kaliteli selfie veya yetersiz bilgi';
                 await VerificationService.rejectRequest(requestId, userId, reason);
             }
-            setVerificationRequests(prev => prev.filter(r => r.id !== requestId));
+            setVerificationRequests(prev => prev.filter((r: VerificationRequest) => r.id !== requestId));
         } catch (error) {
             alert('Hata oluştu');
         }
@@ -93,9 +95,7 @@ export default function ModerationPage() {
             if (action === 'reject') {
                 await UserService.updateUser(userId, { bio: '' });
             }
-            // For approve, we just clear it from the moderation list (local state)
-            // In a real system you might have a 'isBioVerified' flag
-            setPendingBios(prev => prev.filter(u => u.id !== userId));
+            setPendingBios(prev => prev.filter((u: User) => u.id !== userId));
         } catch (error) {
             alert('Hata oluştu');
         }
@@ -106,7 +106,7 @@ export default function ModerationPage() {
             <Sidebar />
             <div className="flex-1 flex flex-col">
                 <Header />
-                <main className="flex-1 overflow-y-auto pb-24 md:pb-6 custom-scrollbar">
+                <main className="flex-1 overflow-y-auto pb-24 md:pb-6 custom-scrollbar text-white">
                     {/* Stats */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 md:p-6">
                         <StatCard
@@ -163,7 +163,7 @@ export default function ModerationPage() {
                             <>
                                 {activeTab === 'photos' && (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                        {pendingUsers.length > 0 ? pendingUsers.map((user) => (
+                                        {pendingUsers.length > 0 ? pendingUsers.map((user: User) => (
                                             <div key={user.id} className="bg-surface-dark rounded-2xl border border-white/10 overflow-hidden group">
                                                 <div className="aspect-[3/4] relative bg-white/5">
                                                     {user.photos && user.photos.length > 0 ? (
@@ -204,7 +204,7 @@ export default function ModerationPage() {
 
                                 {activeTab === 'id_verify' && (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                        {verificationRequests.length > 0 ? verificationRequests.map((req) => (
+                                        {verificationRequests.length > 0 ? verificationRequests.map((req: VerificationRequest) => (
                                             <div key={req.id} className="bg-surface-dark rounded-2xl border border-white/10 overflow-hidden group">
                                                 <div className="aspect-[3/4] relative bg-white/5">
                                                     <img src={req.selfieUrl} alt={req.email} className="w-full h-full object-cover" />
@@ -242,7 +242,7 @@ export default function ModerationPage() {
 
                                 {activeTab === 'bios' && (
                                     <div className="space-y-4">
-                                        {pendingBios.length > 0 ? pendingBios.map((user) => (
+                                        {pendingBios.length > 0 ? pendingBios.map((user: User) => (
                                             <div key={user.id} className="bg-surface-dark rounded-xl border border-white/10 p-4">
                                                 <div className="flex justify-between items-start mb-3">
                                                     <div className="flex items-center gap-3">
@@ -283,6 +283,61 @@ export default function ModerationPage() {
                                                 <p>İncelenecek biyografi bulunmuyor.</p>
                                             </div>
                                         )}
+                                    </div>
+                                )}
+
+                                {activeTab === 'settings' && (
+                                    <div className="max-w-3xl space-y-6">
+                                        <div className="bg-surface-dark rounded-2xl border border-white/10 p-6">
+                                            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-primary">gavel</span>
+                                                Otomatik Moderasyon Kuralları
+                                            </h3>
+
+                                            <div className="space-y-6">
+                                                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                                                    <div>
+                                                        <h4 className="font-bold text-sm text-white">Küfür/Hakaret Filtresi</h4>
+                                                        <p className="text-xs text-white/40">Biyografilerdeki uygunsuz kelimeleri otomatik temizle</p>
+                                                    </div>
+                                                    <div className="h-6 w-11 bg-primary rounded-full relative cursor-pointer">
+                                                        <div className="absolute right-1 top-1 h-4 w-4 bg-black rounded-full shadow-sm" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                                                    <div>
+                                                        <h4 className="font-bold text-sm text-white">AI Fotoğraf Denetimi</h4>
+                                                        <p className="text-xs text-white/40">NSFW içerikleri otomatik olarak reddet</p>
+                                                    </div>
+                                                    <div className="h-6 w-11 bg-white/10 rounded-full relative cursor-pointer">
+                                                        <div className="absolute left-1 top-1 h-4 w-4 bg-white/40 rounded-full shadow-sm" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                                                    <div>
+                                                        <h4 className="font-bold text-sm text-white">Spam Tespiti</h4>
+                                                        <p className="text-xs text-white/40">Ardışık benzer mesaj atanları geçici engelle</p>
+                                                    </div>
+                                                    <div className="h-6 w-11 bg-primary rounded-full relative cursor-pointer">
+                                                        <div className="absolute right-1 top-1 h-4 w-4 bg-black rounded-full shadow-sm" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-surface-dark rounded-2xl border border-white/10 p-6">
+                                            <h3 className="text-lg font-bold text-white mb-4">Yasaklı Kelime Listesi</h3>
+                                            <textarea
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white/60 focus:border-primary outline-none min-h-[120px]"
+                                                placeholder="Virgül ile ayırarak kelimeleri girin... (örn: küfür1, küfür2, reklam)"
+                                                defaultValue="bahis, kumar, eskort, +905"
+                                            />
+                                            <div className="mt-4 flex justify-end">
+                                                <Button size="sm">Listeyi Güncelle</Button>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </>

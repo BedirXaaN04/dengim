@@ -6,7 +6,7 @@ import {
     getDocs,
     orderBy,
     limit,
-    Timestamp
+    Timestamp as FirestoreTimestamp
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { DashboardStats, ChartDataPoint, GenderDistribution } from "@/types";
@@ -16,22 +16,27 @@ export const AnalyticsService = {
     getSystemCounts: async () => {
         try {
             const usersColl = collection(db, "users");
-            const reportsColl = collection(db, "reports");
             const supportColl = collection(db, "support_tickets");
             const verificationsColl = collection(db, "verification_requests");
 
             const [
-                pendingReports,
+                reportsCount,
+                messageReportsCount,
+                storyReportsCount,
                 pendingVerifications,
                 openTickets
             ] = await Promise.all([
-                getCountFromServer(query(reportsColl, where("status", "==", "pending"))),
+                getCountFromServer(query(collection(db, "reports"), where("status", "==", "pending"))),
+                getCountFromServer(query(collection(db, "message_reports"), where("status", "==", "pending"))),
+                getCountFromServer(query(collection(db, "story_reports"), where("status", "==", "pending"))),
                 getCountFromServer(query(verificationsColl, where("status", "==", "pending"))),
                 getCountFromServer(query(supportColl, where("status", "==", "open")))
             ]);
 
+            const totalPendingReports = reportsCount.data().count + messageReportsCount.data().count + storyReportsCount.data().count;
+
             return {
-                reports: pendingReports.data().count,
+                reports: totalPendingReports,
                 moderation: pendingVerifications.data().count,
                 support: openTickets.data().count
             };
@@ -45,7 +50,6 @@ export const AnalyticsService = {
     getDashboardStats: async (): Promise<DashboardStats> => {
         try {
             const usersColl = collection(db, "users");
-            const reportsColl = collection(db, "reports");
             const matchesColl = collection(db, "matches");
 
             const now = new Date();
@@ -56,7 +60,9 @@ export const AnalyticsService = {
             const [
                 totalUsersSnap,
                 premiumUsersSnap,
-                reportsSnap,
+                reportsCount,
+                messageReportsCount,
+                storyReportsCount,
                 verificationRequestsSnap,
                 matchesSnap,
                 todayUsersSnap,
@@ -65,13 +71,17 @@ export const AnalyticsService = {
             ] = await Promise.all([
                 getCountFromServer(usersColl),
                 getCountFromServer(query(usersColl, where("isPremium", "==", true))),
-                getCountFromServer(query(reportsColl, where("status", "==", "pending"))),
+                getCountFromServer(query(collection(db, "reports"), where("status", "==", "pending"))),
+                getCountFromServer(query(collection(db, "message_reports"), where("status", "==", "pending"))),
+                getCountFromServer(query(collection(db, "story_reports"), where("status", "==", "pending"))),
                 getCountFromServer(query(collection(db, "verification_requests"), where("status", "==", "pending"))),
                 getCountFromServer(matchesColl),
-                getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(todayStart)))),
-                getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(weekStart)))),
-                getCountFromServer(query(usersColl, where("createdAt", ">=", Timestamp.fromDate(monthStart))))
+                getCountFromServer(query(usersColl, where("createdAt", ">=", FirestoreTimestamp.fromDate(todayStart)))),
+                getCountFromServer(query(usersColl, where("createdAt", ">=", FirestoreTimestamp.fromDate(weekStart)))),
+                getCountFromServer(query(usersColl, where("createdAt", ">=", FirestoreTimestamp.fromDate(monthStart))))
             ]);
+
+            const totalPendingReports = reportsCount.data().count + messageReportsCount.data().count + storyReportsCount.data().count;
 
             return {
                 totalUsers: totalUsersSnap.data().count,
@@ -79,7 +89,7 @@ export const AnalyticsService = {
                 premiumUsers: premiumUsersSnap.data().count,
                 totalMatches: matchesSnap.data().count,
                 totalMessages: 0, // Requires messages subcollection or count
-                pendingReports: reportsSnap.data().count,
+                pendingReports: totalPendingReports,
                 pendingVerifications: verificationRequestsSnap.data().count,
                 newUsersToday: todayUsersSnap.data().count,
                 newUsersThisWeek: weekUsersSnap.data().count,

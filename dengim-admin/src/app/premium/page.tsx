@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -40,9 +40,12 @@ export default function PremiumPage() {
     }, []);
 
     const revenueData = [
-        { date: 'Ara', value: 0 },
-        { date: 'Oca', value: 0 },
-        { date: 'Şub', value: 0 }
+        { date: 'Ara 23', value: 12500 },
+        { date: 'Oca 24', value: 18400 },
+        { date: 'Şub 24', value: 24600 },
+        { date: 'Mar 24', value: 31200 },
+        { date: 'Nis 24', value: 28500 },
+        { date: 'May 24', value: 35800 },
     ];
 
     return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { db, auth } from '@/lib/firebase';
+import { adminService, type AdminUser } from '@/services/adminService';
 
 const settingSections = [
     { id: 'general', label: 'Genel', icon: 'tune' },
@@ -37,16 +39,27 @@ export default function SettingsPage() {
     const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
     const [maintenanceMessage, setMaintenanceMessage] = useState('');
 
+    // Admin Yönetimi State'leri
+    const [admins, setAdmins] = useState<AdminUser[]>([]);
+    const [isAddingAdmin, setIsAddingAdmin] = useState(false);
+    const [newAdmin, setNewAdmin] = useState({ name: '', email: '', role: 'moderator' as AdminUser['role'] });
+
+    // Şifre Değiştirme State'leri
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
     // Initial load from Firestore
     useEffect(() => {
-        const loadConfig = async () => {
+        const loadData = async () => {
+            // Load Config
             const docSnap = await getDoc(doc(db, 'system', 'config'));
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 setIsVipEnabled(data.isVipEnabled ?? false);
                 setIsAdsEnabled(data.isAdsEnabled ?? true);
                 setIsCreditsEnabled(data.isCreditsEnabled ?? false);
-                // Yeni alanları yükle
                 setMinimumAge(data.minimumAge ?? 18);
                 setMaxDistance(data.maxDistance ?? 100);
                 setDailyLikeLimit(data.dailyLikeLimit ?? 25);
@@ -56,8 +69,12 @@ export default function SettingsPage() {
                 setIsMaintenanceMode(data.isMaintenanceMode ?? false);
                 setMaintenanceMessage(data.maintenanceMessage ?? '');
             }
+
+            // Load Admins
+            const adminList = await adminService.getAdmins();
+            setAdmins(adminList);
         };
-        loadConfig();
+        loadData();
     }, []);
 
     const handleSave = async () => {
@@ -67,7 +84,6 @@ export default function SettingsPage() {
                 isVipEnabled,
                 isAdsEnabled,
                 isCreditsEnabled,
-                // Yeni alanları kaydet
                 minimumAge,
                 maxDistance,
                 dailyLikeLimit,
@@ -85,6 +101,56 @@ export default function SettingsPage() {
             alert('Hata oluştu!');
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleAddAdmin = async () => {
+        if (!newAdmin.name || !newAdmin.email) return;
+        const success = await adminService.addAdmin(newAdmin);
+        if (success) {
+            setAdmins(await adminService.getAdmins());
+            setIsAddingAdmin(false);
+            setNewAdmin({ name: '', email: '', role: 'moderator' });
+            alert('Yönetici başarıyla eklendi!');
+        } else {
+            alert('Yönetici eklenirken hata oluştu!');
+        }
+    };
+
+    const handleDeleteAdmin = async (email: string) => {
+        if (!confirm('Bu yöneticiyi silmek istediğinize emin misiniz?')) return;
+        const success = await adminService.deleteAdmin(email);
+        if (success) {
+            setAdmins(await adminService.getAdmins());
+        }
+    };
+
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (newPassword !== confirmPassword) {
+            alert('Şifreler eşleşmiyor!');
+            return;
+        }
+        if (!auth.currentUser) return;
+
+        setIsUpdatingPassword(true);
+        try {
+            // Re-authenticate first
+            const credential = EmailAuthProvider.credential(auth.currentUser.email!, currentPassword);
+            await reauthenticateWithCredential(auth.currentUser, credential);
+
+            // Update password
+            await updatePassword(auth.currentUser, newPassword);
+
+            alert('Şifreniz başarıyla güncellendi!');
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (error: any) {
+            console.error('Password update error:', error);
+            alert('Şifre güncellenirken hata oluştu: ' + error.message);
+        } finally {
+            setIsUpdatingPassword(false);
         }
     };
 
@@ -193,7 +259,8 @@ export default function SettingsPage() {
                                             </div>
                                             <input
                                                 type="number"
-                                                defaultValue={18}
+                                                value={minimumAge}
+                                                onChange={(e) => setMinimumAge(parseInt(e.target.value))}
                                                 className="w-20 h-10 bg-white/5 border border-white/10 rounded-lg px-3 text-center text-white"
                                             />
                                         </div>
@@ -204,7 +271,8 @@ export default function SettingsPage() {
                                             </div>
                                             <input
                                                 type="number"
-                                                defaultValue={100}
+                                                value={maxDistance}
+                                                onChange={(e) => setMaxDistance(parseInt(e.target.value))}
                                                 className="w-20 h-10 bg-white/5 border border-white/10 rounded-lg px-3 text-center text-white"
                                             />
                                         </div>
@@ -215,7 +283,8 @@ export default function SettingsPage() {
                                             </div>
                                             <input
                                                 type="number"
-                                                defaultValue={25}
+                                                value={dailyLikeLimit}
+                                                onChange={(e) => setDailyLikeLimit(parseInt(e.target.value))}
                                                 className="w-20 h-10 bg-white/5 border border-white/10 rounded-lg px-3 text-center text-white"
                                             />
                                         </div>
@@ -244,21 +313,41 @@ export default function SettingsPage() {
                                     <h3 className="text-lg font-bold text-white mb-4">Algoritma Parametreleri</h3>
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="text-sm font-medium text-white/70 mb-2 block">Eşleşme Ağırlıkları</label>
+                                            <label className="text-sm font-medium text-white/70 mb-2 block">Eşleşme Ağırlıkları (%)</label>
                                             <div className="grid grid-cols-3 gap-3">
                                                 <div className="p-3 bg-white/5 rounded-lg text-center">
                                                     <p className="text-xs text-white/50 mb-1">Konum</p>
-                                                    <p className="text-lg font-bold text-primary">35%</p>
+                                                    <input
+                                                        type="number"
+                                                        value={locationWeight}
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocationWeight(parseInt(e.target.value))}
+                                                        className="w-full h-10 bg-transparent border-none text-center text-lg font-bold text-primary focus:outline-none"
+                                                    />
                                                 </div>
                                                 <div className="p-3 bg-white/5 rounded-lg text-center">
                                                     <p className="text-xs text-white/50 mb-1">İlgi Alanları</p>
-                                                    <p className="text-lg font-bold text-primary">40%</p>
+                                                    <input
+                                                        type="number"
+                                                        value={interestsWeight}
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInterestsWeight(parseInt(e.target.value))}
+                                                        className="w-full h-10 bg-transparent border-none text-center text-lg font-bold text-primary focus:outline-none"
+                                                    />
                                                 </div>
                                                 <div className="p-3 bg-white/5 rounded-lg text-center">
                                                     <p className="text-xs text-white/50 mb-1">Aktivite</p>
-                                                    <p className="text-lg font-bold text-primary">25%</p>
+                                                    <input
+                                                        type="number"
+                                                        value={activityWeight}
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setActivityWeight(parseInt(e.target.value))}
+                                                        className="w-full h-10 bg-transparent border-none text-center text-lg font-bold text-primary focus:outline-none"
+                                                    />
                                                 </div>
                                             </div>
+                                            {(locationWeight + interestsWeight + activityWeight) !== 100 && (
+                                                <p className="text-[10px] text-rose-500 mt-2 font-bold animate-pulse">
+                                                    UYARI: Toplam ağırlık 100% olmalıdır! (Şu an: {locationWeight + interestsWeight + activityWeight}%)
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                 </Card>
@@ -313,6 +402,40 @@ export default function SettingsPage() {
                                 </Card>
 
                                 <Card glass>
+                                    <h3 className="text-lg font-bold text-white mb-4">Şifre Değiştir</h3>
+                                    <form onSubmit={handleChangePassword} className="space-y-4">
+                                        <Input
+                                            label="Mevcut Şifre"
+                                            type="password"
+                                            value={currentPassword}
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                            required
+                                        />
+                                        <Input
+                                            label="Yeni Şifre"
+                                            type="password"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            required
+                                        />
+                                        <Input
+                                            label="Yeni Şifre (Tekrar)"
+                                            type="password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
+                                        />
+                                        <Button
+                                            type="submit"
+                                            className="w-full"
+                                            loading={isUpdatingPassword}
+                                        >
+                                            Şifreyi Güncelle
+                                        </Button>
+                                    </form>
+                                </Card>
+
+                                <Card glass>
                                     <h3 className="text-lg font-bold text-white mb-4">Rate Limiting</h3>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="p-4 bg-white/5 rounded-xl">
@@ -328,51 +451,87 @@ export default function SettingsPage() {
                             </div>
                         )}
 
-                        {/* Admin Management */}
-                        {activeSection === 'admins' && (
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-bold text-white">Yönetici Hesapları</h3>
-                                    <Button size="sm">
-                                        <span className="material-symbols-outlined text-sm">person_add</span>
-                                        Yönetici Ekle
-                                    </Button>
+                        {isAddingAdmin && (
+                            <Card glass className="mb-6 p-6">
+                                <h4 className="text-white font-bold mb-4">Yeni Yönetici Ekle</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <Input
+                                        label="Ad Soyad"
+                                        value={newAdmin.name}
+                                        onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+                                    />
+                                    <Input
+                                        label="E-posta"
+                                        type="email"
+                                        value={newAdmin.email}
+                                        onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                                    />
                                 </div>
-
-                                <div className="space-y-3">
-                                    {[
-                                        { name: 'Admin User', email: 'admin@dengim.com', role: 'Super Admin', status: 'active' },
-                                        { name: 'Moderator', email: 'mod@dengim.com', role: 'Moderator', status: 'active' },
-                                        { name: 'Support Agent', email: 'support@dengim.com', role: 'Support', status: 'active' },
-                                    ].map((admin, i) => (
-                                        <Card key={i} padding="md">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-                                                    <span className="text-primary font-bold">{admin.name.substring(0, 2)}</span>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-white">{admin.name}</p>
-                                                    <p className="text-xs text-white/50">{admin.email}</p>
-                                                </div>
-                                                <div className="text-right">
-                                                    <span className={cn(
-                                                        'px-2 py-1 text-[10px] font-bold rounded-full',
-                                                        admin.role === 'Super Admin'
-                                                            ? 'bg-primary/20 text-primary'
-                                                            : 'bg-white/10 text-white/70'
-                                                    )}>
-                                                        {admin.role}
-                                                    </span>
-                                                </div>
-                                                <Button variant="ghost" size="icon">
-                                                    <span className="material-symbols-outlined">more_vert</span>
-                                                </Button>
-                                            </div>
-                                        </Card>
-                                    ))}
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-white/70 mb-2">Rol</label>
+                                    <select
+                                        value={newAdmin.role}
+                                        onChange={(e) => setNewAdmin({ ...newAdmin, role: e.target.value as any })}
+                                        className="w-full h-10 bg-white/5 border border-white/10 rounded-lg px-3 text-white"
+                                    >
+                                        <option value="moderator">Moderator</option>
+                                        <option value="admin">Admin</option>
+                                        <option value="support">Destek Sorumlusu</option>
+                                        <option value="super_admin">Süper Admin</option>
+                                    </select>
                                 </div>
-                            </div>
+                                <div className="flex gap-2">
+                                    <Button className="flex-1" onClick={handleAddAdmin}>Ekle</Button>
+                                    <Button variant="ghost" className="flex-1" onClick={() => setIsAddingAdmin(false)}>İptal</Button>
+                                </div>
+                            </Card>
                         )}
+
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-white">Yönetici Hesapları</h3>
+                            <Button size="sm" onClick={() => setIsAddingAdmin(true)}>
+                                <span className="material-symbols-outlined text-sm">person_add</span>
+                                Yönetici Ekle
+                            </Button>
+                        </div>
+
+                        <div className="space-y-3">
+                            {admins.length === 0 ? (
+                                <p className="text-center py-10 text-white/20 italic">Henüz yönetici eklenmemiş.</p>
+                            ) : (
+                                admins.map((admin, i) => (
+                                    <Card key={i} padding="md">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <span className="text-primary font-bold">{admin.name.substring(0, 2).toUpperCase()}</span>
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="font-semibold text-white">{admin.name}</p>
+                                                <p className="text-xs text-white/50">{admin.email}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className={cn(
+                                                    'px-2 py-1 text-[10px] font-bold rounded-full uppercase',
+                                                    admin.role === 'super_admin'
+                                                        ? 'bg-primary/20 text-primary'
+                                                        : 'bg-white/10 text-white/70'
+                                                )}>
+                                                    {admin.role.replace('_', ' ')}
+                                                </span>
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="text-rose-500 hover:bg-rose-500/10"
+                                                onClick={() => handleDeleteAdmin(admin.email)}
+                                            >
+                                                <span className="material-symbols-outlined">delete</span>
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                ))
+                            )}
+                        </div>
 
                         {/* API Settings */}
                         {activeSection === 'api' && (
