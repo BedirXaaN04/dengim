@@ -29,10 +29,20 @@ class ProfileService {
     final user = _currentUser;
     if (user == null) throw Exception("Kullanıcı bulunamadı");
 
+    int initialAge = 18;
+    if (birthDate != null) {
+      final now = DateTime.now();
+      initialAge = now.year - birthDate.year;
+      if (now.month < birthDate.month || (now.month == birthDate.month && now.day < birthDate.day)) {
+        initialAge--;
+      }
+    }
+
     final userProfile = {
       'uid': user.uid,
       'email': user.email ?? '',
       'name': name,
+      'age': initialAge, // ← YENİ: Security rules için gerekli
       'birthDate': birthDate != null ? Timestamp.fromDate(birthDate) : null,
       'gender': gender,
       'country': country,
@@ -47,6 +57,7 @@ class ProfileService {
       'createdAt': FieldValue.serverTimestamp(),
       'lastActive': FieldValue.serverTimestamp(),
       'isOnline': true,
+      'blockedUsers': [], // Initialize empty
     };
 
     try {
