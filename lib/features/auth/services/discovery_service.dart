@@ -14,6 +14,7 @@ class DiscoveryService {
     String? gender,
     int? minAge,
     int? maxAge,
+    List<String>? interests,
   }) async {
     final user = _currentUser;
     if (user == null) return [];
@@ -33,8 +34,15 @@ class DiscoveryService {
       Query baseQuery = _firestore.collection('users');
       Query activeQuery = baseQuery;
       
-      if (gender != null && gender != 'other') {
+      // Gender Filter
+      if (gender != null && gender != 'all' && gender != 'other') {
         activeQuery = activeQuery.where('gender', isEqualTo: gender == 'male' ? 'Erkek' : 'Kadın');
+      }
+
+      // Interests Filter (Optimization: Use array-contains-any for server-side filtering)
+      if (interests != null && interests.isNotEmpty) {
+        // Firestore limits array-contains-any to 10 elements
+        activeQuery = activeQuery.where('interests', arrayContainsAny: interests.take(10).toList());
       }
       
       // Try fetching with orderBy first
@@ -149,6 +157,21 @@ class DiscoveryService {
         LogService.i("MATCH FOUND! Creating match...");
         await _createMatch(user.uid, targetUserId);
         
+        // Mark the likes as viewed/matched to avoid double badges
+        await _firestore.collection('users').doc(targetUserId).collection('likes').doc(user.uid).set({
+          'fromUserId': user.uid,
+          'type': swipeType,
+          'timestamp': FieldValue.serverTimestamp(),
+          'viewed': true, // Auto view since it's a match
+          'matched': true,
+        });
+
+        await _firestore.collection('users').doc(user.uid).collection('likes').doc(targetUserId).get().then((doc) {
+          if (doc.exists) {
+            doc.reference.update({'viewed': true, 'matched': true});
+          }
+        });
+
         // Send match notifications to both users
         await sendNotification(targetUserId, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var!");
         await sendNotification(user.uid, type: 'match', title: "Eşleşme! 🎉", body: "Tebrikler, yeni bir eşleşmen var!");
@@ -188,6 +211,7 @@ class DiscoveryService {
     await _firestore.collection('matches').doc(matchId).set({
       'userIds': [uid1, uid2],
       'timestamp': FieldValue.serverTimestamp(),
+      'seenBy': [], // Tracking who viewed the match
     });
 
     // 2. Create Initial Conversation

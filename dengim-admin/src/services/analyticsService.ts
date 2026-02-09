@@ -23,21 +23,26 @@ export const AnalyticsService = {
                 reportsCount,
                 messageReportsCount,
                 storyReportsCount,
-                pendingVerifications,
+                pendingPhotosCount,
+                pendingBiosCount,
+                pendingVerificationsCount,
                 openTickets
             ] = await Promise.all([
                 getCountFromServer(query(collection(db, "reports"), where("status", "==", "pending"))),
                 getCountFromServer(query(collection(db, "message_reports"), where("status", "==", "pending"))),
                 getCountFromServer(query(collection(db, "story_reports"), where("status", "==", "pending"))),
+                getCountFromServer(query(usersColl, where("isVerified", "==", false), where("imageUrl", "!=", ""))),
+                getCountFromServer(query(usersColl, where("bioFlagged", "==", true))),
                 getCountFromServer(query(verificationsColl, where("status", "==", "pending"))),
                 getCountFromServer(query(supportColl, where("status", "==", "open")))
             ]);
 
             const totalPendingReports = reportsCount.data().count + messageReportsCount.data().count + storyReportsCount.data().count;
+            const totalModerationTasks = pendingPhotosCount.data().count + pendingBiosCount.data().count + pendingVerificationsCount.data().count;
 
             return {
                 reports: totalPendingReports,
-                moderation: pendingVerifications.data().count,
+                moderation: totalModerationTasks,
                 support: openTickets.data().count
             };
         } catch (error) {
@@ -122,8 +127,8 @@ export const AnalyticsService = {
 
                 const q = query(
                     collection(db, "users"),
-                    where("createdAt", ">=", Timestamp.fromDate(date)),
-                    where("createdAt", "<", Timestamp.fromDate(nextDate))
+                    where("createdAt", ">=", FirestoreTimestamp.fromDate(date)),
+                    where("createdAt", "<", FirestoreTimestamp.fromDate(nextDate))
                 );
                 const snap = await getCountFromServer(q);
                 result.push({

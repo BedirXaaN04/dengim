@@ -31,7 +31,10 @@ class BadgeProvider extends ChangeNotifier {
         final unreadCounts = data['unreadCounts'] as Map<String, dynamic>?;
         if (unreadCounts != null) {
           final count = unreadCounts[uid] as int? ?? 0;
-          if (count > 0) unreadCount++;
+          // Sadece karşı taraftan gelen mesajları/sistem mesajlarını ama gerçekten okunmamışsa say
+          if (count > 0 && data['lastMessageSenderId'] != uid) {
+            unreadCount++;
+          }
         }
       }
       _chatUnreadCount = unreadCount;
@@ -40,14 +43,17 @@ class BadgeProvider extends ChangeNotifier {
       LogService.e("Badge Provider: Chat listener error", e);
     });
 
-    // Listen to new matches (son 24 saat)
+    // Listen to new matches (unseen ones)
     _firestore
         .collection('matches')
         .where('userIds', arrayContains: uid)
-        .where('timestamp', isGreaterThan: Timestamp.fromDate(DateTime.now().subtract(const Duration(hours: 24))))
         .snapshots()
         .listen((snapshot) {
-      _matchCount = snapshot.docs.length;
+      // Filter in client side since array-not-contains is not available in multiple filters
+      _matchCount = snapshot.docs.where((doc) {
+        final seenBy = List<String>.from(doc.data()['seenBy'] ?? []);
+        return !seenBy.contains(uid);
+      }).length;
       notifyListeners();
     }, onError: (e) {
       LogService.e("Badge Provider: Match listener error", e);
@@ -81,9 +87,41 @@ class BadgeProvider extends ChangeNotifier {
     }
   }
 
+  void markMatchesAsViewed() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      final matchesSnapshot = await _firestore
+          .collection('matches')
+          .where('userIds', arrayContains: uid)
+          .get();
+
+      final batch = _firestore.batch();
+      bool hasUpdates = false;
+
+      for (var doc in matchesSnapshot.docs) {
+        final seenBy = List<String>.from(doc.data()['seenBy'] ?? []);
+        if (!seenBy.contains(uid)) {
+          batch.update(doc.reference, {
+            'seenBy': FieldValue.arrayUnion([uid])
+          });
+          hasUpdates = true;
+        }
+      }
+      
+      if (hasUpdates) await batch.commit();
+    } catch (e) {
+      LogService.e("Failed to mark matches as viewed", e);
+    }
+  }
+
   void markLikesAsViewed() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) return;
+
+    // Also mark matches as viewed
+    markMatchesAsViewed();
 
     try {
       final likesSnapshot = await _firestore
@@ -93,9 +131,13 @@ class BadgeProvider extends ChangeNotifier {
           .where('viewed', isEqualTo: false)
           .get();
 
+      if (likesSnapshot.docs.isEmpty) return;
+
+      final batch = _firestore.batch();
       for (var doc in likesSnapshot.docs) {
-        await doc.reference.update({'viewed': true});
+        batch.update(doc.reference, {'viewed': true});
       }
+      await batch.commit();
     } catch (e) {
       LogService.e("Failed to mark likes as viewed", e);
     }

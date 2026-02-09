@@ -50,11 +50,29 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   // Tepki emojileri
   static const List<String> _reactionEmojis = ['❤️', '😂', '😮', '😢', '😡', '👍'];
 
+  StreamSubscription? _conversationSubscription;
+
   @override
   void initState() {
     super.initState();
     _chatService.markAsRead(widget.chatId);
     
+    // Listen for new messages while in this screen to clear unread count
+    _conversationSubscription = FirebaseFirestore.instance
+        .collection('conversations')
+        .doc(widget.chatId)
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.exists) {
+        final data = snapshot.data();
+        final unreadCounts = data?['unreadCounts'] as Map<String, dynamic>?;
+        final uid = FirebaseAuth.instance.currentUser?.uid;
+        if (uid != null && (unreadCounts?[uid] ?? 0) > 0) {
+          _chatService.markAsRead(widget.chatId);
+        }
+      }
+    });
+
     // Ses kaydı callback'leri
     _audioRecorder.onDurationUpdate = (duration) {
       if (mounted) setState(() => _recordingDuration = duration);
@@ -63,6 +81,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   @override
   void dispose() {
+    _conversationSubscription?.cancel();
     _messageController.dispose();
     _scrollController.dispose();
     _audioRecorder.dispose();

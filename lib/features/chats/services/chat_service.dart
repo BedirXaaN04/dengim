@@ -129,13 +129,17 @@ class ChatService {
         .add(messageData);
 
     // 2. Ana sohbet belgesini güncelle (son mesaj, okunmamış sayısı vb.)
-    // Okunmamış sayısını artırmak için receiverId'yi kullanarak map'i güncelle
-    await _firestore.collection('conversations').doc(chatId).update({
+    final Map<String, dynamic> updateData = {
       'lastMessage': lastMessagePreview,
       'lastMessageTime': timestamp,
       'lastMessageSenderId': user.uid,
-      'unreadCounts.$receiverId': FieldValue.increment(1), // Karşı taraf için 1 artır
-    });
+    };
+
+    if (incrementUnread) {
+      updateData['unreadCounts.$receiverId'] = FieldValue.increment(1);
+    }
+
+    await _firestore.collection('conversations').doc(chatId).update(updateData);
   }
 
   /// Fotoğraf Gönder

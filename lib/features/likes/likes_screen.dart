@@ -30,6 +30,11 @@ class _LikesScreenState extends State<LikesScreen> {
       provider.initStreams(); // Gerçek zamanlı dinleme
       provider.loadMatches();
       provider.loadLikedMeUsers();
+      
+      // Bildirimleri temizle
+      if (mounted) {
+        context.read<BadgeProvider>().markLikesAsViewed();
+      }
     });
   }
 

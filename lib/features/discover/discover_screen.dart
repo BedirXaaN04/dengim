@@ -613,6 +613,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               gender: filters['gender'] ?? 'all',
                               minAge: filters['minAge'] ?? 18,
                               maxAge: filters['maxAge'] ?? 50,
+                              interests: filters['interests'],
+                              forceRefresh: true,
                             );
                           },
                         ),

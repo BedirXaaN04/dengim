@@ -32,10 +32,14 @@ class ReportBlockService {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // Şikayet sayısını artır
-      await _firestore.collection('users').doc(reportedUserId).update({
-        'reportCount': FieldValue.increment(1),
-      });
+      // Şikayet sayısını artır (Hata alsa bile şikayet kaydedilsin)
+      try {
+        await _firestore.collection('users').doc(reportedUserId).update({
+          'reportCount': FieldValue.increment(1),
+        });
+      } catch (e) {
+        LogService.w('Could not increment report count for user $reportedUserId: $e');
+      }
 
       LogService.i('User reported: $reportedUserId by $currentUserId');
       return true;

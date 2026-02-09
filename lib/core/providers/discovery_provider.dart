@@ -38,6 +38,7 @@ class DiscoveryProvider extends ChangeNotifier {
         gender: gender,
         minAge: minAge,
         maxAge: maxAge,
+        interests: interests,
       );
 
       // Block Filter
