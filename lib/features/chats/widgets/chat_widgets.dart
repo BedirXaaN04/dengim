@@ -1,10 +1,8 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/chat_models.dart';
 

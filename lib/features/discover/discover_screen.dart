@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
@@ -17,7 +16,6 @@ import '../../core/providers/discovery_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/providers/story_provider.dart';
 import '../../core/providers/user_provider.dart';
-import '../map/map_screen.dart';
 import '../notifications/notifications_screen.dart';
 import 'story_viewer_screen.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,7 +24,6 @@ import '../payment/premium_offer_screen.dart';
 import 'user_profile_detail_screen.dart';
 import '../spaces/screens/spaces_screen.dart';
 import 'widgets/advanced_filters_modal.dart';
-import '../../core/widgets/online_status_indicator.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
