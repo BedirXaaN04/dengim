@@ -1,0 +1,104 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.5'
+        channel: 'stable'
+        cache: true
+        
+    - name: 📦 Install Dependencies
+      run: flutter pub get
+      
+    - name: 🔍 Analyze Code
+      run: flutter analyze --no-fatal-infos
+      continue-on-error: true
+      
+    - name: 🧪 Run Tests
+      run: flutter test
+      continue-on-error: true
+      
+    - name: ✅ Check Formatting
+      run: dart format --set-exit-if-changed .
+      continue-on-error: true
+
+  build-apk:
+    name: Build APK
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.5'
+        channel: 'stable'
+        cache: true
+        
+    - name: 📦 Install Dependencies
+      run: flutter pub get
+      
+    - name: 🔧 Build APK
+      run: flutter build apk --release
+      
+    - name: 📤 Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+
+  build-ios:
+    name: Build iOS (No Signing)
+    needs: analyze
+    runs-on: macos-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.5'
+        channel: 'stable'
+        cache: true
+        
+    - name: 📦 Install Dependencies
+      run: flutter pub get
+      
+    - name: 🔧 Build iOS (No Codesign)
+      run: flutter build ios --release --no-codesign
+      continue-on-error: true
