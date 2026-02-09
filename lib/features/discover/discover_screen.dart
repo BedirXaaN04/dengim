@@ -1,4 +1,5 @@
-import 'dart:ui';\r\nimport 'package:flutter/material.dart';
+import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:google_fonts/google_fonts.dart';
