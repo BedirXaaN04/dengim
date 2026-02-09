@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/connectivity_provider.dart';
+import '../providers/connectivity_provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 /// Bağlantı durumu banner'ı
@@ -14,7 +14,7 @@ class ConnectionBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ConnectivityProvider>(
       builder: (context, connectivity, _) {
-        final isOffline = connectivity.connectionStatus.contains(ConnectivityResult.none);
+        final isOffline = connectivity?.connectionStatus.contains(ConnectivityResult.none) ?? false;
         
         return Column(
           children: [
@@ -62,7 +62,7 @@ class RequiresConnection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ConnectivityProvider>(
       builder: (context, connectivity, _) {
-        if (!connectivity.isConnected) {
+        if (connectivity?.isConnected == false) {
           return offlineWidget ?? _buildDefaultOffline();
         }
         return child;

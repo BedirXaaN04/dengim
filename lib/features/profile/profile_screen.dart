@@ -159,6 +159,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
 
+                      const SizedBox(height: 32),
+                      // Profile Completion Indicator
+                      _buildProfileCompletionCard(profile),
+                      
                       const SizedBox(height: 40),
                       _buildSectionTitle('HAKKINDA'),
                       const SizedBox(height: 12),
@@ -297,6 +301,174 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Profile Completion Calculator
+  int _calculateCompletionPercentage(dynamic profile) {
+    if (profile == null) return 0;
+    
+    int completed = 0;
+    int total = 8;
+    
+    if (profile.name?.isNotEmpty ?? false) completed++;
+    if ((profile.photoUrls?.length ?? 0) >= 3) completed++; // Has 3+ photos
+    if (profile.bio?.isNotEmpty ?? false) completed++;
+    if (profile.job?.isNotEmpty ?? false) completed++;
+    if (profile.education?.isNotEmpty ?? false) completed++;
+    if ((profile.interests?.length ?? 0) >= 3) completed++; // Has 3+ interests
+    if (profile.relationshipGoal != null) completed++;
+    if (profile.country?.isNotEmpty ?? false) completed++;
+    
+    return ((completed / total) * 100).round();
+  }
+
+  String _getCompletionMessage(int percentage) {
+    if (percentage == 100) return '🎉 Profilin mükemmel!';
+    if (percentage >= 80) return '✨ Neredeyse tamamlandı!';
+    if (percentage >= 60) return '👍 İyi gidiyorsun!';
+    if (percentage >= 40) return '📝 Devam et!';
+    return '🚀 Profilini tamamla!';
+  }
+
+  Widget _buildProfileCompletionCard(dynamic profile) {
+    final percentage = _calculateCompletionPercentage(profile);
+    final message = _getCompletionMessage(percentage);
+    
+    // Tam profil ise gösterme
+    if (percentage == 100) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primary.withOpacity(0.2),
+              AppColors.primary.withOpacity(0.05),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.verified, color: Colors.black, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Profilin tamamen dolu ve keşfedilmeye hazır!',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // Eksik profil
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'PROFİL TAMAMLANMA',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white54,
+                  letterSpacing: 2.0,
+                ),
+              ),
+              Text(
+                '%$percentage',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: percentage / 100,
+              minHeight: 8,
+              backgroundColor: Colors.white.withOpacity(0.1),
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  message,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (profile != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditProfileScreen(profile: profile),
+                      ),
+                    );
+                  }
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                ),
+                child: Text(
+                  'Tamamla',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

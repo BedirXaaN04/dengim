@@ -25,6 +25,8 @@ import 'models/story_model.dart';
 import '../payment/premium_offer_screen.dart';
 import 'user_profile_detail_screen.dart';
 import '../spaces/screens/spaces_screen.dart';
+import 'widgets/advanced_filters_modal.dart';
+import '../../core/widgets/online_status_indicator.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -579,8 +581,55 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 ),
                 const SizedBox(width: 16),
                 GestureDetector(
-                  onTap: _showFilters,
-                  child: const Icon(Icons.tune_rounded, color: AppColors.primary, size: 24),
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.85,
+                        child: AdvancedFiltersModal(
+                          currentFilters: {
+                            'minAge': _filterSettings.ageRange.start.toInt(),
+                            'maxAge': _filterSettings.ageRange.end.toInt(),
+                            'maxDistance': 50,
+                            'gender': _filterSettings.gender,
+                            'interests': [],
+                            'relationshipGoal': null,
+                            'verifiedOnly': false,
+                            'hasPhotoOnly': true,
+                            'onlineOnly': false,
+                          },
+                          onApplyFilters: (filters) {
+                            setState(() {
+                              _filterSettings = FilterSettings(
+                                gender: filters['gender'] ?? 'all',
+                                ageRange: RangeValues(
+                                  filters['minAge'].toDouble(),
+                                  filters['maxAge'].toDouble(),
+                                ),
+                              );
+                            });
+                            context.read<DiscoveryProvider>().loadDiscoveryUsers(
+                              gender: filters['gender'] ?? 'all',
+                              minAge: filters['minAge'] ?? 18,
+                              maxAge: filters['maxAge'] ?? 50,
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                    ),
+                    child: const Icon(Icons.filter_list_rounded, color: AppColors.primary, size: 20),
+                  ),
                 ),
               ],
             ),

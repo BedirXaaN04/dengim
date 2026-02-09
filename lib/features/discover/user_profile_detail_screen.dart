@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/services/safety_service.dart';
 import '../auth/models/user_profile.dart';
+import '../profile/services/report_block_service.dart';
 
 class UserProfileDetailScreen extends StatelessWidget {
   final String? userId;
@@ -125,47 +126,35 @@ class UserProfileDetailScreen extends StatelessWidget {
                     icon: const Icon(Icons.more_vert, color: Colors.white),
                     onSelected: (value) async {
                       if (value == 'report') {
-                         final reasonController = TextEditingController();
                          if (!context.mounted) return;
-                         showDialog(context: context, builder: (ctx) => AlertDialog(
-                           backgroundColor: const Color(0xFF1E293B),
-                           title: const Text("Şikayet Et", style: TextStyle(color: Colors.white)),
-                           content: TextField(
-                             controller: reasonController, 
-                             style: const TextStyle(color: Colors.white),
-                             decoration: const InputDecoration(hintText: "Sebep...", hintStyle: TextStyle(color: Colors.white54)),
+                         showModalBottomSheet(
+                           context: context,
+                           isScrollControlled: true,
+                           backgroundColor: Colors.transparent,
+                           builder: (_) => SizedBox(
+                             height: MediaQuery.of(context).size.height * 0.85,
+                             child: ReportUserModal(
+                               reportedUserId: userId ?? '',
+                               reportedUserName: name,
+                             ),
                            ),
-                           actions: [
-                             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("İptal")),
-                             TextButton(onPressed: () {
-                               if (reasonController.text.isNotEmpty) {
-                                  SafetyService().reportUser(reportedUserId: userId ?? '', reason: reasonController.text);
-                                  Navigator.pop(ctx);
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Şikayet alındı.")));
-                               }
-                             }, child: const Text("Gönder")),
-                           ],
-                         ));
+                         );
                       } else if (value == 'block') {
                          if (!context.mounted) return;
-                         showDialog(context: context, builder: (ctx) => AlertDialog(
-                           backgroundColor: const Color(0xFF1E293B),
-                           title: const Text("Engelle?", style: TextStyle(color: Colors.white)),
-                           content: const Text("Bu kullanıcıyı bir daha görmeyeceksiniz.", style: TextStyle(color: Colors.white70)),
-                           actions: [
-                             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Vazgeç")),
-                             TextButton(onPressed: () async {
-                               if (userId != null) {
-                                 await SafetyService().blockUser(userId!);
-                               }
-                               if (!ctx.mounted) return;
-                               Navigator.pop(ctx); // Dialog kapat
-                               if (!context.mounted) return;
-                               Navigator.pop(context); // Ekranı kapat
-                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Kullanıcı engellendi.")));
-                             }, child: const Text("ENGELLE", style: TextStyle(color: Colors.red))),
-                           ],
-                         ));
+                         await BlockUserDialog.show(
+                           context,
+                           userName: name,
+                           onBlock: () async {
+                             if (userId != null) {
+                               await ReportBlockService().blockUser(userId!);
+                             }
+                             if (!context.mounted) return;
+                             Navigator.pop(context);
+                             ScaffoldMessenger.of(context).showSnackBar(
+                               const SnackBar(content: Text("Kullanıcı engellendi.")),
+                             );
+                           },
+                         );
                       }
                     },
                     itemBuilder: (context) => [
@@ -298,46 +287,34 @@ class UserProfileDetailScreen extends StatelessWidget {
               child: PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 onSelected: (value) async {
-                  if (value == 'report') {
-                     final reasonController = TextEditingController();
-                     if (!context.mounted) return;
-                     showDialog(context: context, builder: (ctx) => AlertDialog(
-                       backgroundColor: const Color(0xFF1E293B),
-                       title: const Text("Şikayet Et", style: TextStyle(color: Colors.white)),
-                       content: TextField(
-                         controller: reasonController, 
-                         style: const TextStyle(color: Colors.white),
-                         decoration: const InputDecoration(hintText: "Sebep...", hintStyle: TextStyle(color: Colors.white54)),
-                       ),
-                       actions: [
-                         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("İptal")),
-                         TextButton(onPressed: () {
-                           if (reasonController.text.isNotEmpty) {
-                              SafetyService().reportUser(reportedUserId: targetUserId, reason: reasonController.text);
-                              Navigator.pop(ctx);
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Şikayet alındı.")));
-                           }
-                         }, child: const Text("Gönder")),
-                       ],
-                     ));
-                  } else if (value == 'block') {
-                     if (!context.mounted) return;
-                     showDialog(context: context, builder: (ctx) => AlertDialog(
-                       backgroundColor: const Color(0xFF1E293B),
-                       title: const Text("Engelle?", style: TextStyle(color: Colors.white)),
-                       content: const Text("Bu kullanıcıyı bir daha görmeyeceksiniz.", style: TextStyle(color: Colors.white70)),
-                       actions: [
-                         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Vazgeç")),
-                         TextButton(onPressed: () async {
-                           await SafetyService().blockUser(targetUserId);
-                           if (!ctx.mounted) return;
-                           Navigator.pop(ctx); // Dialog kapat
-                           if (!context.mounted) return;
-                           Navigator.pop(context); // Ekranı kapat
-                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Kullanıcı engellendi.")));
-                         }, child: const Text("ENGELLE", style: TextStyle(color: Colors.red))),
-                       ],
-                     ));
+                   if (value == 'report') {
+                      if (!context.mounted) return;
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) => SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.85,
+                          child: ReportUserModal(
+                            reportedUserId: targetUserId,
+                            reportedUserName: profile.name,
+                          ),
+                        ),
+                      );
+                   } else if (value == 'block') {
+                      if (!context.mounted) return;
+                      await BlockUserDialog.show(
+                        context,
+                        userName: profile.name,
+                        onBlock: () async {
+                          await ReportBlockService().blockUser(targetUserId);
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Kullanıcı engellendi.")),
+                          );
+                        },
+                      );
                   }
                 },
                 itemBuilder: (context) => [

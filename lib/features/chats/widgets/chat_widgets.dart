@@ -381,11 +381,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                         ),
                         if (isMe) ...[
                           const SizedBox(width: 4),
-                          Icon(
-                            widget.message.isRead ? Icons.done_all : Icons.done,
-                            size: 14,
-                            color: widget.message.isRead ? Colors.blue : Colors.black38,
-                          ),
+                          _buildReadReceipt(),
                         ],
                       ],
                     ),
@@ -545,5 +541,31 @@ class _ChatBubbleState extends State<ChatBubble> {
       ],
     );
   }
-}
 
+  /// Read Receipt Indicator
+  Widget _buildReadReceipt() {
+    // Üç durum: Gönderildi (✓), İletildi (✓✓), Okundu (✓✓ mavi)
+    final bool isSent = true; // Her mesaj gönderilmiş kabul edilir
+    final bool isDelivered = widget.message.isRead; // Şu an read = delivered olarak kullanılıyor
+    final bool isRead = widget.message.isRead;
+    
+    IconData icon;
+    Color color;
+    
+    if (isRead) {
+      icon = Icons.done_all; // ✓✓
+      color = const Color(0xFF10B981); // Green - okundu
+    } else if (isDelivered) {
+      icon = Icons.done_all; // ✓✓  
+      color = Colors.black38; // Gray - iletildi
+    } else if (isSent) {
+      icon = Icons.done; // ✓
+      color = Colors.black38; // Gray - gönderildi
+    } else {
+      icon = Icons.schedule; // ⏱
+      color = Colors.black26; // Lighter gray - gönder iliyor
+    }
+    
+    return Icon(icon, size: 14, color: color);
+  }
+}

@@ -57,7 +57,7 @@ class ChatProvider extends ChangeNotifier {
     } else {
       _conversations = _allConversations.where((chat) {
         return chat.otherUserName.toLowerCase().contains(_searchQuery) ||
-               (chat.lastMessage?.toLowerCase().contains(_searchQuery) ?? false);
+               chat.lastMessage.toLowerCase().contains(_searchQuery);
       }).toList();
     }
   }

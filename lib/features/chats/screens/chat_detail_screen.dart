@@ -12,6 +12,8 @@ import '../widgets/chat_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/services/audio_recorder_service.dart';
 import '../../../core/services/cloudinary_service.dart';
+import '../../../core/services/typing_indicator_service.dart';
+import '../../../core/widgets/online_status_indicator.dart';
 import 'call_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
@@ -37,6 +39,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final AudioRecorderService _audioRecorder = AudioRecorderService();
+  final TypingIndicatorService _typingService = TypingIndicatorService();
   bool _isUploading = false;
   bool _isRecording = false;
   int _recordingDuration = 0;
@@ -63,6 +66,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     _messageController.dispose();
     _scrollController.dispose();
     _audioRecorder.dispose();
+    _typingService.stopTyping(widget.chatId);
     super.dispose();
   }
 
@@ -273,17 +277,36 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundImage: NetworkImage(widget.otherUserAvatar),
+            OnlineStatusBadge(
+              userId: widget.otherUserId,
+              badgeSize: 12,
+              child: CircleAvatar(
+                radius: 18,
+                backgroundImage: NetworkImage(widget.otherUserAvatar),
+              ),
             ),
             const SizedBox(width: 12),
-            Text(
-              widget.otherUserName,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.otherUserName,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  LastSeenText(
+                    userId: widget.otherUserId,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      color: Colors.white54,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -404,6 +427,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 );
               },
             ),
+          ),
+          
+          // Typing Indicator
+          TypingIndicator(
+            chatId: widget.chatId,
+            otherUserId: widget.otherUserId,
+            color: AppColors.primary,
           ),
           
           // Yanıt önizlemesi
@@ -650,6 +680,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             child: TextField(
               controller: _messageController,
               style: GoogleFonts.plusJakartaSans(color: Colors.white),
+              onChanged: (text) {
+                if (text.isNotEmpty) {
+                  _typingService.startTyping(widget.chatId);
+                } else {
+                  _typingService.stopTyping(widget.chatId);
+                }
+              },
               decoration: InputDecoration(
                 hintText: 'Mesaj yaz...',
                 hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white38),
