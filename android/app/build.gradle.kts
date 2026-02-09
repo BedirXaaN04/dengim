@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.dengim.dengim"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34  // Explicit version for plugin compatibility
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -25,8 +25,8 @@ android {
         applicationId = "dengim.kim"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 21  // Explicit for better compatibility
+        targetSdk = 34  // Match compileSdk
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
