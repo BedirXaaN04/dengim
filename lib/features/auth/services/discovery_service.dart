@@ -439,7 +439,7 @@ class DiscoveryService {
     score += commonInterests * 10;
 
     // 2. Profile Completeness (+5 bio, +5 many photos)
-    if (other.bio.isNotEmpty) score += 5;
+    if (other.bio != null && other.bio!.isNotEmpty) score += 5;
     if ((other.photoUrls?.length ?? 0) >= 3) score += 5;
 
     // 3. Activity (+5 if active in last 24h)

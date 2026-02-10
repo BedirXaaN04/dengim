@@ -248,7 +248,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
           itemBuilder: (context, index) {
             return _buildParticipantItem(
               const SpaceParticipant(
-                odtokendId: '',
+                agoraUid: 0,
                 userId: 'mock',
                 name: 'Dinleyici',
                 role: SpaceRole.listener,
