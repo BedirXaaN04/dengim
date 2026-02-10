@@ -11,22 +11,18 @@ class AdService {
   AdService._internal();
 
   Future<void> init() async {
-    if (kIsWeb) {
-      LogService.i("AdService: Web platform - ads disabled.");
-      return;
-    }
+    LogService.i("AdService: Web platform - ads disabled.");
   }
 
-  void showRewardedAd({required FunctionOnReward onReward}) {
-    if (kIsWeb) {
-      LogService.w("Ads are not supported on web.");
-      return;
-    }
-    if (!ConfigService().isAdsEnabled) {
-      LogService.w("Ads are globally disabled via admin panel.");
-      return;
-    }
+  void showRewardedAd({required String tier, required FunctionOnReward onReward}) {
+    LogService.w("Ads are not supported on web.");
   }
+
+  void showInterstitialAd({required String tier}) {
+    LogService.w("Ads are not supported on web.");
+  }
+
+  String get bannerAdUnitId => "";
 }
 
 typedef FunctionOnReward = void Function(int amount);

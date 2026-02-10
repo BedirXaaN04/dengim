@@ -3,7 +3,7 @@ import '../../features/auth/models/user_profile.dart';
 import '../../features/auth/services/discovery_service.dart';
 import '../../features/auth/services/profile_service.dart';
 import '../utils/log_service.dart';
-import '../../services/analytics_service.dart';
+import '../../core/services/analytics_service.dart';
 import '../../features/ads/services/ad_service.dart';
 import '../../core/services/feature_flag_service.dart';
 import 'user_provider.dart';

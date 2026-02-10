@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../features/auth/services/profile_service.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../core/services/feature_flag_service.dart';
+import '../core/utils/log_service.dart'; 
 import '../core/services/analytics_service.dart';
-import '../utils/log_service.dart'; // Changed from '../core/utils/log_service.dart'
+import '../features/auth/services/profile_service.dart';
 
 class PurchaseService {
   static final PurchaseService _instance = PurchaseService._internal();

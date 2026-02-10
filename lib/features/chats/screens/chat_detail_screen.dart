@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -338,6 +340,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => CallScreen(
+                    channelId: widget.chatId,
                     userName: widget.otherUserName,
                     userAvatar: widget.otherUserAvatar,
                     isVideo: false,
@@ -353,6 +356,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => CallScreen(
+                    channelId: widget.chatId,
                     userName: widget.otherUserName,
                     userAvatar: widget.otherUserAvatar,
                     isVideo: true,
