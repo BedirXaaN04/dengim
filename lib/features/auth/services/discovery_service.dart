@@ -4,6 +4,10 @@ import '../../../core/utils/log_service.dart';
 import '../models/user_profile.dart';
 
 class DiscoveryService {
+  static final DiscoveryService _instance = DiscoveryService._internal();
+  factory DiscoveryService() => _instance;
+  DiscoveryService._internal();
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -29,6 +33,13 @@ class DiscoveryService {
       
       final Set<String> swipedIds = swipedIdsSnapshot.docs.map((doc) => doc.id).toSet();
       swipedIds.add(user.uid); 
+      
+      // 1.5 Engellenen kullanıcıları elenenler listesine ekle
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        final blockedUsers = List<String>.from(userDoc.data()?['blockedUsers'] ?? []);
+        swipedIds.addAll(blockedUsers);
+      }
 
       // 2. Fetch users with basic filters
       Query baseQuery = _firestore.collection('users');
@@ -80,25 +91,31 @@ class DiscoveryService {
           .where((profile) => profile != null)
           .cast<UserProfile>()
           .where((profile) {
-            // Filter out test accounts (name or email contains 'test')
+            if (!profile.isComplete) return false;
             if (profile.name.toLowerCase().contains('test') || 
                 profile.email.toLowerCase().contains('test')) {
               return false;
             }
-            
-            // Client-side age filtering - only apply if we have enough users
             if (snapshot.docs.length > 5) {
               if (minAge != null && profile.age < minAge) return false;
               if (maxAge != null && profile.age > maxAge) return false;
             }
             return true;
           })
-          .take(limit)
           .toList();
 
+      // SMART RANKING v2.0
+      final currentUserProfile = await _getProfileSync(user.uid);
+      if (currentUserProfile != null) {
+        users.sort((a, b) {
+          final scoreA = _calculateCompatibilityScore(currentUserProfile, a);
+          final scoreB = _calculateCompatibilityScore(currentUserProfile, b);
+          return scoreB.compareTo(scoreA); // High score first
+        });
+      }
 
-      LogService.i("Final discovery fetch: Found ${users.length} users (Original raw docs: ${snapshot.docs.length})");
-      return users;
+      LogService.i("Final discovery fetch: Found ${users.length} users ranked by score");
+      return users.take(limit).toList();
     } catch (e) {
       LogService.e("Critical failure in discovery query", e);
       return [];
@@ -404,6 +421,42 @@ class DiscoveryService {
     } catch (e) {
       LogService.e("Reject like error", e);
     }
+  }
+
+  // --- PRIVATE HELPERS ---
+
+  Future<UserProfile?> _getProfileSync(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (!doc.exists) return null;
+    return UserProfile.fromMap(doc.data()!);
+  }
+
+  int _calculateCompatibilityScore(UserProfile current, UserProfile other) {
+    int score = 0;
+
+    // 1. Common Interests (+10 each)
+    final commonInterests = current.interests.where((i) => other.interests.contains(i)).length;
+    score += commonInterests * 10;
+
+    // 2. Profile Completeness (+5 bio, +5 many photos)
+    if (other.bio.isNotEmpty) score += 5;
+    if ((other.photoUrls?.length ?? 0) >= 3) score += 5;
+
+    // 3. Activity (+5 if active in last 24h)
+    final hoursSinceActive = DateTime.now().difference(other.lastActive).inHours;
+    if (hoursSinceActive < 24) score += 5;
+
+    // 4. Distance Penalty (-1 per 10km, max -30)
+    if (current.latitude != null && current.longitude != null && 
+        other.latitude != null && other.longitude != null) {
+      // Very basic distance approximation for scoring (not for precision)
+      final dLat = (current.latitude! - other.latitude!).abs();
+      final dLon = (current.longitude! - other.longitude!).abs();
+      final approxKm = (dLat + dLon) * 111; // 1 degree ~ 111km
+      score -= (approxKm / 10).clamp(0, 30).toInt();
+    }
+
+    return score;
   }
 }
 

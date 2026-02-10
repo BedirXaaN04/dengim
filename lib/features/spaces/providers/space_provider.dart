@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/space_model.dart';
 import '../services/space_service.dart';
 import '../../auth/models/user_profile.dart';
+import '../../../core/services/agora_service.dart';
+import '../../../core/utils/log_service.dart';
 
 class SpaceProvider extends ChangeNotifier {
   final SpaceService _spaceService = SpaceService();
+  final AgoraService _agoraService = AgoraService();
   
   List<SpaceRoom> _spaces = [];
   bool _isLoading = false;
@@ -35,6 +38,14 @@ class SpaceProvider extends ChangeNotifier {
         description: description,
         hostProfile: hostProfile,
       );
+      
+      // Agora Kanalına Katıl (Host olarak)
+      await _agoraService.joinChannel(
+        channelId: roomId,
+        uid: hostProfile.uid.hashCode.abs(),
+        isHost: true,
+      );
+
       _isLoading = false;
       notifyListeners();
       return roomId;
@@ -46,12 +57,25 @@ class SpaceProvider extends ChangeNotifier {
   }
 
   Future<void> joinSpace(String spaceId, UserProfile userProfile) async {
-    await _spaceService.joinSpace(spaceId, userProfile);
-    // _currentSpace set logic later
+    try {
+      await _spaceService.joinSpace(spaceId, userProfile);
+      
+      // Agora Kanalına Katıl (Dinleyici olarak)
+      await _agoraService.joinChannel(
+        channelId: spaceId,
+        uid: userProfile.uid.hashCode.abs(),
+        isHost: false,
+      );
+    } catch (e) {
+      LogService.e("Error joining space via provider", e);
+    }
   }
 
   Future<void> leaveSpace(String spaceId, String userId) async {
     await _spaceService.leaveSpace(spaceId, userId);
+    
+    // Agora Kanalından Ayrıl
+    await _agoraService.leaveChannel();
     if (_currentSpace?.id == spaceId) {
       _currentSpace = null;
     }

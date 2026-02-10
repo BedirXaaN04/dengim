@@ -1,14 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/app_colors.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
-import '../../core/services/config_service.dart';
-import '../ads/services/ad_service.dart';
-import '../auth/services/profile_service.dart';
-import '../../core/providers/user_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:in_app_purchase/in_app_purchase.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/providers/subscription_provider.dart';
+import '../../core/providers/user_provider.dart';
+import '../../core/utils/log_service.dart';
 
 class PremiumOfferScreen extends StatefulWidget {
   const PremiumOfferScreen({super.key});
@@ -18,107 +16,8 @@ class PremiumOfferScreen extends StatefulWidget {
 }
 
 class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
-  bool _isLoading = true;
-  Offerings? _offerings;
-  Package? _selectedPackage;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadOfferings();
-    AdService().init(); // Reklam servisini başlat
-  }
-
-  void _watchAd() {
-    AdService().showRewardedAd(onReward: (amount) async {
-       // Kredi Ekle (Varsayılan 10 kredi)
-       await ProfileService().addCredits(10);
-       
-       if (mounted) {
-         // Update provider to reflect new credits
-         await context.read<UserProvider>().loadCurrentUser();
-         
-         ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(content: Text('Tebrikler! 10 Kredi Kazandınız. 🎉')),
-         );
-       }
-    });
-  }
-
-  Future<void> _loadOfferings() async {
-    try {
-      // RevenueCat'ten paketleri çekmeye çalış
-      final offerings = await Purchases.getOfferings();
-      if (mounted) {
-        setState(() {
-          _offerings = offerings;
-          _isLoading = false;
-          // Varsayılan olarak yıllık paketi seç
-          if (offerings.current?.annual != null) {
-            _selectedPackage = offerings.current!.annual;
-          } else if (offerings.current?.availablePackages.isNotEmpty == true) {
-            _selectedPackage = offerings.current!.availablePackages.first;
-          }
-        });
-      }
-    } catch (e) {
-      // RevenueCat yapılandırılmamışsa veya hata varsa demo modunda çalış
-      debugPrint("RevenueCat Error: $e - Running in demo mode");
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  Future<void> _buy() async {
-    setState(() => _isLoading = true);
-    
-    try {
-      // Gerçek paket varsa RevenueCat ile satın al
-      if (_selectedPackage != null) {
-        final customerInfo = await Purchases.purchasePackage(_selectedPackage!);
-        final isPremium = customerInfo.entitlements.all['dengim_premium']?.isActive ?? false;
-        
-        if (isPremium && mounted) {
-          // Firestore'da kullanıcı profilini güncelle
-          await ProfileService().updateProfile(isPremium: true);
-          await context.read<UserProvider>().loadCurrentUser();
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('🎉 Tebrikler! Premium üyeliğiniz aktif edildi.'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.pop(context, true);
-          return;
-        }
-      }
-      
-      // Demo modu (API key yoksa veya paket seçilmediyse)
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) {
-        // Demo modunda da premium olarak işaretle
-        await ProfileService().updateProfile(isPremium: true);
-        await context.read<UserProvider>().loadCurrentUser();
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Demo Modu: Premium aktif edildi!'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-        Navigator.pop(context, true);
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
+  final PageController _pageController = PageController(viewportFraction: 0.85);
+  int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +36,7 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.vibrantGold.withOpacity(0.3),
+                    AppColors.vibrantGold.withOpacity(0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -146,180 +45,113 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
           ),
           
           SafeArea(
-            child: Column(
-              children: [
-                // Close Button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            shape: BoxShape.circle,
+            child: Consumer<SubscriptionProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+                }
+
+                return Column(
+                  children: [
+                    // Top Bar
+                    _buildHeader(context, provider),
+
+                    // Promo Banner
+                    _buildPromoBanner(),
+
+                    Expanded(
+                      child: PageView(
+                        controller: _pageController,
+                        onPageChanged: (index) => setState(() => _currentPage = index),
+                        children: [
+                          _buildPlanCard(
+                            title: 'GOLD',
+                            color: AppColors.primary,
+                            icon: Icons.star_rounded,
+                            features: [
+                              'Günde 1000 beğeni hakkı',
+                              'Günde 5 Super Like',
+                              'Geri al (Rewind) hakkı',
+                              'Sesli mesaj gönderme',
+                              'Gelişmiş filtreler',
+                              '8 fotoğraf ekleme',
+                            ],
+                            products: provider.products.where((p) => p.id.contains('gold')).toList(),
+                            provider: provider,
                           ),
-                          child: const Icon(Icons.close, color: Colors.white, size: 20),
+                          _buildPlanCard(
+                            title: 'PLATINUM',
+                            color: const Color(0xFFE5E4E2), // Platinum silver
+                            icon: Icons.workspace_premium_rounded,
+                            features: [
+                              'Sınırsız beğeni hakkı',
+                              'Günde 10 Super Like',
+                              'Sınırsız video görüşme',
+                              'Seni beğenenleri görme',
+                              'Haftalık 1 Ücretsiz Boost',
+                              'Aramalarda öncelik',
+                            ],
+                            products: provider.products.where((p) => p.id.contains('platinum')).toList(),
+                            provider: provider,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Page Indicator
+                    _buildIndicator(),
+
+                    // Restore Button
+                    TextButton(
+                      onPressed: () => provider.restorePurchases(),
+                      child: Text(
+                        'SATIN ALIMLARI GERİ YÜKLE',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Logo / Header
-                         Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: const LinearGradient(
-                              colors: [AppColors.primary, AppColors.secondary],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            boxShadow: [
-                              BoxShadow(color: AppColors.primary.withOpacity(0.5), blurRadius: 30),
-                            ],
-                          ),
-                          child: const Icon(Icons.star_rounded, color: Colors.white, size: 48),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'DENGİM PREMİUM',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2.0,
-                            color: AppColors.secondary,
-                            shadows: [
-                              Shadow(color: AppColors.secondary.withOpacity(0.5), blurRadius: 20),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Sınırları kaldır, ayrıcalıklı dünyanın kapılarını arala.',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14,
-                            color: Colors.white70,
-                            height: 1.5,
-                          ),
-                        ),
-
-                        const SizedBox(height: 48),
-
-                        // Features List
-                        _buildFeatureRow(Icons.visibility_rounded, 'Kimlerin Seni Beğendiğini Gör'),
-                        _buildFeatureRow(Icons.history_rounded, 'Yanlışlıkla Geçtiklerini Geri Al'),
-                        _buildFeatureRow(Icons.flash_on_rounded, 'Haftada 5 Super Like'),
-                        _buildFeatureRow(Icons.location_on_rounded, 'Dünyanın Her Yerinde Kaydır'),
-                        _buildFeatureRow(Icons.favorite_rounded, 'Sınırsız Beğeni Hakkı'),
-
-                        const SizedBox(height: 48),
-
-                        // Pricing Plans
-                        Row(
-                          children: [
-                            Expanded(child: _buildPlanCard('1 Ay', '₺99.99', false)),
-                            const SizedBox(width: 16),
-                            Expanded(child: _buildPlanCard('12 Ay', '₺599.99', true)), // Best value
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-                        
-                        // Watch Ad Button (Alternative)
-                        if (ConfigService().isAdsEnabled)
-                          GestureDetector(
-                            onTap: _watchAd,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: AppColors.secondary.withOpacity(0.3)),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.play_circle_filled_rounded, color: AppColors.secondary, size: 20),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Reklam İzle & 10 Kredi Kazan',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                        const SizedBox(height: 32),
-                        
-                        // Subscribe Button
-                        GestureDetector(
-                          onTap: _buy,
-                          child: Container(
-                            height: 64,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [AppColors.secondary, AppColors.primary],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.4),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (_isLoading)
-                                   const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                else ...[
-                                  Text(
-                                    'DENGİNİ BULMAYA BAŞLA',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      letterSpacing: 1.0,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Icon(Icons.arrow_forward_rounded, color: Colors.white),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 24),
-                        Text(
-                          'İstediğin zaman iptal edebilirsin.',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white30),
-                        ),
-                        const SizedBox(height: 48),
-                      ],
                     ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, SubscriptionProvider provider) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.close, color: Colors.white70),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.wallet, color: AppColors.primary, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  'Mevcut: ${provider.currentTier.toUpperCase()}',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -330,28 +162,100 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
     );
   }
 
-  Widget _buildFeatureRow(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: AppColors.primary, size: 20),
+  Widget _buildPromoBanner() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Center(
+        child: Text(
+          '🔥 İLK AY %50 İNDİRİM FIRSATI!',
+          style: GoogleFonts.plusJakartaSans(
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
+            fontSize: 13,
           ),
-          const SizedBox(width: 16),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlanCard({
+    required String title,
+    required Color color,
+    required IconData icon,
+    required List<String> features,
+    required List<ProductDetails> products,
+    required SubscriptionProvider provider,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: color.withOpacity(0.3), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 32),
+          Icon(icon, color: color, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: color,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 32),
           Expanded(
-            child: Text(
-              text,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.white.withOpacity(0.9),
-              ),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              itemCount: features.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_circle_rounded, color: color, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          features[index],
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          
+          // Pricing Options
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: products.map((p) => _buildPriceButton(p, color, provider)).toList(),
             ),
           ),
         ],
@@ -359,51 +263,62 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
     );
   }
 
-  Widget _buildPlanCard(String duration, String price, bool isBest) {
-    final isSelected = isBest; // Şimdilik sadece Best Value seçili gelsin
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.1),
-          width: 2,
+  Widget _buildPriceButton(ProductDetails product, Color color, SubscriptionProvider provider) {
+    String period = 'Ay';
+    if (product.id.contains('3')) period = '3 Ay';
+    if (product.id.contains('6')) period = '6 Ay';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: InkWell(
+        onTap: () => provider.buyProduct(product),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white10),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                period,
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                product.price,
+                style: GoogleFonts.plusJakartaSans(
+                  color: color,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      child: Column(
-        children: [
-          if (isBest)
-            Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                'EN İYİ FİYAT',
-                style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
+    );
+  }
+
+  Widget _buildIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(2, (index) {
+          return Container(
+            width: 8,
+            height: 8,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _currentPage == index ? AppColors.primary : Colors.white12,
             ),
-          Text(
-            duration,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white70,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            price,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-            ),
-          ),
-        ],
+          );
+        }),
       ),
     );
   }

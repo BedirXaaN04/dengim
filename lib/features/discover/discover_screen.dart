@@ -25,6 +25,7 @@ import '../payment/premium_offer_screen.dart';
 import 'user_profile_detail_screen.dart';
 import '../spaces/screens/spaces_screen.dart';
 import 'widgets/advanced_filters_modal.dart';
+import '../ads/widgets/dengim_banner_ad.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -401,6 +402,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                 ),
                           ),
                           _buildActionButtons(),
+                          const DengimBannerAd(),
                           const SizedBox(height: 100), 
                         ],
                       ),

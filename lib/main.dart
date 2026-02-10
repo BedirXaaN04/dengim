@@ -26,11 +26,14 @@ import 'core/providers/likes_provider.dart';
 import 'core/providers/map_provider.dart';
 import 'core/providers/story_provider.dart';
 import 'core/providers/system_config_provider.dart';
+import 'core/providers/subscription_provider.dart';
 import 'core/utils/log_service.dart';
 
 import 'features/auth/services/profile_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/config_service.dart';
+import 'core/services/feature_flag_service.dart';
+import 'features/ads/services/ad_service.dart';
 
 import 'features/spaces/providers/space_provider.dart';
 import 'core/widgets/maintenance_screen.dart';
@@ -69,6 +72,8 @@ void main() async {
 
     // Remote Configuration'ı başlat
     await ConfigService().init();
+    await FeatureFlagService().init();
+    await AdService().init();
 
     // Bildirim servisini başlat
     try {
@@ -97,6 +102,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => StoryProvider()),
         ChangeNotifierProvider(create: (_) => SystemConfigProvider()),
         ChangeNotifierProvider(create: (_) => SpaceProvider()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()..init()),
       ],
       child: const DengimApp(),
     ),

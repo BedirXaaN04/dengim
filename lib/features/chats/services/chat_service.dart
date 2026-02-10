@@ -7,6 +7,10 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/services/cloudinary_service.dart';
 
 class ChatService {
+  static final ChatService _instance = ChatService._internal();
+  factory ChatService() => _instance;
+  ChatService._internal();
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -93,6 +97,7 @@ class ChatService {
     String receiverId, { // receiverId is kept for backward compat but inside update we use it for unread count
     MessageType type = MessageType.text,
     Map<String, dynamic>? storyReply,
+    bool incrementUnread = true,
   }) async {
     final user = currentUser;
     if (user == null) return;
@@ -190,7 +195,7 @@ class ChatService {
 
     for (var doc in query.docs) {
       final List<dynamic> users = doc['userIds'];
-      if (users.contains(receiverId)) {
+      if (users.length == 2 && users.contains(receiverId)) {
         return doc.id; // Zaten var
       }
     }

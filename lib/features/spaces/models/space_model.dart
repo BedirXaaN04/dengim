@@ -40,7 +40,7 @@ class SpaceRoom {
   final bool isPrivate;
   final DateTime createdAt;
   final DateTime? scheduledAt;
-  final String? roomToken; // LiveKit/WebRTC token
+  final String? agoraToken; // Agora RTC token
 
   const SpaceRoom({
     required this.id,
@@ -58,7 +58,7 @@ class SpaceRoom {
     this.isPrivate = false,
     required this.createdAt,
     this.scheduledAt,
-    this.roomToken,
+    this.agoraToken,
   });
 
   Map<String, dynamic> toMap() {
@@ -78,7 +78,7 @@ class SpaceRoom {
       'isPrivate': isPrivate,
       'createdAt': Timestamp.fromDate(createdAt),
       'scheduledAt': scheduledAt != null ? Timestamp.fromDate(scheduledAt!) : null,
-      'roomToken': roomToken,
+      'agoraToken': agoraToken,
     };
   }
 
@@ -109,7 +109,7 @@ class SpaceRoom {
       isPrivate: data['isPrivate'] ?? false,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       scheduledAt: (data['scheduledAt'] as Timestamp?)?.toDate(),
-      roomToken: data['roomToken'],
+      agoraToken: data['agoraToken'],
     );
   }
 
@@ -138,7 +138,7 @@ class SpaceRoom {
       isPrivate: isPrivate,
       createdAt: createdAt,
       scheduledAt: scheduledAt,
-      roomToken: roomToken,
+      agoraToken: agoraToken,
     );
   }
 
@@ -148,7 +148,7 @@ class SpaceRoom {
 
 /// Oda Katılımcısı
 class SpaceParticipant {
-  final String odtokendId;
+  final int agoraUid;
   final String userId;
   final String name;
   final String? avatarUrl;
@@ -157,7 +157,7 @@ class SpaceParticipant {
   final bool isSpeaking; // Şu an konuşuyor mu
 
   const SpaceParticipant({
-    required this.odtokendId,
+    required this.agoraUid,
     required this.userId,
     required this.name,
     this.avatarUrl,
@@ -168,7 +168,7 @@ class SpaceParticipant {
 
   Map<String, dynamic> toMap() {
     return {
-      'odtokendId': odtokendId,
+      'agoraUid': agoraUid,
       'userId': userId,
       'name': name,
       'avatarUrl': avatarUrl,
@@ -180,7 +180,7 @@ class SpaceParticipant {
 
   factory SpaceParticipant.fromMap(Map<String, dynamic> data) {
     return SpaceParticipant(
-      odtokendId: data['odtokendId'] ?? '',
+      agoraUid: data['agoraUid']?.toInt() ?? 0,
       userId: data['userId'] ?? '',
       name: data['name'] ?? 'Anonim',
       avatarUrl: data['avatarUrl'],

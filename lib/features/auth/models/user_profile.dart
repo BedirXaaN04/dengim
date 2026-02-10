@@ -22,10 +22,14 @@ class UserProfile {
   
   // Özellikler
   final bool isPremium;
+  final String subscriptionTier; // free, gold, platinum
   final int credits;
   final bool isVerified;
   final bool isOnline;
-  final UserRole role; // YENİ: Rol (user, moderator, admin)
+  final String role; // as String for easier mapping
+  final String referralCode;
+  final String? referredBy;
+  final List<String> achievements;
   
   // Konum
   final double distance;
@@ -52,10 +56,14 @@ class UserProfile {
     this.relationshipGoal,
     this.photoUrls,
     this.isPremium = false,
+    this.subscriptionTier = 'free',
     this.credits = 0,
     this.isVerified = false,
     this.isOnline = false,
-    this.role = UserRole.user,
+    this.role = 'user',
+    this.referralCode = '',
+    this.referredBy,
+    this.achievements = const [],
     this.distance = 0,
     this.latitude,
     this.longitude,
@@ -75,6 +83,12 @@ class UserProfile {
       calculatedAge--;
     }
     return calculatedAge;
+  }
+
+  // Profil tam mı? (İsim ve en az 1 fotoğraf var mı?)
+  bool get isComplete {
+    return name.isNotEmpty && name != 'Kullanıcı' && 
+           photoUrls != null && photoUrls!.isNotEmpty;
   }
 
   // UI Yardımcıları
@@ -99,10 +113,14 @@ class UserProfile {
       'relationshipGoal': relationshipGoal,
       'photoUrls': photoUrls,
       'isPremium': isPremium,
+      'subscriptionTier': subscriptionTier,
       'credits': credits,
       'isVerified': isVerified,
       'isOnline': isOnline,
-      'role': role.name,
+      'role': role,
+      'referralCode': referralCode,
+      'referredBy': referredBy,
+      'achievements': achievements,
       'latitude': latitude,
       'longitude': longitude,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -144,10 +162,14 @@ class UserProfile {
       relationshipGoal: map['relationshipGoal'],
       photoUrls: map['photoUrls'] != null ? List<String>.from(map['photoUrls']) : null,
       isPremium: map['isPremium'] ?? false,
+      subscriptionTier: map['subscriptionTier'] ?? 'free',
       credits: map['credits']?.toInt() ?? 0,
       isVerified: map['isVerified'] ?? false,
       isOnline: map['isOnline'] ?? false,
-      role: UserRole.values.firstWhere((e) => e.name == (map['role'] ?? 'user'), orElse: () => UserRole.user),
+      role: map['role'] ?? 'user',
+      referralCode: map['referralCode'] ?? '',
+      referredBy: map['referredBy'],
+      achievements: List<String>.from(map['achievements'] ?? []),
       latitude: map['latitude']?.toDouble(),
       longitude: map['longitude']?.toDouble(),
       distance: 0.0,

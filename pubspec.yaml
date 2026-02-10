@@ -21,12 +21,19 @@ dependencies:
   cloud_firestore: ^5.4.4
   firebase_storage: ^12.3.2
   firebase_messaging: ^15.1.3
+  firebase_remote_config: ^5.1.3
   flutter_local_notifications: ^17.2.2
   google_sign_in: ^6.2.1
   image_picker: ^1.0.7
   
-  # Ödeme Sistemi (RevenueCat)
-  purchases_flutter: ^6.25.0
+  # Ödeme Sistemi (Native IAP)
+  in_app_purchase: ^3.2.0
+  in_app_purchase_storekit: ^0.3.18
+  in_app_purchase_android: ^0.3.0
+  
+  # RTC (Voice & Video)
+  agora_rtc_engine: ^6.3.2
+  permission_handler: ^11.3.1
   
   # Bağlantı Durumu
   connectivity_plus: ^6.0.3
@@ -74,6 +81,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
 
 flutter_icons:
   android: "launcher_icon"
@@ -89,6 +97,14 @@ flutter_icons:
     generate: true
     image_path: "assets/icon.png"
     icon_size: 48 # min:48, max:256, default: 48
+
+flutter_native_splash:
+  color: "#FEEAE6" # Logonun arka planındaki o tatlı pembe tonu
+  image: "assets/icon.png"
+  android_12:
+    image: "assets/icon.png"
+    color: "#FEEAE6"
+  web: false
 
 flutter:
   uses-material-design: true

@@ -1,8 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../../../core/services/config_service.dart';
 import '../../../core/utils/log_service.dart';
-
-// Conditional import - only import google_mobile_ads on mobile
 import 'ad_service_mobile.dart' if (dart.library.html) 'ad_service_web.dart' as ads;
 
 class AdService {
@@ -16,18 +13,19 @@ class AdService {
     await _platformService.init();
   }
 
-  void showRewardedAd({required Function(int) onReward}) {
-    if (kIsWeb) {
-      LogService.w("Ads are not supported on web.");
-      return;
-    }
-    if (!ConfigService().isAdsEnabled) {
-      LogService.w("Ads are globally disabled via admin panel.");
-      return;
-    }
-    _platformService.showRewardedAd(onReward: onReward);
+  void showRewardedAd({required String tier, required Function(int) onReward}) {
+    if (kIsWeb) return;
+    _platformService.showRewardedAd(tier: tier, onReward: onReward);
+  }
+
+  void showInterstitialAd({required String tier}) {
+    if (kIsWeb) return;
+    _platformService.showInterstitialAd(tier: tier);
+  }
+
+  // Get current platform banner unit id
+  String get bannerAdUnitId {
+    if (kIsWeb) return "";
+    return _platformService.bannerAdUnitId;
   }
 }
-
-typedef FunctionOnReward = void Function(int amount);
-

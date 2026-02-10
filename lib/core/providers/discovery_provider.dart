@@ -3,6 +3,11 @@ import '../../features/auth/models/user_profile.dart';
 import '../../features/auth/services/discovery_service.dart';
 import '../../features/auth/services/profile_service.dart';
 import '../utils/log_service.dart';
+import '../../services/analytics_service.dart';
+import '../../features/ads/services/ad_service.dart';
+import '../../core/services/feature_flag_service.dart';
+import 'user_provider.dart';
+import 'package:provider/provider.dart';
 
 
 class DiscoveryProvider extends ChangeNotifier {
@@ -11,6 +16,8 @@ class DiscoveryProvider extends ChangeNotifier {
   bool _isLoading = false;
   final DiscoveryService _discoveryService = DiscoveryService();
   final ProfileService _profileService = ProfileService();
+  
+  int _swipeCount = 0;
 
   List<UserProfile> get users => _users;
   List<UserProfile> get activeUsers => _activeUsers;
@@ -41,26 +48,10 @@ class DiscoveryProvider extends ChangeNotifier {
         interests: interests,
       );
 
-      // Block Filter
-      final currentUserProfile = await _profileService.getUserProfile();
-      final blockedUsers = currentUserProfile?.blockedUsers ?? [];
-      
-      if (blockedUsers.isNotEmpty) {
-        realUsers.removeWhere((u) => blockedUsers.contains(u.uid));
-      }
-      
-      // Interest Filter
-      if (interests != null && interests.isNotEmpty) {
-        realUsers = realUsers.where((u) => u.interests.any((i) => interests.contains(i))).toList();
-      }
-      
       _users = realUsers;
       
-      // 3. Aktif kullanıcılar için de aynı mantık
+      // 3. Aktif kullanıcılar için
       List<UserProfile> realActiveUsers = await _discoveryService.getActiveUsers();
-      if (blockedUsers.isNotEmpty) {
-        realActiveUsers.removeWhere((u) => blockedUsers.contains(u.uid));
-      }
       _activeUsers = realActiveUsers;
       
       LogService.i("Discovery loaded: ${_users.length} users, ${_activeUsers.length} active");
@@ -84,7 +75,22 @@ class DiscoveryProvider extends ChangeNotifier {
 
   Future<bool> swipeUser(String targetUserId, String swipeType) async {    
     try {
-      return await _discoveryService.swipeUser(targetUserId, swipeType: swipeType);
+      final success = await _discoveryService.swipeUser(targetUserId, swipeType: swipeType);
+      if (success) {
+        AnalyticsService().logSwipe(swipeType, targetUserId);
+      }
+
+      // --- AD LOGIC ---
+      _swipeCount++;
+      if (_swipeCount >= 10) {
+        _swipeCount = 0;
+        final profile = await _profileService.getUserProfile();
+        if (profile != null && FeatureFlagService().shouldShowAds(profile.subscriptionTier)) {
+          AdService().showInterstitialAd(tier: profile.subscriptionTier);
+        }
+      }
+
+      return success;
     } catch (e) {
       LogService.e("Error swiping user", e);
       return false;

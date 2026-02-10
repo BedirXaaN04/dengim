@@ -50,7 +50,7 @@ class SpaceService {
       final docRef = _firestore.collection('spaces').doc();
       
       final hostAsSpeaker = SpaceParticipant(
-        odtokendId: '', // LiveKit token integration later
+        agoraUid: hostProfile.uid.hashCode.abs(), 
         userId: hostProfile.uid,
         name: hostProfile.name,
         avatarUrl: hostProfile.imageUrl,

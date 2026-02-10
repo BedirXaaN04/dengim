@@ -8,6 +8,10 @@ import '../../../core/services/cloudinary_service.dart';
 import 'package:flutter/foundation.dart';
 
 class ProfileService {
+  static final ProfileService _instance = ProfileService._internal();
+  factory ProfileService() => _instance;
+  ProfileService._internal();
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -83,6 +87,19 @@ class ProfileService {
       LogService.e("Error fetching profile: $targetUid", e);
       return null;
     }
+  }
+
+  /// Profil Değişikliklerini Dinle (Realtime)
+  Stream<UserProfile?> getProfileStream() {
+    final uid = _currentUser?.uid;
+    if (uid == null) return const Stream.empty();
+
+    return _firestore.collection('users').doc(uid).snapshots().map((snapshot) {
+      if (snapshot.exists && snapshot.data() != null) {
+        return UserProfile.fromMap(snapshot.data()!);
+      }
+      return null;
+    });
   }
 
   Future<String> uploadProfilePhoto(XFile file, String userId) async {

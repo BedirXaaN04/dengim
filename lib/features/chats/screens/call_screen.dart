@@ -1,18 +1,23 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dengim/core/theme/app_colors.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/services/agora_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CallScreen extends StatefulWidget {
   final String userName;
   final String userAvatar;
+  final String channelId;
   final bool isVideo;
 
   const CallScreen({
     super.key,
     required this.userName,
     required this.userAvatar,
+    required this.channelId,
     this.isVideo = false,
   });
 
@@ -21,6 +26,10 @@ class CallScreen extends StatefulWidget {
 }
 
 class _CallScreenState extends State<CallScreen> {
+  final _agoraService = AgoraService();
+  int? _remoteUid;
+  bool _localUserJoined = false;
+  
   Timer? _timer;
   int _seconds = 0;
   bool _isMuted = false;
@@ -30,7 +39,40 @@ class _CallScreenState extends State<CallScreen> {
   @override
   void initState() {
     super.initState();
+    _initAgora();
     _startTimer();
+  }
+
+  Future<void> _initAgora() async {
+    await _agoraService.init();
+    
+    _agoraService.engine.registerEventHandler(
+      RtcEngineEventHandler(
+        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+          setState(() {
+            _localUserJoined = true;
+          });
+        },
+        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+          setState(() {
+            _remoteUid = remoteUid;
+          });
+        },
+        onUserOffline: (RtcConnection connection, int remoteUid, UserOfflineReasonType reason) {
+          setState(() {
+            _remoteUid = null;
+          });
+          Navigator.pop(context);
+        },
+      ),
+    );
+
+    await _agoraService.joinChannel(
+      channelId: widget.channelId,
+      uid: FirebaseAuth.instance.currentUser?.uid.hashCode.abs() ?? 0,
+      isVideo: widget.isVideo,
+      isHost: false, // Birebir görüşmede communication profili yeterli
+    );
   }
 
   void _startTimer() {
@@ -46,6 +88,7 @@ class _CallScreenState extends State<CallScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    _agoraService.leaveChannel();
     super.dispose();
   }
 
@@ -58,111 +101,158 @@ class _CallScreenState extends State<CallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E), // Dark background
+      backgroundColor: Colors.black,
       body: Stack(
-        fit: StackFit.expand,
         children: [
-          // Background Image (Blurred)
-          if (widget.isVideo && !_isVideoOff)
-             CachedNetworkImage(
-               imageUrl: widget.userAvatar,
-               fit: BoxFit.cover,
-               color: Colors.black.withOpacity(0.3),
-               colorBlendMode: BlendMode.darken,
-             )
-          else
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.black, AppColors.primary.withOpacity(0.2), Colors.black],
+          // Remote Video or Placeholder
+          _remoteUid != null && widget.isVideo && !_isVideoOff
+              ? AgoraVideoView(
+                  controller: VideoViewController.remote(
+                    rtcEngine: _agoraService.engine,
+                    canvas: VideoCanvas(uid: _remoteUid),
+                    connection: RtcConnection(channelId: widget.channelId),
+                  ),
+                )
+              : _buildPlaceholder(),
+
+          // Local Preview (Picture-in-picture)
+          if (widget.isVideo && _localUserJoined && !_isVideoOff)
+            Positioned(
+              top: 60,
+              right: 20,
+              child: Container(
+                width: 120,
+                height: 180,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white24),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: AgoraVideoView(
+                    controller: VideoViewController(
+                      rtcEngine: _agoraService.engine,
+                      canvas: const VideoCanvas(uid: 0),
+                    ),
+                  ),
                 ),
               ),
             ),
-            
-          SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Header Info
-                Column(
-                  children: [
-                    const SizedBox(height: 40),
-                    if (!widget.isVideo || _isVideoOff)
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.primary, width: 2),
-                        ),
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundImage: NetworkImage(widget.userAvatar),
-                        ),
-                      ),
-                    const SizedBox(height: 24),
-                    Text(
-                      widget.userName,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _formatDuration(_seconds),
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 16,
-                        color: Colors.white70,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
 
-                // Controls
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 48),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildControlBtn(
-                        icon: _isMuted ? Icons.mic_off : Icons.mic,
-                        isActive: _isMuted,
-                        onTap: () => setState(() => _isMuted = !_isMuted),
-                      ),
-                      if (widget.isVideo)
-                         _buildControlBtn(
-                          icon: _isVideoOff ? Icons.videocam_off : Icons.videocam,
-                          isActive: _isVideoOff,
-                          onTap: () => setState(() => _isVideoOff = !_isVideoOff),
-                        ),
-                         
-                      _buildControlBtn(
-                         icon: _isSpeaker ? Icons.volume_up : Icons.volume_off,
-                         isActive: _isSpeaker,
-                         onTap: () => setState(() => _isSpeaker = !_isSpeaker),
-                      ),
-                      
-                      // End Call
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          width: 72,
-                          height: 72,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(color: Colors.redAccent, blurRadius: 20, spreadRadius: 2)
-                            ]
-                          ),
-                          child: const Icon(Icons.call_end, color: Colors.white, size: 32),
-                        ),
-                      ),
-                    ],
+          // Overlay UI
+          _buildOverlayUI(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.black, AppColors.primary.withOpacity(0.2), Colors.black],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 60,
+              backgroundImage: CachedNetworkImageProvider(widget.userAvatar),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              widget.userName,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            if (_remoteUid == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  'Bağlanıyor...',
+                  style: GoogleFonts.plusJakartaSans(color: Colors.white54),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverlayUI() {
+    return SafeArea(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                if (_remoteUid != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      _formatDuration(_seconds),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Controls
+          Padding(
+            padding: const EdgeInsets.only(bottom: 40),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildControlBtn(
+                  icon: _isMuted ? Icons.mic_off : Icons.mic,
+                  isActive: _isMuted,
+                  onTap: () {
+                    setState(() => _isMuted = !_isMuted);
+                    _agoraService.engine.muteLocalAudioStream(_isMuted);
+                  },
+                ),
+                if (widget.isVideo)
+                  _buildControlBtn(
+                    icon: _isVideoOff ? Icons.videocam_off : Icons.videocam,
+                    isActive: _isVideoOff,
+                    onTap: () {
+                      setState(() => _isVideoOff = !_isVideoOff);
+                      _agoraService.engine.muteLocalVideoStream(_isVideoOff);
+                    },
+                  ),
+                _buildControlBtn(
+                  icon: _isSpeaker ? Icons.volume_up : Icons.volume_down,
+                  isActive: _isSpeaker,
+                  onTap: () {
+                    setState(() => _isSpeaker = !_isSpeaker);
+                    _agoraService.engine.setEnableSpeakerphone(_isSpeaker);
+                  },
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 70,
+                    height: 70,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.call_end, color: Colors.white, size: 32),
                   ),
                 ),
               ],
@@ -173,11 +263,7 @@ class _CallScreenState extends State<CallScreen> {
     );
   }
 
-  Widget _buildControlBtn({
-    required IconData icon,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildControlBtn({required IconData icon, required bool isActive, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

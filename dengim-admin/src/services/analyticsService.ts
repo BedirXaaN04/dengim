@@ -80,11 +80,17 @@ export const AnalyticsService = {
                 getCountFromServer(query(collection(db, "message_reports"), where("status", "==", "pending"))),
                 getCountFromServer(query(collection(db, "story_reports"), where("status", "==", "pending"))),
                 getCountFromServer(query(collection(db, "verification_requests"), where("status", "==", "pending"))),
-                getCountFromServer(matchesColl),
+                getCountFromServer(collection(db, "matches")),
                 getCountFromServer(query(usersColl, where("createdAt", ">=", FirestoreTimestamp.fromDate(todayStart)))),
                 getCountFromServer(query(usersColl, where("createdAt", ">=", FirestoreTimestamp.fromDate(weekStart)))),
-                getCountFromServer(query(usersColl, where("createdAt", ">=", FirestoreTimestamp.fromDate(monthStart))))
+                getCountFromServer(query(usersColl, where("createdAt", ">=", FirestoreTimestamp.fromDate(monthStart)))),
+                getCountFromServer(query(usersColl, where("subscriptionTier", "==", "gold"))),
+                getCountFromServer(query(usersColl, where("subscriptionTier", "==", "platinum")))
             ]);
+
+            const goldCount = goldUsersSnap?.data().count || 0;
+            const platinumCount = platinumUsersSnap?.data().count || 0;
+            const mrrValue = (goldCount * 249) + (platinumCount * 449);
 
             const totalPendingReports = reportsCount.data().count + messageReportsCount.data().count + storyReportsCount.data().count;
 
@@ -99,8 +105,9 @@ export const AnalyticsService = {
                 newUsersToday: todayUsersSnap.data().count,
                 newUsersThisWeek: weekUsersSnap.data().count,
                 newUsersThisMonth: monthUsersSnap.data().count,
-                mrr: premiumUsersSnap.data().count * 299, // Assumption: 299 TL per premium
-                arr: premiumUsersSnap.data().count * 299 * 12,
+                newUsersThisMonth: monthUsersSnap.data().count,
+                mrr: mrrValue,
+                arr: mrrValue * 12,
                 churnRate: 0,
                 conversionRate: totalUsersSnap.data().count > 0
                     ? (premiumUsersSnap.data().count / totalUsersSnap.data().count) * 100
