@@ -583,13 +583,13 @@ class DiscoveryService {
 
     return score;
   }
+
   /// Profil ziyaretini kaydet
   Future<void> trackVisit(String targetUserId) async {
     final myUid = _currentUser?.uid;
     if (myUid == null || myUid == targetUserId) return;
 
     try {
-      final visitId = "${targetUserId}_$myUid";
       final visitRef = _firestore
           .collection('users')
           .doc(targetUserId)
@@ -603,7 +603,7 @@ class DiscoveryService {
         if (data != null && data['timestamp'] != null) {
           final lastVisit = (data['timestamp'] as Timestamp).toDate();
           if (DateTime.now().difference(lastVisit) < const Duration(hours: 24)) {
-             return;
+            return;
           }
         }
       }

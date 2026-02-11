@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/utils/error_handler.dart';
-import '../auth/services/auth_service.dart';
-import '../auth/login_screen.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/error_handler.dart';
+import '../../auth/services/auth_service.dart';
+import '../../auth/login_screen.dart';
 import 'blocked_users_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/user_provider.dart';
@@ -118,7 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           user?.isGhostMode ?? false,
                           (value) async {
                             if (!isPremium) {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
                               return;
                             }
                             await ProfileService().updateProfile(isGhostMode: value);
@@ -131,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           user?.isIncognitoMode ?? false,
                           (value) async {
                             if (!isPremium) {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
                               return;
                             }
                             await ProfileService().updateProfile(isIncognitoMode: value);

@@ -5,21 +5,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dengim/core/theme/app_colors.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import '../models/chat_models.dart';
-import '../services/chat_service.dart';
-import '../../auth/services/report_service.dart';
-import '../widgets/chat_widgets.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/log_service.dart';
 import '../../../core/services/audio_recorder_service.dart';
 import '../../../core/services/cloudinary_service.dart';
 import '../../../core/services/typing_indicator_service.dart';
 import '../../../core/widgets/online_status_indicator.dart';
-import 'call_screen.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/services/feature_flag_service.dart';
+
+import '../models/chat_models.dart';
+import '../services/chat_service.dart';
+import '../widgets/chat_widgets.dart';
+import '../../auth/services/report_service.dart';
 import '../../payment/premium_offer_screen.dart';
+import 'call_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String chatId;
@@ -343,7 +346,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
               
               if (userTier == 'free') {
-                 Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                 Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
                  return;
               }
 
@@ -367,7 +370,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
               
               if (!FeatureFlagService().isVideoCallEnabled(userTier)) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
                 return;
               }
 
@@ -853,7 +856,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
     
     if (!FeatureFlagService().isVoiceMessageEnabled(userTier)) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
       return;
     }
 

@@ -234,7 +234,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                       return GestureDetector(
                         onTap: () {
                           if (!widget.isPremium) {
-                             Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                             Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
                              return;
                           }
                           setState(() {
@@ -529,7 +529,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
             value: value,
             onChanged: (val) {
               if (isPremiumOnly && !widget.isPremium) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
                 return;
               }
               onChanged(val);
