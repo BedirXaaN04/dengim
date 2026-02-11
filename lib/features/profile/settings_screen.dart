@@ -10,7 +10,9 @@ import '../auth/login_screen.dart';
 import 'blocked_users_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/user_provider.dart';
-import 'verification_screen.dart'; // Import verification screen
+import 'verification_screen.dart';
+import '../auth/services/profile_service.dart';
+import '../payment/premium_offer_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

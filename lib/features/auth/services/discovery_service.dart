@@ -582,6 +582,7 @@ class DiscoveryService {
     if (other.isBoosted) score += 100;
 
     return score;
+  }
   /// Profil ziyaretini kaydet
   Future<void> trackVisit(String targetUserId) async {
     final myUid = _currentUser?.uid;

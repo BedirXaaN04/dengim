@@ -91,4 +91,8 @@ class AnalyticsService {
   Future<void> logScreenView(String screenName) async {
     await _analytics.setCurrentScreen(screenName: screenName);
   }
+
+  Future<void> logEvent(String name, Map<String, dynamic> parameters) async {
+    await _analytics.logEvent(name: name, parameters: parameters);
+  }
 }

@@ -470,7 +470,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Text(
                     "Video Profil Ekle (Max 30sn)",
                     style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white34,
+                      color: Colors.white38,
                       fontSize: 13,
                     ),
                   ),

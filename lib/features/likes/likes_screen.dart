@@ -8,6 +8,7 @@ import '../payment/premium_offer_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/likes_provider.dart';
 import '../../core/providers/badge_provider.dart';
+import '../../core/providers/user_provider.dart';
 import '../../core/services/config_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';

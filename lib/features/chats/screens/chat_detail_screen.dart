@@ -17,6 +17,9 @@ import '../../../core/services/cloudinary_service.dart';
 import '../../../core/services/typing_indicator_service.dart';
 import '../../../core/widgets/online_status_indicator.dart';
 import 'call_screen.dart';
+import '../../../core/providers/user_provider.dart';
+import '../../../core/services/feature_flag_service.dart';
+import '../../payment/premium_offer_screen.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String chatId;

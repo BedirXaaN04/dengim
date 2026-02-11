@@ -8,6 +8,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/models/user_profile.dart';
 import '../auth/services/profile_service.dart';
+import '../auth/services/discovery_service.dart';
 import '../../core/utils/log_service.dart';
 import 'widgets/filter_bottom_sheet.dart';
 
@@ -675,7 +676,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               CachedNetworkImage(
                 imageUrl: user.imageUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(color: Colors.white05),
+                placeholder: (context, url) => Container(color: Colors.white.withOpacity(0.05)),
               ),
               if (!isPremium)
                 ClipRRect(
