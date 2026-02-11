@@ -11,7 +11,10 @@ class AdvancedFiltersModal extends StatefulWidget {
     super.key,
     required this.currentFilters,
     required this.onApplyFilters,
+    this.isPremium = false,
   });
+
+  final bool isPremium;
 
   @override
   State<AdvancedFiltersModal> createState() => _AdvancedFiltersModalState();
@@ -229,6 +232,10 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                       final isSelected = _relationshipGoal == goal['id'];
                       return GestureDetector(
                         onTap: () {
+                          if (!widget.isPremium) {
+                             Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                             return;
+                          }
                           setState(() {
                             _relationshipGoal =
                                 isSelected ? null : goal['id'];
@@ -270,6 +277,10 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                                   fontSize: 13,
                                 ),
                               ),
+                              if (!widget.isPremium && goal['id'] != 'all') ...[
+                                const SizedBox(width: 4),
+                                const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 12),
+                              ],
                             ],
                           ),
                         ),
@@ -355,6 +366,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                     Icons.circle,
                     _onlineOnly,
                     (value) => setState(() => _onlineOnly = value),
+                    isPremiumOnly: true,
                   ),
 
                   const SizedBox(height: 48),
@@ -481,8 +493,9 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
     String label,
     IconData icon,
     bool value,
-    Function(bool) onChanged,
-  ) {
+    Function(bool) onChanged, {
+    bool isPremiumOnly = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -495,17 +508,31 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
           Icon(icon, color: value ? AppColors.primary : Colors.white54, size: 20),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              label,
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+            child: Row(
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+                if (isPremiumOnly && !widget.isPremium) ...[
+                  const SizedBox(width: 8),
+                  const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 14),
+                ],
+              ],
             ),
           ),
           Switch(
             value: value,
-            onChanged: onChanged,
+            onChanged: (val) {
+              if (isPremiumOnly && !widget.isPremium) {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                return;
+              }
+              onChanged(val);
+            },
             activeColor: AppColors.primary,
             activeTrackColor: AppColors.primary.withOpacity(0.5),
           ),

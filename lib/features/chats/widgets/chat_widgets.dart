@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/providers/user_provider.dart';
 import '../models/chat_models.dart';
 
 
@@ -543,25 +545,29 @@ class _ChatBubbleState extends State<ChatBubble> {
   /// Read Receipt Indicator
   Widget _buildReadReceipt() {
     // Üç durum: Gönderildi (✓), İletildi (✓✓), Okundu (✓✓ mavi)
-    final bool isSent = true; // Her mesaj gönderilmiş kabul edilir
-    final bool isDelivered = widget.message.isRead; // Şu an read = delivered olarak kullanılıyor
+    // ÖNEMLİ: Okundu bilgisi sadece Platinum üyeler için gösterilir
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final isPlatinum = userProvider.currentUser?.subscriptionTier == 'platinum';
+
+    final bool isSent = true; 
     final bool isRead = widget.message.isRead;
     
     IconData icon;
     Color color;
     
-    if (isRead) {
+    if (isRead && isPlatinum) {
       icon = Icons.done_all; // ✓✓
       color = const Color(0xFF10B981); // Green - okundu
-    } else if (isDelivered) {
-      icon = Icons.done_all; // ✓✓  
-      color = Colors.black38; // Gray - iletildi
+    } else if (isRead && !isPlatinum) {
+      // Platinum değilse ama okunduysa bile gri çift tık (iletildi gibi) göster
+      icon = Icons.done_all; 
+      color = Colors.black38;
     } else if (isSent) {
       icon = Icons.done; // ✓
-      color = Colors.black38; // Gray - gönderildi
+      color = Colors.black38; 
     } else {
-      icon = Icons.schedule; // ⏱
-      color = Colors.black26; // Lighter gray - gönder iliyor
+      icon = Icons.schedule; 
+      color = Colors.black26; 
     }
     
     return Icon(icon, size: 14, color: color);

@@ -30,6 +30,10 @@ class OnlineStatusIndicator extends StatelessWidget {
         final data = snapshot.data?.data() as Map<String, dynamic>?;
         final isOnline = data?['isOnline'] ?? false;
         final lastSeen = data?['lastSeen'] as Timestamp?;
+        final isGhostMode = data?['isGhostMode'] ?? false;
+
+        // Ghost Mode 활성화 시 오프라인으로 표시
+        if (isGhostMode) return _buildOfflineIndicator();
 
         // Son 5 dakika içinde görüldüyse online say
         if (!isOnline && lastSeen != null) {
@@ -143,6 +147,14 @@ class LastSeenText extends StatelessWidget {
         final data = snapshot.data?.data() as Map<String, dynamic>?;
         final isOnline = data?['isOnline'] ?? false;
         final lastSeen = data?['lastSeen'] as Timestamp?;
+        final isGhostMode = data?['isGhostMode'] ?? false;
+
+        if (isGhostMode) {
+           return Text(
+            'Gizli',
+            style: style ?? const TextStyle(color: Colors.grey, fontSize: 12),
+          );
+        }
 
         if (isOnline) {
           return Text(

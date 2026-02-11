@@ -43,7 +43,7 @@ class DiscoveryService {
 
       // 2. Fetch users with basic filters
       Query baseQuery = _firestore.collection('users');
-      Query activeQuery = baseQuery;
+      Query activeQuery = baseQuery.where('isIncognitoMode', isEqualTo: false);
       
       // Gender Filter
       if (gender != null && gender != 'all' && gender != 'other') {
@@ -210,6 +210,114 @@ class DiscoveryService {
       LogService.e("Swipe Error", e);
       return false;
     }
+  }
+
+  Future<void> incrementSwipeCount() async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    final now = DateTime.now();
+    final dateKey = "${now.year}-${now.month}-${now.day}";
+
+    final statsRef = _firestore.collection('users').doc(user.uid).collection('stats').doc('swipes');
+    
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(statsRef);
+      if (!snapshot.exists) {
+        transaction.set(statsRef, {
+          'lastSwipeDate': dateKey,
+          'count': 1,
+        });
+      } else {
+        final data = snapshot.data()!;
+        if (data['lastSwipeDate'] == dateKey) {
+          transaction.update(statsRef, {'count': FieldValue.increment(1)});
+        } else {
+          transaction.update(statsRef, {
+            'lastSwipeDate': dateKey,
+            'count': 1,
+          });
+        }
+      }
+    });
+  }
+
+  Future<int> getDailySwipeCount() async {
+    final user = _currentUser;
+    if (user == null) return 0;
+
+    final now = DateTime.now();
+    final dateKey = "${now.year}-${now.month}-${now.day}";
+
+    final snapshot = await _firestore.collection('users').doc(user.uid).collection('stats').doc('swipes').get();
+    if (!snapshot.exists) return 0;
+
+    final data = snapshot.data()!;
+    if (data['lastSwipeDate'] == dateKey) {
+      return data['count'] ?? 0;
+    }
+    return 0;
+  }
+
+  Future<void> incrementSuperLikeCount() async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    final now = DateTime.now();
+    final dateKey = "${now.year}-${now.month}-${now.day}";
+
+    final statsRef = _firestore.collection('users').doc(user.uid).collection('stats').doc('super_likes');
+    
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(statsRef);
+      if (!snapshot.exists) {
+        transaction.set(statsRef, {
+          'lastDate': dateKey,
+          'count': 1,
+        });
+      } else {
+        final data = snapshot.data()!;
+        if (data['lastDate'] == dateKey) {
+          transaction.update(statsRef, {'count': FieldValue.increment(1)});
+        } else {
+          transaction.update(statsRef, {
+            'lastDate': dateKey,
+            'count': 1,
+          });
+        }
+      }
+    });
+  }
+
+  Future<int> getDailySuperLikeCount() async {
+    final user = _currentUser;
+    if (user == null) return 0;
+
+    final now = DateTime.now();
+    final dateKey = "${now.year}-${now.month}-${now.day}";
+
+    final snapshot = await _firestore.collection('users').doc(user.uid).collection('stats').doc('super_likes').get();
+    if (!snapshot.exists) return 0;
+
+    final data = snapshot.data()!;
+    if (data['lastDate'] == dateKey) {
+      return data['count'] ?? 0;
+    }
+    return 0;
+  }
+
+  Future<void> activateBoost() async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    // Boost duration: 30 minutes
+    final boostUntil = DateTime.now().add(const Duration(minutes: 30));
+    
+    await _firestore.collection('users').doc(user.uid).update({
+      'boostUntil': Timestamp.fromDate(boostUntil),
+    });
+    
+    LogService.i("Boost activated for ${user.uid} until $boostUntil");
   }
 
   Future<void> sendNotification(String targetUid, {required String type, required String title, required String body}) async {
@@ -470,7 +578,79 @@ class DiscoveryService {
       score -= (approxKm / 10).clamp(0, 30).toInt();
     }
 
+    // 5. Premium Boost (+100)
+    if (other.isBoosted) score += 100;
+
     return score;
+  /// Profil ziyaretini kaydet
+  Future<void> trackVisit(String targetUserId) async {
+    final myUid = _currentUser?.uid;
+    if (myUid == null || myUid == targetUserId) return;
+
+    try {
+      final visitId = "${targetUserId}_$myUid";
+      final visitRef = _firestore
+          .collection('users')
+          .doc(targetUserId)
+          .collection('visitors')
+          .doc(myUid);
+
+      // Sadece 24 saatte bir güncelle (spam önlemek için)
+      final doc = await visitRef.get();
+      if (doc.exists) {
+        final data = doc.data();
+        if (data != null && data['timestamp'] != null) {
+          final lastVisit = (data['timestamp'] as Timestamp).toDate();
+          if (DateTime.now().difference(lastVisit) < const Duration(hours: 24)) {
+             return;
+          }
+        }
+      }
+
+      await visitRef.set({
+        'fromUserId': myUid,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      
+      LogService.d("Tracked visit from $myUid to $targetUserId");
+    } catch (e) {
+      LogService.e("Track visit error", e);
+    }
+  }
+
+  /// Profilimi ziyaret edenleri getir
+  Future<List<UserProfile>> getProfileVisitors() async {
+    final uid = _currentUser?.uid;
+    if (uid == null) return [];
+
+    try {
+      final snapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('visitors')
+          .orderBy('timestamp', descending: true)
+          .limit(50)
+          .get();
+
+      if (snapshot.docs.isEmpty) return [];
+
+      final visitorIds = snapshot.docs.map((doc) => doc.id).toList();
+      
+      final List<UserProfile> visitors = [];
+      for (var i = 0; i < visitorIds.length; i += 10) {
+        final chunk = visitorIds.skip(i).take(10).toList();
+        final usersSnapshot = await _firestore
+            .collection('users')
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+        visitors.addAll(usersSnapshot.docs.map((doc) => UserProfile.fromMap(doc.data())));
+      }
+
+      return visitors;
+    } catch (e) {
+      LogService.e("Get visitors error", e);
+      return [];
+    }
   }
 }
 

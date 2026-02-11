@@ -27,6 +27,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _countryController;
   
   List<String> _photoUrls = [];
+  String? _videoUrl;
   List<String> _selectedInterests = [];
   bool _isSaving = false;
   bool _hasChanges = false;
@@ -55,6 +56,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _ageController = TextEditingController(text: widget.profile.age.toString());
     _countryController = TextEditingController(text: widget.profile.country);
     _photoUrls = List.from(widget.profile.photoUrls ?? []);
+    _videoUrl = widget.profile.videoUrl;
     _selectedInterests = List.from(widget.profile.interests);
     _selectedRelationshipGoal = widget.profile.relationshipGoal;
   }
@@ -84,6 +86,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
       } catch (e) {
         if (mounted) ErrorHandler.showError(context, "Fotoğraf yüklenemedi: $e");
+      } finally {
+        if (mounted) setState(() => _isSaving = false);
+      }
+    }
+  }
+
+  Future<void> _pickAndUploadVideo() async {
+    final picker = ImagePicker();
+    final video = await picker.pickVideo(source: ImageSource.gallery, maxDuration: const Duration(seconds: 30));
+    
+    if (video != null) {
+      setState(() => _isSaving = true);
+      try {
+        final url = await ProfileService().uploadProfileVideo(video);
+        if (url != null) {
+          setState(() {
+            _videoUrl = url;
+            _hasChanges = true;
+          });
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('✅ Video başarıyla yüklendi!'), backgroundColor: Colors.green),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) ErrorHandler.showError(context, "Video yüklenemedi: $e");
       } finally {
         if (mounted) setState(() => _isSaving = false);
       }
@@ -140,6 +169,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         age: int.tryParse(_ageController.text.trim()) ?? widget.profile.age,
         country: _countryController.text.trim(),
         photoUrls: _photoUrls,
+        videoUrl: _videoUrl,
         interests: _selectedInterests,
         relationshipGoal: _selectedRelationshipGoal,
       );
@@ -212,6 +242,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildSectionHeader("FOTOĞRAFLAR"),
             const SizedBox(height: 12),
             _buildPhotosGrid(),
+            
+            const SizedBox(height: 24),
+            
+            // Video Section
+            _buildSectionHeader("VİDEO PROFİL (OPSİYONEL)"),
+            const SizedBox(height: 12),
+            _buildVideoPicker(),
             
             const SizedBox(height: 32),
             
@@ -364,6 +401,81 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildVideoPicker() {
+    return GestureDetector(
+      onTap: _pickAndUploadVideo,
+      child: Container(
+        width: double.infinity,
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _videoUrl != null ? AppColors.primary : Colors.white.withOpacity(0.1),
+            width: _videoUrl != null ? 2 : 1,
+            style: BorderStyle.solid,
+          ),
+        ),
+        child: _videoUrl != null
+            ? Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.video_library, color: AppColors.primary, size: 40),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Video Yüklendi",
+                          style: GoogleFonts.plusJakartaSans(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _videoUrl = null;
+                          _hasChanges = true;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, color: Colors.white, size: 18),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.video_call_outlined, color: Colors.white24, size: 32),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Video Profil Ekle (Max 30sn)",
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white34,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

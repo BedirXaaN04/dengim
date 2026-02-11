@@ -336,6 +336,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           IconButton(
             icon: const Icon(Icons.call, color: Colors.white),
             onPressed: () {
+              final userProvider = context.read<UserProvider>();
+              final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
+              
+              if (userTier == 'free') {
+                 Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                 return;
+              }
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -352,6 +360,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           IconButton(
             icon: const Icon(Icons.videocam, color: Colors.white),
             onPressed: () {
+              final userProvider = context.read<UserProvider>();
+              final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
+              
+              if (!FeatureFlagService().isVideoCallEnabled(userTier)) {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                return;
+              }
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -830,6 +846,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
   /// Ses kaydını başlat
   Future<void> _startRecording() async {
+    final userProvider = context.read<UserProvider>();
+    final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
+    
+    if (!FeatureFlagService().isVoiceMessageEnabled(userTier)) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+      return;
+    }
+
     final started = await _audioRecorder.startRecording();
     if (started) {
       setState(() {

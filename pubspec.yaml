@@ -26,6 +26,7 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   google_sign_in: ^6.2.1
   image_picker: ^1.0.7
+  video_player: ^2.8.2
   
   # Ödeme Sistemi (Native IAP)
   in_app_purchase: ^3.2.0

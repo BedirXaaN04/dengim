@@ -22,6 +22,9 @@ class LikesScreen extends StatefulWidget {
 
 class _LikesScreenState extends State<LikesScreen> {
   int _activeTab = 0; // 0: Seni Beğenenler, 1: Eşleşmeler
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+  bool _onlyOnline = false;
 
   @override
   void initState() {
@@ -87,53 +90,93 @@ class _LikesScreenState extends State<LikesScreen> {
                         SliverToBoxAdapter(
                           child: _buildNewMatchesSection(provider.matches),
                         ),
-                        if (ConfigService().isVipEnabled) ...[
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
-                              child: Text(
-                                "SENI BEĞENENLER (VIP)",
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.2,
-                                  color: Colors.white.withOpacity(0.9),
+                        Consumer<UserProvider>(
+                          builder: (context, userProvider, _) {
+                            final isPremium = userProvider.currentUser?.isPremium ?? false;
+                            
+                            if (!isPremium) {
+                              return SliverMainAxisGroup(
+                                slivers: [
+                                  SliverToBoxAdapter(
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(20, 32, 20, 16),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "SENI BEĞENENLER",
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 1.2,
+                                              color: Colors.white.withOpacity(0.9),
+                                            ),
+                                          ),
+                                          const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 16),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                   SliverToBoxAdapter(
+                                    child: _buildSearchAndFilter(false),
+                                  ),
+                                  SliverPadding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    sliver: SliverGrid(
+                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.75,
+                                        crossAxisSpacing: 12,
+                                        mainAxisSpacing: 12,
+                                      ),
+                                      delegate: SliverChildBuilderDelegate(
+                                        (context, index) => const _LockedLikeCard(),
+                                        childCount: provider.likedMeUsers.length,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+
+                            return SliverMainAxisGroup(
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: _buildSearchAndFilter(isPremium),
                                 ),
-                              ),
-                            ),
-                          ),
-                          SliverPadding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            sliver: SliverGrid(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.75,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                              ),
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) => const _LockedLikeCard(),
-                                childCount: provider.likedMeUsers.length,
-                              ),
-                            ),
-                          ),
-                        ] else ...[
-                          SliverPadding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            sliver: SliverGrid(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.75,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                              ),
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) => _UnlockedLikeCard(user: provider.likedMeUsers[index]),
-                                childCount: provider.likedMeUsers.length,
-                              ),
-                            ),
-                          ),
-                        ],
+                                SliverPadding(
+                                  padding: const EdgeInsets.all(20),
+                                  sliver: SliverGrid(
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 0.75,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 12,
+                                    ),
+                                    delegate: SliverChildBuilderDelegate(
+                                      (context, index) {
+                                        final allLikedUsers = provider.likedMeUsers;
+                                        final filteredUsers = allLikedUsers.where((user) {
+                                          final matchesSearch = user.name.toLowerCase().contains(_searchQuery.toLowerCase());
+                                          final matchesOnline = !_onlyOnline || user.isOnline;
+                                          return matchesSearch && matchesOnline;
+                                        }).toList();
+                                        
+                                        if (index >= filteredUsers.length) return null;
+                                        return _UnlockedLikeCard(user: filteredUsers[index]);
+                                      },
+                                      childCount: provider.likedMeUsers.where((user) {
+                                        final matchesSearch = user.name.toLowerCase().contains(_searchQuery.toLowerCase());
+                                        final matchesOnline = !_onlyOnline || user.isOnline;
+                                        return matchesSearch && matchesOnline;
+                                      }).length,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                         if (provider.likedMeUsers.isEmpty)
                           SliverToBoxAdapter(
                             child: Padding(
@@ -181,6 +224,85 @@ class _LikesScreenState extends State<LikesScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildSearchAndFilter(bool isPremium) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (val) => setState(() => _searchQuery = val),
+                    enabled: isPremium,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search, color: isPremium ? Colors.white38 : Colors.white12, size: 20),
+                      hintText: "Beğenilerde ara...",
+                      hintStyle: TextStyle(color: isPremium ? Colors.white24 : Colors.white10, fontSize: 13),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () {
+                  if (!isPremium) {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                  } else {
+                    setState(() => _onlyOnline = !_onlyOnline);
+                  }
+                },
+                child: Container(
+                  height: 48,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: _onlyOnline ? AppColors.primary.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: _onlyOnline ? AppColors.primary : Colors.transparent),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Online",
+                      style: GoogleFonts.plusJakartaSans(
+                        color: _onlyOnline ? AppColors.primary : Colors.white54,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (!isPremium)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 12),
+                  const SizedBox(width: 6),
+                  Text(
+                    "Beğenileri filtrelemek için Platinum'a yüksel",
+                    style: GoogleFonts.plusJakartaSans(color: AppColors.primary, fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

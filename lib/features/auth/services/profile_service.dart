@@ -117,6 +117,15 @@ class ProfileService {
     }
   }
 
+  Future<String?> uploadProfileVideo(XFile file) async {
+    try {
+      return await CloudinaryService.uploadVideo(file);
+    } catch (e) {
+      LogService.e("Video upload failed", e);
+      return null;
+    }
+  }
+
   Future<String> uploadProfilePhotoBytes(Uint8List bytes, String userId) async {
     try {
       final imageUrl = await CloudinaryService.uploadImageBytes(bytes);
@@ -201,8 +210,11 @@ class ProfileService {
     List<String>? interests,
     String? relationshipGoal,
     List<String>? photoUrls,
+    String? videoUrl,
     bool? isPremium,
     bool? isVerified,
+    bool? isGhostMode,
+    bool? isIncognitoMode,
   }) async {
     final uid = _currentUser?.uid;
     if (uid == null) return;
@@ -225,8 +237,11 @@ class ProfileService {
     if (interests != null) updates['interests'] = interests;
     if (relationshipGoal != null) updates['relationshipGoal'] = relationshipGoal;
     if (photoUrls != null) updates['photoUrls'] = photoUrls;
+    if (videoUrl != null) updates['videoUrl'] = videoUrl;
     if (isPremium != null) updates['isPremium'] = isPremium;
     if (isVerified != null) updates['isVerified'] = isVerified;
+    if (isGhostMode != null) updates['isGhostMode'] = isGhostMode;
+    if (isIncognitoMode != null) updates['isIncognitoMode'] = isIncognitoMode;
 
     try {
       await _firestore.collection('users').doc(uid).update(updates);

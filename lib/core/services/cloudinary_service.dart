@@ -141,6 +141,47 @@ class CloudinaryService {
       }
     });
   }
+
+  /// Video dosyası yükle
+  static Future<String?> uploadVideo(XFile file) async {
+    return _uploadWithRetry(() async {
+      try {
+        final url = Uri.parse("https://api.cloudinary.com/v1_1/$_cloudName/video/upload");
+        final request = http.MultipartRequest("POST", url);
+
+        request.fields['upload_preset'] = _uploadPreset;
+        request.fields['resource_type'] = 'video';
+        
+        if (kIsWeb) {
+          final bytes = await file.readAsBytes();
+          request.files.add(http.MultipartFile.fromBytes(
+            'file',
+            bytes,
+            filename: file.name,
+          ));
+        } else {
+          request.files.add(await http.MultipartFile.fromPath('file', file.path));
+        }
+
+        final response = await request.send();
+        final responseData = await response.stream.toBytes();
+        final responseString = String.fromCharCodes(responseData);
+        final jsonResponse = jsonDecode(responseString);
+
+        if (response.statusCode == 200) {
+          LogService.i("Cloudinary video upload success: ${jsonResponse['secure_url']}");
+          return jsonResponse['secure_url'];
+        } else {
+          LogService.e("Cloudinary Video Upload Failed (Status: ${response.statusCode})");
+          LogService.e("Response: $responseString");
+          throw Exception("Video upload failed with status ${response.statusCode}");
+        }
+      } catch (e) {
+        LogService.e("Cloudinary video upload attempt failed", e);
+        rethrow;
+      }
+    });
+  }
 }
 
 

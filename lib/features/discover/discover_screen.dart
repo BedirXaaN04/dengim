@@ -141,10 +141,28 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     if (direction == CardSwiperDirection.top) swipeType = 'super_like';
     
     try {
-      final isMatch = await discoveryProvider.swipeUser(targetUser.uid, swipeType);
+      final userProvider = context.read<UserProvider>();
+      final currentUser = userProvider.currentUser;
+      final userTier = currentUser?.subscriptionTier ?? 'free';
+
+      final success = await discoveryProvider.swipeUser(
+        targetUser.uid, 
+        swipeType, 
+        userTier: userTier
+      );
       
-      // Geri bildirim göster (match değilse)
-      if (mounted && !isMatch) {
+      if (!success && swipeType != 'dislike') {
+        // Limit reached, show offer
+        if (mounted) {
+           Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+        }
+        return false; // Swipe failed
+      }
+
+      final isMatch = success; // Success means swipe recorded, might be match
+      
+      // Geri bildirim göster (match değilse ve beğeni ise)
+      if (mounted && !isMatch && swipeType != 'dislike') {
         if (direction == CardSwiperDirection.right) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -158,6 +176,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         }
       }
       
+      // Re-fetch isMatch real status if needed, but swipeUser returns if it was a match
       if (isMatch) {
         _showMatchAnimation(targetUser);
       }
@@ -233,8 +252,108 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   void _onUndo() {
+    final userProvider = context.read<UserProvider>();
+    final isPremium = userProvider.currentUser?.isPremium ?? false;
+
+    if (!isPremium) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+      return;
+    }
+
     HapticFeedback.lightImpact();
     _cardController.undo();
+  }
+
+  void _onBoost() {
+    final userProvider = context.read<UserProvider>();
+    final currentUser = userProvider.currentUser;
+    final isPremium = currentUser?.isPremium ?? false;
+
+    if (!isPremium) {
+       Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+       return;
+    }
+    
+    // Check if already boosted
+    if (currentUser?.isBoosted ?? false) {
+       ScaffoldMessenger.of(context).showSnackBar(
+         const SnackBar(content: Text('Zaten bir boost aktif!'))
+       );
+       return;
+    }
+
+    _showBoostActivationDialog();
+  }
+
+  void _showBoostActivationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.purpleAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.purpleAccent.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.bolt_rounded, color: Colors.purpleAccent, size: 24),
+            ),
+            const SizedBox(width: 12),
+            Text('Profilini Öne Çıkar', 
+              style: GoogleFonts.plusJakartaSans(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              )
+            ),
+          ],
+        ),
+        content: Text(
+          '30 dakika boyunca profilin daha fazla kişi tarafından görülecek ve eşleşme şansın artacak!',
+          style: GoogleFonts.plusJakartaSans(
+            color: Colors.white70,
+            fontSize: 14,
+            height: 1.5,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('İptal', 
+              style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontWeight: FontWeight.bold)
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<DiscoveryProvider>().activateBoost();
+              HapticFeedback.heavyImpact();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('🚀 Boost Aktifleştirildi! Profilin öne çıkıyor.'),
+                  backgroundColor: Colors.purpleAccent,
+                  behavior: SnackBarBehavior.floating,
+                )
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.purpleAccent,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text('Aktifleştir', 
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _dismissMatch() {
@@ -368,6 +487,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           _buildTopBar(),
                           _buildSearchBar(), // 🔍 Arama barı
                           if (!_showSearchBar) _buildStoriesTray(storyProvider.activeStories),
+                          if (!_showSearchBar) _buildTopPicks(provider.activeUsers),
                           const SizedBox(height: 8),
                         ],
                       ),
@@ -478,6 +598,130 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
 
+  Widget _buildTopPicks(List<UserProfile> activeUsers) {
+    if (activeUsers.isEmpty) return const SizedBox();
+    
+    final userProvider = context.read<UserProvider>();
+    final isPremium = userProvider.currentUser?.isPremium ?? false;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "ÖNE ÇIKANLAR",
+                style: GoogleFonts.plusJakartaSans(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              if (!isPremium) 
+                const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 14),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 140,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: activeUsers.take(8).length,
+            itemBuilder: (context, index) {
+              final user = activeUsers[index];
+              return _buildTopPickCard(user, isPremium);
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildTopPickCard(UserProfile user, bool isPremium) {
+    return GestureDetector(
+      onTap: () {
+        if (!isPremium) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+        } else {
+          _onCardTap(user);
+        }
+      },
+      child: Container(
+        width: 100,
+        margin: const EdgeInsets.symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              CachedNetworkImage(
+                imageUrl: user.imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(color: Colors.white05),
+              ),
+              if (!isPremium)
+                ClipRRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    child: Container(
+                      color: Colors.black.withOpacity(0.4),
+                      child: const Center(
+                        child: Icon(Icons.lock_outline_rounded, color: Colors.white70, size: 24),
+                      ),
+                    ),
+                  ),
+                ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                    ),
+                  ),
+                  child: Text(
+                    isPremium ? user.name : 'Aç',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTopBar() {
     return SafeArea(
       bottom: false,
@@ -510,17 +754,27 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     height: 32,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.primary.withOpacity(0.5), width: 2),
+                      gradient: user?.isPremium == true ? AppColors.goldGradient : null,
+                      border: user?.isPremium == true ? null : Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                      boxShadow: user?.isPremium == true ? [
+                        BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8, spreadRadius: 1)
+                      ] : null,
                     ),
-                    child: ClipOval(
-                      child: user?.imageUrl != null
-                          ? CachedNetworkImage(
-                              imageUrl: user!.imageUrl,
-                              fit: BoxFit.cover,
-                              placeholder: (_, __) => Container(color: AppColors.surface),
-                              errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.white54, size: 18),
-                            )
-                          : const Icon(Icons.person, color: Colors.white54, size: 18),
+                    child: Padding(
+                      padding: EdgeInsets.all(user?.isPremium == true ? 2 : 0),
+                      child: Container(
+                        decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.scaffold),
+                        child: ClipOval(
+                          child: user?.imageUrl != null
+                              ? CachedNetworkImage(
+                                  imageUrl: user!.imageUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (_, __) => Container(color: AppColors.surface),
+                                  errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.white54, size: 18),
+                                )
+                              : const Icon(Icons.person, color: Colors.white54, size: 18),
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -590,6 +844,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       builder: (_) => SizedBox(
                         height: MediaQuery.of(context).size.height * 0.85,
                         child: AdvancedFiltersModal(
+                          isPremium: context.read<UserProvider>().currentUser?.isPremium ?? false,
                           currentFilters: {
                             'minAge': _filterSettings.ageRange.start.toInt(),
                             'maxAge': _filterSettings.ageRange.end.toInt(),
@@ -1000,26 +1255,39 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
     return AspectRatio(
       aspectRatio: 3.8 / 5,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(40),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-              blurRadius: 40,
-              offset: const Offset(0, 20),
+      child: GestureDetector(
+        onTap: () => _onCardTap(user),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.4),
+                blurRadius: 40,
+                offset: const Offset(0, 20),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(40),
+            child: Stack(
+              fit: StackFit.expand,
+              children: _buildStackChildren(user, showLike, showNope, percentX),
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(40),
-          child: Stack(
-            fit: StackFit.expand,
-            children: _buildStackChildren(user, showLike, showNope, percentX),
           ),
         ),
       ),
     );
+  }
+
+  void _onCardTap(UserProfile user) {
+    HapticFeedback.lightImpact();
+    // Visit track et
+    DiscoveryService().trackVisit(user.uid);
+    
+    // Profil detay sayfasını aç
+    // Not: UserDetailScreen henüz yoksa oluşturulmalı veya modal açılmalı
+    // _showUserDetail(user); 
   }
 
   Widget _buildActionButtons() {
@@ -1064,6 +1332,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             color: Colors.white.withOpacity(0.5),
             borderColor: Colors.white.withOpacity(0.1),
             bgColor: Colors.white.withOpacity(0.03),
+          ),
+          const SizedBox(width: 24),
+          _buildCircleButton(
+            onTap: _onBoost,
+            size: 40,
+            icon: Icons.bolt_rounded,
+            color: Colors.purpleAccent,
+            borderColor: Colors.purpleAccent.withOpacity(0.4),
+            bgColor: Colors.transparent,
           ),
         ],
       ),
@@ -1169,35 +1446,49 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       Positioned(
         top: 24,
         right: 24,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+        child: Row(
+          children: [
+            if (user.videoUrl != null)
               Container(
-                width: 8, height: 8, 
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: user.isOnline ? const Color(0xFF10B981) : Colors.white30, 
-                  shape: BoxShape.circle
-                )
+                  color: AppColors.primary.withOpacity(0.8),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 16),
               ),
-              const SizedBox(width: 8),
-              Text(
-                user.isOnline ? 'AKTİF' : 'ÇEVRİMDIŞI', 
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 10, 
-                  fontWeight: FontWeight.bold, 
-                  color: user.isOnline ? Colors.white : Colors.white30, 
-                  letterSpacing: 1.0
-                )
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.2)),
               ),
-            ],
-          ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8, height: 8, 
+                    decoration: BoxDecoration(
+                      color: user.isOnline ? const Color(0xFF10B981) : Colors.white30, 
+                      shape: BoxShape.circle
+                    )
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    user.isOnline ? 'AKTİF' : 'ÇEVRİMDIŞI', 
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10, 
+                      fontWeight: FontWeight.bold, 
+                      color: user.isOnline ? Colors.white : Colors.white30, 
+                      letterSpacing: 1.0
+                    )
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
       // Photo Indicators

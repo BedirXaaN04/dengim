@@ -73,11 +73,38 @@ class DiscoveryProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> swipeUser(String targetUserId, String swipeType) async {    
+  Future<bool> swipeUser(String targetUserId, String swipeType, {required String userTier}) async {    
     try {
+      // 1. Check Daily Limit
+      if (userTier != 'platinum') {
+        if (swipeType == 'super_like') {
+          final currentSuperCount = await _discoveryService.getDailySuperLikeCount();
+          final superLimit = FeatureFlagService().getSuperLikesLimit(userTier);
+          if (currentSuperCount >= superLimit) {
+            LogService.w("Daily super like limit reached for tier: $userTier");
+            return false;
+          }
+        } else {
+          final currentCount = await _discoveryService.getDailySwipeCount();
+          final limit = FeatureFlagService().getDailySwipeLimit(userTier);
+          
+          if (currentCount >= limit) {
+            LogService.w("Daily swipe limit reached for tier: $userTier");
+            return false; 
+          }
+        }
+      }
+
       final success = await _discoveryService.swipeUser(targetUserId, swipeType: swipeType);
       if (success) {
         AnalyticsService().logSwipe(swipeType, targetUserId);
+        
+        // Increment counts
+        if (swipeType == 'super_like') {
+          await _discoveryService.incrementSuperLikeCount();
+        } else {
+          await _discoveryService.incrementSwipeCount();
+        }
       }
 
       // --- AD LOGIC ---
@@ -94,6 +121,15 @@ class DiscoveryProvider extends ChangeNotifier {
     } catch (e) {
       LogService.e("Error swiping user", e);
       return false;
+    }
+  }
+
+  Future<void> activateBoost() async {
+    try {
+      await _discoveryService.activateBoost();
+      AnalyticsService().logEvent('boost_activated', {});
+    } catch (e) {
+      LogService.e("Error activating boost", e);
     }
   }
 }

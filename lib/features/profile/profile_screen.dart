@@ -6,11 +6,13 @@ import '../auth/services/auth_service.dart';
 import '../auth/login_screen.dart';
 import 'settings_screen.dart';
 import 'edit_profile_screen.dart';
+import 'visitors_screen.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/user_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
+import 'widgets/video_player_modal.dart';
 
 
 class ProfileScreen extends StatefulWidget {
@@ -140,7 +142,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Icon(Icons.verified, color: AppColors.primary, size: 24),
+                          if (profile?.isVerified == true)
+                            const Icon(Icons.verified, color: AppColors.primary, size: 24),
+                          if (profile?.isPremium == true) ...[
+                            const SizedBox(width: 8),
+                            _buildPremiumBadge(profile?.subscriptionTier ?? 'gold'),
+                          ],
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -183,8 +190,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildDetailRow('Eğitim', education),
                       _buildDetailRow('İlgi Alanları', interests, isLast: true),
 
+                      if (profile?.videoUrl != null) ...[
+                        const SizedBox(height: 40),
+                        _buildSectionTitle('VİDEO PROFİL'),
+                        const SizedBox(height: 16),
+                        _buildVideoPreview(profile!.videoUrl!),
+                      ],
+
                       const SizedBox(height: 48),
                       // Buttons
+                      _buildActionBtn(
+                        icon: Icons.visibility_outlined,
+                        label: 'Profil Ziyaretçileri',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const VisitorsScreen()),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
                       _buildActionBtn(
                         icon: Icons.share_outlined,
                         label: 'Profili Paylaş',
@@ -305,6 +330,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildVideoPreview(String videoUrl) {
+    return GestureDetector(
+      onTap: () {
+        // Play video
+        _showVideoPlayer(videoUrl);
+      },
+      child: Container(
+        height: 200,
+        width: 150,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white.withOpacity(0.05),
+          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+          image: const DecorationImage(
+            image: CachedNetworkImageProvider('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=500'),
+            fit: BoxFit.cover,
+            opacity: 0.5,
+          ),
+        ),
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.8),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 32),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showVideoPlayer(String videoUrl) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.black,
+      builder: (context) => VideoPlayerModal(videoUrl: videoUrl),
+    );
+  }
+
   // Profile Completion Calculator
   int _calculateCompletionPercentage(dynamic profile) {
     if (profile == null) return 0;
@@ -320,8 +387,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if ((profile.interests?.length ?? 0) >= 3) completed++; // Has 3+ interests
     if (profile.relationshipGoal != null) completed++;
     if (profile.country?.isNotEmpty ?? false) completed++;
-    
-    return ((completed / total) * 100).round();
+    if (profile.videoUrl != null) completed++; // New: Video count
+
+    return ((completed / (total + 1)) * 100).round();
   }
 
   String _getCompletionMessage(int percentage) {
@@ -467,6 +535,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPremiumBadge(String tier) {
+    final isPlatinum = tier == 'platinum';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        gradient: isPlatinum 
+            ? const LinearGradient(colors: [Color(0xFFE5E4E2), Color(0xFFB4B4B4)]) 
+            : AppColors.goldGradient,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: (isPlatinum ? Colors.white : AppColors.primary).withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPlatinum ? Icons.workspace_premium_rounded : Icons.star_rounded,
+            color: isPlatinum ? Colors.black87 : Colors.black,
+            size: 14,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            tier.toUpperCase(),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 10,
+              fontWeight: FontWeight.w900,
+              color: isPlatinum ? Colors.black87 : Colors.black,
+              letterSpacing: 0.5,
+            ),
           ),
         ],
       ),

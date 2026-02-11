@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/services/safety_service.dart';
 import '../auth/models/user_profile.dart';
 import '../profile/services/report_block_service.dart';
+import '../profile/widgets/video_player_modal.dart';
 
 class UserProfileDetailScreen extends StatelessWidget {
   final String? userId;
@@ -164,6 +165,26 @@ class UserProfileDetailScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
+              // Video Profile Button
+              if (data['videoUrl'] != null)
+                Positioned(
+                  bottom: 120,
+                  right: 20,
+                  child: FloatingActionButton(
+                    heroTag: 'video_profile_btn_1',
+                    backgroundColor: AppColors.primary,
+                    child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 32),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.black,
+                        builder: (context) => VideoPlayerModal(videoUrl: data['videoUrl']),
+                      );
+                    },
+                  ),
+                ),
             ],
           );
         },
@@ -324,6 +345,26 @@ class UserProfileDetailScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Video Profile Button (UI Version)
+          if (profile.videoUrl != null)
+            Positioned(
+              bottom: 120,
+              right: 20,
+              child: FloatingActionButton(
+                heroTag: 'video_profile_btn_ui',
+                backgroundColor: AppColors.primary,
+                child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 32),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.black,
+                    builder: (context) => VideoPlayerModal(videoUrl: profile.videoUrl!),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );

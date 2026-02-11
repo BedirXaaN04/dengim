@@ -19,6 +19,7 @@ class UserProfile {
   final String? education;
   final String? relationshipGoal; // New field
   final List<String>? photoUrls;
+  final String? videoUrl; // ← YENİ: Video profil URL
   
   // Özellikler
   final bool isPremium;
@@ -37,6 +38,9 @@ class UserProfile {
   final double? longitude;
   final List<String> blockedUsers;
   final String? fcmToken;
+  final DateTime? boostUntil;
+  final bool isGhostMode;
+  final bool isIncognitoMode;
 
   // Zamanlar
   final DateTime createdAt;
@@ -55,6 +59,7 @@ class UserProfile {
     this.education,
     this.relationshipGoal,
     this.photoUrls,
+    this.videoUrl, // ← YENİ
     this.isPremium = false,
     this.subscriptionTier = 'free',
     this.credits = 0,
@@ -71,6 +76,9 @@ class UserProfile {
     required this.lastActive,
     required this.blockedUsers,
     this.fcmToken,
+    this.boostUntil,
+    this.isGhostMode = false,
+    this.isIncognitoMode = false,
   });
 
   // Calculated age from birthDate
@@ -83,6 +91,11 @@ class UserProfile {
       calculatedAge--;
     }
     return calculatedAge;
+  }
+
+  bool get isBoosted {
+    if (boostUntil == null) return false;
+    return boostUntil!.isAfter(DateTime.now());
   }
 
   // Profil tam mı? (İsim ve en az 1 fotoğraf var mı?)
@@ -112,6 +125,7 @@ class UserProfile {
       'education': education,
       'relationshipGoal': relationshipGoal,
       'photoUrls': photoUrls,
+      'videoUrl': videoUrl,
       'isPremium': isPremium,
       'subscriptionTier': subscriptionTier,
       'credits': credits,
@@ -127,6 +141,9 @@ class UserProfile {
       'lastActive': Timestamp.fromDate(lastActive),
       'blockedUsers': blockedUsers,
       'fcmToken': fcmToken,
+      'boostUntil': boostUntil != null ? Timestamp.fromDate(boostUntil!) : null,
+      'isGhostMode': isGhostMode,
+      'isIncognitoMode': isIncognitoMode,
     };
   }
 
@@ -161,6 +178,7 @@ class UserProfile {
       education: map['education'],
       relationshipGoal: map['relationshipGoal'],
       photoUrls: map['photoUrls'] != null ? List<String>.from(map['photoUrls']) : null,
+      videoUrl: map['videoUrl'],
       isPremium: map['isPremium'] ?? false,
       subscriptionTier: map['subscriptionTier'] ?? 'free',
       credits: map['credits']?.toInt() ?? 0,
@@ -181,6 +199,11 @@ class UserProfile {
           : DateTime.now()),
       blockedUsers: List<String>.from(map['blockedUsers'] ?? []),
       fcmToken: map['fcmToken'],
+      boostUntil: map['boostUntil'] is Timestamp 
+          ? (map['boostUntil'] as Timestamp).toDate() 
+          : null,
+      isGhostMode: map['isGhostMode'] ?? false,
+      isIncognitoMode: map['isIncognitoMode'] ?? false,
     );
   }
 }

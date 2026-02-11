@@ -91,6 +91,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 
                 const SizedBox(height: 32),
+                _buildSectionHeader("KEŞFET"),
+                _buildSettingItem(
+                  context, 
+                  "Seyahat Modu (Pasaport)", 
+                  Icons.public_rounded,
+                  trailing: "Mevcut Konumun",
+                  onTap: _onPassportTap,
+                ),
+                
+                const SizedBox(height: 32),
+                _buildSectionHeader("GİZLİLİK MODLARI (PREMIUM)"),
+                Consumer<UserProvider>(
+                  builder: (context, provider, _) {
+                    final user = provider.currentUser;
+                    final isPremium = user?.isPremium ?? false;
+                    
+                    return Column(
+                      children: [
+                        _buildSwitchItem(
+                          context,
+                          "Hayalet Modu",
+                          Icons.visibility_off_outlined,
+                          user?.isGhostMode ?? false,
+                          (value) async {
+                            if (!isPremium) {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                              return;
+                            }
+                            await ProfileService().updateProfile(isGhostMode: value);
+                          },
+                        ),
+                        _buildSwitchItem(
+                          context,
+                          "Gizli Mod (Incognito)",
+                          Icons.security_outlined,
+                          user?.isIncognitoMode ?? false,
+                          (value) async {
+                            if (!isPremium) {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+                              return;
+                            }
+                            await ProfileService().updateProfile(isIncognitoMode: value);
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            "Hayalet Modu: Çevrimiçi durumunuzu gizler. Gizli Mod: Sadece beğendiğiniz kişiler sizi görebilir.",
+                            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.white24),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                ),
+                
+                const SizedBox(height: 32),
                 _buildSectionHeader("UYGULAMA"),
                 _buildSwitchItem(
                   context,
@@ -482,5 +539,89 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ErrorHandler.showError(context, "Hesap silinemedi: $e");
       }
     }
+  }
+
+  void _onPassportTap() {
+    final userProvider = context.read<UserProvider>();
+    final isPremium = userProvider.currentUser?.isPremium ?? false;
+
+    if (!isPremium) {
+       Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
+       return;
+    }
+
+    _showPassportDialog();
+  }
+
+  void _showPassportDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        decoration: const BoxDecoration(
+          color: AppColors.scaffold,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 24),
+            Text(
+              "Dengim Pasaport",
+              style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "İstediğin şehre ışınlan ve oradaki kişilerle eşleş!",
+              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.white54),
+            ),
+            const SizedBox(height: 24),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                children: [
+                   _buildCityItem("Mevcut Konumum", Icons.my_location, isSelected: true),
+                   _buildCityItem("İstanbul", Icons.location_city),
+                   _buildCityItem("Ankara", Icons.location_city),
+                   _buildCityItem("İzmir", Icons.location_city),
+                   _buildCityItem("Antalya", Icons.location_city),
+                   _buildCityItem("Londra", Icons.public),
+                   _buildCityItem("New York", Icons.public),
+                   _buildCityItem("Paris", Icons.public),
+                   _buildCityItem("Tokyo", Icons.public),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCityItem(String name, IconData icon, {bool isSelected = false}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isSelected ? AppColors.primary : Colors.white10),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: isSelected ? AppColors.primary : Colors.white54),
+        title: Text(name, style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+        trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.primary) : null,
+        onTap: () {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$name bölgesine ışınlanılıyor...'))
+          );
+          // Gerçek uygulamada koordinat güncellenir
+        },
+      ),
+    );
   }
 }
