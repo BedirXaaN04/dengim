@@ -145,6 +145,11 @@ class ChatService {
     }
 
     await _firestore.collection('conversations').doc(chatId).update(updateData);
+
+    // 3. Update Sender message count
+    await _firestore.collection('users').doc(user.uid).update({
+      'messageCount': FieldValue.increment(1),
+    });
   }
 
   /// Fotoğraf Gönder

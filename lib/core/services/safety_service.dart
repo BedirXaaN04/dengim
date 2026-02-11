@@ -16,6 +16,7 @@ class SafetyService {
     if (uid == null) return;
 
     try {
+      // 1. Create Report Document
       await _firestore.collection('reports').add({
         'reporterId': uid,
         'reportedId': reportedUserId,
@@ -23,6 +24,11 @@ class SafetyService {
         'description': description,
         'status': 'pending', // pending, reviewed, resolved
         'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // 2. Increment Reported User's Report Count
+      await _firestore.collection('users').doc(reportedUserId).update({
+        'reportCount': FieldValue.increment(1),
       });
       LogService.i("User $reportedUserId reported by $uid");
     } catch (e) {

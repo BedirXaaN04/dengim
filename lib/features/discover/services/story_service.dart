@@ -32,12 +32,16 @@ class StoryService {
       }
 
       // 2. Create Story Record in Firestore
+      final finalUserName = userName.isNotEmpty ? userName : (user.email?.split('@')[0] ?? 'Kullanıcı');
+      final finalUserAvatar = userAvatar.isNotEmpty 
+          ? userAvatar 
+          : 'https://ui-avatars.com/api/?name=${finalUserName.substring(0, 1)}&background=D4AF37&color=fff&size=200';
+
+      // 2. Create Story Record in Firestore
       await _firestore.collection('stories').add({
         'userId': user.uid,
-        'userName': userName,
-        'userAvatar': userAvatar.isNotEmpty 
-            ? userAvatar 
-            : 'https://ui-avatars.com/api/?name=${userName.substring(0, 1)}&background=D4AF37&color=fff&size=200',
+        'userName': finalUserName,
+        'userAvatar': finalUserAvatar,
         'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
         'viewers': [],
@@ -72,12 +76,16 @@ class StoryService {
       }
 
       // 2. Create Story Record in Firestore
+      final finalUserName = userName.isNotEmpty ? userName : (user.email?.split('@')[0] ?? 'Kullanıcı');
+      final finalUserAvatar = userAvatar.isNotEmpty 
+          ? userAvatar 
+          : 'https://ui-avatars.com/api/?name=${finalUserName.substring(0, 1)}&background=D4AF37&color=fff&size=200';
+
+      // 2. Create Story Record in Firestore
       await _firestore.collection('stories').add({
         'userId': user.uid,
-        'userName': userName,
-        'userAvatar': userAvatar.isNotEmpty 
-            ? userAvatar 
-            : 'https://ui-avatars.com/api/?name=${userName.substring(0, 1)}&background=D4AF37&color=fff&size=200',
+        'userName': finalUserName,
+        'userAvatar': finalUserAvatar,
         'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
         'viewers': [],

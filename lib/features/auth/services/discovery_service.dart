@@ -170,6 +170,12 @@ class DiscoveryService {
           .doc(user.uid)
           .get();
 
+      if (matchDoc.exists) {
+         LogService.i("Match doc found. Type: ${matchDoc.data()?['type']}");
+      } else {
+         LogService.w("Match doc NOT found at users/$targetUserId/swipes/${user.uid}");
+      }
+
       if (matchDoc.exists && (matchDoc.data()?['type'] == 'like' || matchDoc.data()?['type'] == 'super_like')) {
         LogService.i("MATCH FOUND! Creating match...");
         await _createMatch(user.uid, targetUserId);
@@ -241,6 +247,14 @@ class DiscoveryService {
         uid1: 0,
         uid2: 0,
       }
+    });
+
+    // 3. Update User Match Counts
+    await _firestore.collection('users').doc(uid1).update({
+      'matchCount': FieldValue.increment(1),
+    });
+    await _firestore.collection('users').doc(uid2).update({
+      'matchCount': FieldValue.increment(1),
     });
 
     LogService.i("Match and Conversation created: $matchId");

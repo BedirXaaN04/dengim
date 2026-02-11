@@ -99,7 +99,7 @@ export default function UsersPage() {
     return (
         <div className="flex min-h-screen bg-background-dark">
             <Sidebar />
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 <Header />
                 <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 custom-scrollbar">
                     {/* Page Header */}
@@ -209,7 +209,7 @@ export default function UsersPage() {
                                         onSelect={() => toggleUserSelection(user.id)}
                                         onAction={handleAction}
                                         onEdit={() => handleEdit(user)}
-                                        onView={() => handleEdit(user)} // Same for now
+                                        onView={() => handleEdit(user)}
                                     />
                                 ))}
 
@@ -228,38 +228,91 @@ export default function UsersPage() {
                 {/* Edit Modal */}
                 {showUserModal && editingUser && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                        <div className="bg-surface-dark w-full max-w-lg rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+                        <div className="bg-surface-dark w-full max-w-lg rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col">
                             <div className="p-6 border-b border-white/5 flex items-center justify-between">
                                 <h3 className="text-xl font-bold text-white">Kullanıcı Düzenle</h3>
                                 <button onClick={() => setShowUserModal(false)} className="text-white/50 hover:text-white">
                                     <span className="material-symbols-outlined">close</span>
                                 </button>
                             </div>
-                            <div className="p-6 space-y-4">
-                                <div>
-                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">Ad Soyad</label>
-                                    <input
-                                        type="text"
-                                        value={editingUser.name}
-                                        onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
-                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary"
-                                    />
+
+                            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                                {/* Photos Gallery */}
+                                {editingUser.photos && editingUser.photos.length > 0 && (
+                                    <div>
+                                        <label className="text-xs font-bold text-white/40 mb-3 block uppercase tracking-wider">Fotoğraflar</label>
+                                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                            {editingUser.photos.map((photo, i) => (
+                                                <div key={i} className="relative group shrink-0">
+                                                    <img
+                                                        src={photo}
+                                                        className="h-40 w-32 object-cover rounded-2xl border border-white/10 shadow-lg"
+                                                        alt={`User photo ${i + 1}`}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
+                                        <p className="text-[10px] font-bold text-white/30 uppercase mb-1 tracking-wider">Eşleşme</p>
+                                        <p className="text-xl font-bold text-white">{editingUser.matchCount || 0}</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
+                                        <p className="text-[10px] font-bold text-white/30 uppercase mb-1 tracking-wider">Mesaj</p>
+                                        <p className="text-xl font-bold text-white">{editingUser.messageCount || 0}</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
+                                        <p className="text-[10px] font-bold text-white/30 uppercase mb-1 tracking-wider">Rapor</p>
+                                        <p className="text-xl font-bold text-rose-500">{editingUser.reportCount || 0}</p>
+                                    </div>
                                 </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs font-bold text-white/40 mb-2 block uppercase tracking-wider">Ad Soyad</label>
+                                        <input
+                                            type="text"
+                                            value={editingUser.name}
+                                            onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
+                                            className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary transition-colors"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-white/40 mb-2 block uppercase tracking-wider">İlişki Hedefi</label>
+                                        <select
+                                            value={editingUser.relationshipGoal || ''}
+                                            onChange={(e) => setEditingUser({ ...editingUser, relationshipGoal: e.target.value })}
+                                            className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary appearance-none [&>option]:bg-surface-dark transition-colors"
+                                        >
+                                            <option value="">Belirtilmemiş</option>
+                                            <option value="serious">Ciddi Bir İlişki</option>
+                                            <option value="casual">Kısa Süreli Eğlence</option>
+                                            <option value="chat">Sadece Sohbet</option>
+                                            <option value="unsure">Henüz Kararsızım</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">Biyo</label>
+                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase tracking-wider">Biyografi</label>
                                     <textarea
                                         value={editingUser.bio}
                                         onChange={(e) => setEditingUser({ ...editingUser, bio: e.target.value })}
-                                        rows={3}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary resize-none"
+                                        rows={4}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-primary resize-none transition-colors"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">Durum</label>
+                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase tracking-wider">Hesap Durumu</label>
                                     <select
                                         value={editingUser.status}
                                         onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value as any })}
-                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary appearance-none [&>option]:bg-surface-dark"
+                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary appearance-none [&>option]:bg-surface-dark transition-colors"
                                     >
                                         <option value="active">Aktif</option>
                                         <option value="verified">Doğrulanmış</option>
@@ -267,23 +320,10 @@ export default function UsersPage() {
                                         <option value="banned">Yasaklı</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-bold text-white/40 mb-2 block uppercase">İlişki Hedefi</label>
-                                    <select
-                                        value={editingUser.relationshipGoal || ''}
-                                        onChange={(e) => setEditingUser({ ...editingUser, relationshipGoal: e.target.value })}
-                                        className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-white outline-none focus:border-primary appearance-none [&>option]:bg-surface-dark"
-                                    >
-                                        <option value="">Belirtilmemiş</option>
-                                        <option value="serious">Ciddi Bir İlişki</option>
-                                        <option value="casual">Kısa Süreli Eğlence</option>
-                                        <option value="chat">Sadece Sohbet</option>
-                                        <option value="unsure">Henüz Kararsızım</option>
-                                    </select>
-                                </div>
-                                <div className="flex gap-3 pt-4">
-                                    <Button variant="outline" className="flex-1 h-12" onClick={() => setShowUserModal(false)}>İptal</Button>
-                                    <Button className="flex-1 h-12" onClick={handleUpdateUser}>Kaydet</Button>
+
+                                <div className="flex gap-3 pt-4 border-t border-white/5 mt-auto">
+                                    <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={() => setShowUserModal(false)}>İptal</Button>
+                                    <Button className="flex-1 h-12 rounded-xl" onClick={handleUpdateUser}>Kaydet</Button>
                                 </div>
                             </div>
                         </div>
@@ -304,71 +344,73 @@ function UserCard({ user, selected, onSelect, onAction, onEdit, onView }: {
 }) {
     return (
         <div className={cn(
-            'bg-surface-dark rounded-xl p-4 border transition-all',
-            selected ? 'border-primary bg-primary/5' : 'border-white/10 hover:border-white/20'
+            'bg-surface-dark rounded-2xl p-4 border transition-all duration-300',
+            selected ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' : 'border-white/5 hover:border-white/20'
         )}>
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                    <input
-                        type="checkbox"
-                        checked={selected}
-                        onChange={onSelect}
-                        className="h-4 w-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary/50"
-                    />
-                    <Avatar
-                        src={user.photos[0]}
-                        name={user.name}
-                        size="lg"
-                        verified={user.isVerified}
-                        premium={user.isPremium}
-                    />
-                    <div className="cursor-pointer" onClick={onView}>
-                        <h4 className="font-bold text-white flex items-center gap-2">
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                    <div className="relative" onClick={onSelect}>
+                        <div className={cn(
+                            "absolute -top-1 -left-1 w-5 h-5 rounded-md border-2 border-surface-dark flex items-center justify-center transition-colors z-10",
+                            selected ? "bg-primary border-primary" : "bg-white/10"
+                        )}>
+                            {selected && <span className="material-symbols-outlined text-[14px] text-black font-bold">check</span>}
+                        </div>
+                        <Avatar
+                            src={user.photos[0]}
+                            name={user.name}
+                            size="lg"
+                            verified={user.isVerified}
+                            premium={user.isPremium}
+                        />
+                    </div>
+                    <div className="cursor-pointer group" onClick={onView}>
+                        <h4 className="font-bold text-white flex items-center gap-2 group-hover:text-primary transition-colors">
                             {user.name}
                             {user.isVerified && (
-                                <span className="material-symbols-outlined text-blue-400 text-sm">verified</span>
+                                <span className="material-symbols-outlined text-blue-400 text-[18px]">verified</span>
                             )}
                         </h4>
-                        <p className="text-slate-400 text-xs">
+                        <p className="text-white/40 text-xs font-medium">
                             ID: {user.id.substring(0, 8)}... | {user.location?.city || 'Bilinmiyor'}
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-2">
                     {user.isPremium && <TierBadge tier={user.premiumTier || 'basic'} />}
                     <StatusBadge status={user.status} />
                 </div>
             </div>
 
             {/* Actions */}
-            <div className="grid grid-cols-4 gap-2 border-t border-white/5 pt-3">
+            <div className="grid grid-cols-4 gap-2 border-t border-white/5 pt-4">
                 <button
                     onClick={onView}
-                    className="flex flex-col items-center gap-1 py-2 text-slate-400 hover:text-white transition-colors"
+                    className="flex flex-col items-center gap-1.5 py-2 text-white/40 hover:text-white transition-all hover:bg-white/5 rounded-xl"
                 >
-                    <span className="material-symbols-outlined text-lg">visibility</span>
-                    <span className="text-[10px] font-semibold">Gör</span>
+                    <span className="material-symbols-outlined text-xl">visibility</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tight">Gör</span>
                 </button>
                 <button
                     onClick={onEdit}
-                    className="flex flex-col items-center gap-1 py-2 text-slate-400 hover:text-white transition-colors"
+                    className="flex flex-col items-center gap-1.5 py-2 text-white/40 hover:text-white transition-all hover:bg-white/5 rounded-xl"
                 >
-                    <span className="material-symbols-outlined text-lg">edit</span>
-                    <span className="text-[10px] font-semibold">Düzenle</span>
+                    <span className="material-symbols-outlined text-xl">edit</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tight">Düzenle</span>
                 </button>
                 <button
                     onClick={() => onAction(user.id, 'verify')}
-                    className="flex flex-col items-center gap-1 py-2 text-primary hover:text-primary/80 transition-colors"
+                    className="flex flex-col items-center gap-1.5 py-2 text-primary/60 hover:text-primary transition-all hover:bg-primary/5 rounded-xl"
                 >
-                    <span className="material-symbols-outlined text-lg">verified_user</span>
-                    <span className="text-[10px] font-semibold">Doğrula</span>
+                    <span className="material-symbols-outlined text-xl">verified_user</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tight">Doğrula</span>
                 </button>
                 <button
                     onClick={() => onAction(user.id, 'ban')}
-                    className="flex flex-col items-center gap-1 py-2 text-rose-400 hover:text-rose-300 transition-colors"
+                    className="flex flex-col items-center gap-1.5 py-2 text-rose-500/60 hover:text-rose-500 transition-all hover:bg-rose-500/5 rounded-xl"
                 >
-                    <span className="material-symbols-outlined text-lg">block</span>
-                    <span className="text-[10px] font-semibold">Yasakla</span>
+                    <span className="material-symbols-outlined text-xl">block</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tight">Yasakla</span>
                 </button>
             </div>
         </div>
