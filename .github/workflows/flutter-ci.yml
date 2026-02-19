@@ -68,6 +68,15 @@ jobs:
         
     - name: 📦 Install Dependencies
       run: flutter pub get
+
+    - name: 🔧 Patch geolocator_android build.gradle
+      run: |
+        GEOLOCATOR_GRADLE=$(find $HOME/.pub-cache -path "*/geolocator_android*/android/build.gradle" | head -1)
+        if [ -n "$GEOLOCATOR_GRADLE" ]; then
+          echo "Patching: $GEOLOCATOR_GRADLE"
+          sed -i 's/compileSdk flutter.compileSdkVersion/compileSdk 35/' "$GEOLOCATOR_GRADLE"
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 23/' "$GEOLOCATOR_GRADLE"
+        fi
       
     - name: 🔧 Build APK
       run: flutter build apk --release
