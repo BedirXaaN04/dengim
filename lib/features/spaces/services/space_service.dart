@@ -28,8 +28,8 @@ class SpaceService {
     if (profile == null) return false;
     
     return profile.isPremium || 
-           profile.role == UserRole.admin || 
-           profile.role == UserRole.moderator;
+           profile.role == UserRole.admin.name || 
+           profile.role == UserRole.moderator.name;
   }
 
   /// Yeni bir sesli oda oluştur
