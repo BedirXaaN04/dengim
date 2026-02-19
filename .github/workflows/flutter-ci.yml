@@ -69,14 +69,18 @@ jobs:
     - name: 📦 Install Dependencies
       run: flutter pub get
 
-    - name: 🔧 Patch geolocator_android build.gradle
+    - name: 🔧 Patch plugin build.gradle files (flutter extension fix)
       run: |
-        GEOLOCATOR_GRADLE=$(find $HOME/.pub-cache -path "*/geolocator_android*/android/build.gradle" | head -1)
-        if [ -n "$GEOLOCATOR_GRADLE" ]; then
-          echo "Patching: $GEOLOCATOR_GRADLE"
-          sed -i 's/compileSdk flutter.compileSdkVersion/compileSdk 35/' "$GEOLOCATOR_GRADLE"
-          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 23/' "$GEOLOCATOR_GRADLE"
-        fi
+        echo "Patching all plugins that use flutter.compileSdkVersion / flutter.minSdkVersion..."
+        find $HOME/.pub-cache -name "build.gradle" -path "*/android/*" | while read f; do
+          if grep -q "flutter\.compileSdkVersion\|flutter\.minSdkVersion\|flutter\.ndkVersion" "$f" 2>/dev/null; then
+            echo "  Patching: $f"
+            sed -i 's/flutter\.compileSdkVersion/35/g' "$f"
+            sed -i 's/flutter\.minSdkVersion/23/g' "$f"
+            sed -i 's/flutter\.ndkVersion/"25.1.8937393"/g' "$f"
+          fi
+        done
+        echo "Done patching plugins."
       
     - name: 🔧 Build APK
       run: flutter build apk --release
