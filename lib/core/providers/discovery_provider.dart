@@ -135,7 +135,7 @@ class DiscoveryProvider extends ChangeNotifier {
   Future<void> activateBoost() async {
     try {
       await _discoveryService.activateBoost();
-      AnalyticsService().logEvent('boost_activated', {});
+      AnalyticsService().logEvent(name: 'boost_activated', parameters: {});
     } catch (e) {
       LogService.e("Error activating boost", e);
     }

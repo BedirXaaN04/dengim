@@ -84,7 +84,7 @@ class AdService {
     InterstitialAd.load(
       adUnitId: _interstitialAdUnitId,
       request: const AdRequest(),
-      interstitialLoadCallback: InterstitialLoadCallback(
+      adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _interstitialAd = ad;
           _numInterstitialLoadAttempts = 0;
