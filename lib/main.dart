@@ -27,6 +27,7 @@ import 'core/providers/map_provider.dart';
 import 'core/providers/story_provider.dart';
 import 'core/providers/system_config_provider.dart';
 import 'core/providers/subscription_provider.dart';
+import 'core/providers/credit_provider.dart';
 import 'core/utils/log_service.dart';
 
 import 'features/auth/services/profile_service.dart';
@@ -103,6 +104,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SystemConfigProvider()),
         ChangeNotifierProvider(create: (_) => SpaceProvider()),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()..init()),
+        ChangeNotifierProvider(create: (_) => CreditProvider()),
       ],
       child: const DengimApp(),
     ),
@@ -247,6 +249,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             await userProvider.loadCurrentUser();
             
             if (!mounted) return;
+
+            // Kredi sağlayıcısını başlat ve günlük ödülü kontrol et
+            final creditProvider = Provider.of<CreditProvider>(context, listen: false);
+            await creditProvider.init();
+            await creditProvider.claimDailyReward();
 
             Widget nextScreen = userProvider.currentUser != null 
                 ? const MainScaffold() 

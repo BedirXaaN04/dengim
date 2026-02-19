@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +28,11 @@ import 'user_profile_detail_screen.dart';
 import '../spaces/screens/spaces_screen.dart';
 import 'widgets/advanced_filters_modal.dart';
 import '../ads/widgets/dengim_banner_ad.dart';
+import '../ads/screens/watch_and_earn_screen.dart';
+import '../../core/providers/credit_provider.dart';
+import '../../core/services/credit_service.dart';
+import '../../core/constants/tier_limits.dart';
+import '../../core/widgets/premium_required_modal.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -63,6 +69,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         gender: _filterSettings.gender,
         minAge: _filterSettings.ageRange.start.toInt(),
         maxAge: _filterSettings.ageRange.end.toInt(),
+        interests: _filterSettings.interests.isNotEmpty ? _filterSettings.interests : null,
+        maxDistance: _filterSettings.distance.toInt(),
+        verifiedOnly: _filterSettings.verifiedOnly,
+        hasPhotoOnly: _filterSettings.hasPhotoOnly,
+        onlineOnly: _filterSettings.onlineOnly,
+        relationshipGoal: _filterSettings.relationshipGoal,
       );
     } catch (e) {
       LogService.e("Failed to load initial discovery data", e);
@@ -95,6 +107,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         gender: _filterSettings.gender,
         minAge: _filterSettings.ageRange.start.toInt(),
         maxAge: _filterSettings.ageRange.end.toInt(),
+        interests: _filterSettings.interests.isNotEmpty ? _filterSettings.interests : null,
+        maxDistance: _filterSettings.distance.toInt(),
+        verifiedOnly: _filterSettings.verifiedOnly,
+        hasPhotoOnly: _filterSettings.hasPhotoOnly,
+        onlineOnly: _filterSettings.onlineOnly,
+        relationshipGoal: _filterSettings.relationshipGoal,
         forceRefresh: true,
       );
       
@@ -222,26 +240,36 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   void _onSuperLike() async {
     final userProvider = context.read<UserProvider>();
     final currentUser = userProvider.currentUser;
+    final tier = currentUser?.subscriptionTier ?? 'free';
+    final superLikeLimit = TierLimits.getDailySuperLikes(tier);
 
-    if (currentUser?.isPremium != true) {
-      // Show Premium Offer
-      final result = await Navigator.push(
-        context, 
-        MaterialPageRoute(builder: (_) => const PremiumOfferScreen())
-      );
-      
-      if (result == true) {
-         // If purchased, proceed
-         _performSuperLike();
-      }
-    } else {
+    if (superLikeLimit > 0) {
+      // Gold/Platinum - direkt gönder
       _performSuperLike();
+    } else {
+      // Free kullanıcı - kredi ile gönderebilir
+      final creditProvider = context.read<CreditProvider>();
+      if (creditProvider.balance >= CreditService.costSuperLike) {
+        final success = await creditProvider.spendSuperLike();
+        if (success) {
+          _performSuperLike();
+        }
+      } else {
+        // Kredi yok, Premium modal göster
+        if (mounted) {
+          PremiumRequiredModal.show(
+            context,
+            featureName: 'Super Like',
+            requiredTier: 'gold',
+            creditCost: CreditService.costSuperLike,
+          );
+        }
+      }
     }
   }
 
   void _performSuperLike() {
     HapticFeedback.heavyImpact();
-    // Show visual feedback
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('🌟 Super Like gönderildi!'),
@@ -252,28 +280,40 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _cardController.swipe(CardSwiperDirection.top);
   }
 
-  void _onUndo() {
+  void _onUndo() async {
     final userProvider = context.read<UserProvider>();
-    final isPremium = userProvider.currentUser?.isPremium ?? false;
+    final tier = userProvider.currentUser?.subscriptionTier ?? 'free';
+    final rewindLimit = TierLimits.getRewindsPerDay(tier);
 
-    if (!isPremium) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
-      return;
+    if (rewindLimit > 0) {
+      HapticFeedback.lightImpact();
+      _cardController.undo();
+    } else {
+      // Free kullanıcı - kredi ile geri alabilir
+      final creditProvider = context.read<CreditProvider>();
+      if (creditProvider.balance >= CreditService.costUndoSwipe) {
+        final success = await creditProvider.spendUndo();
+        if (success) {
+          HapticFeedback.lightImpact();
+          _cardController.undo();
+        }
+      } else {
+        if (mounted) {
+          PremiumRequiredModal.show(
+            context,
+            featureName: 'Geri Al',
+            requiredTier: 'gold',
+            creditCost: CreditService.costUndoSwipe,
+          );
+        }
+      }
     }
-
-    HapticFeedback.lightImpact();
-    _cardController.undo();
   }
 
-  void _onBoost() {
+  void _onBoost() async {
     final userProvider = context.read<UserProvider>();
     final currentUser = userProvider.currentUser;
-    final isPremium = currentUser?.isPremium ?? false;
-
-    if (!isPremium) {
-       Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
-       return;
-    }
+    final tier = currentUser?.subscriptionTier ?? 'free';
     
     // Check if already boosted
     if (currentUser?.isBoosted ?? false) {
@@ -283,7 +323,27 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
        return;
     }
 
-    _showBoostActivationDialog();
+    if (TierLimits.canBoost(tier)) {
+      _showBoostActivationDialog();
+    } else {
+      // Free kullanıcı - kredi ile boost alabilir
+      final creditProvider = context.read<CreditProvider>();
+      if (creditProvider.balance >= CreditService.costBoost) {
+        final success = await creditProvider.spendBoost();
+        if (success) {
+          _showBoostActivationDialog();
+        }
+      } else {
+        if (mounted) {
+          PremiumRequiredModal.show(
+            context,
+            featureName: 'Boost',
+            requiredTier: 'gold',
+            creditCost: CreditService.costBoost,
+          );
+        }
+      }
+    }
   }
 
   void _showBoostActivationDialog() {
@@ -376,6 +436,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           gender: settings.gender,
           minAge: settings.ageRange.start.toInt(),
           maxAge: settings.ageRange.end.toInt(),
+          interests: settings.interests.isNotEmpty ? settings.interests : null,
+          maxDistance: settings.distance.toInt(),
+          verifiedOnly: settings.verifiedOnly,
+          hasPhotoOnly: settings.hasPhotoOnly,
+          onlineOnly: settings.onlineOnly,
+          relationshipGoal: settings.relationshipGoal,
+          forceRefresh: true,
         );
       },
     );
@@ -846,32 +913,36 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         height: MediaQuery.of(context).size.height * 0.85,
                         child: AdvancedFiltersModal(
                           isPremium: context.read<UserProvider>().currentUser?.isPremium ?? false,
-                          currentFilters: {
-                            'minAge': _filterSettings.ageRange.start.toInt(),
-                            'maxAge': _filterSettings.ageRange.end.toInt(),
-                            'maxDistance': 50,
-                            'gender': _filterSettings.gender,
-                            'interests': [],
-                            'relationshipGoal': null,
-                            'verifiedOnly': false,
-                            'hasPhotoOnly': true,
-                            'onlineOnly': false,
-                          },
+                          currentFilters: _filterSettings.toMap(),
                           onApplyFilters: (filters) {
+                            final List<String> interests = filters['interests'] != null 
+                                ? List<String>.from(filters['interests']) 
+                                : [];
                             setState(() {
                               _filterSettings = FilterSettings(
                                 gender: filters['gender'] ?? 'all',
                                 ageRange: RangeValues(
-                                  filters['minAge'].toDouble(),
-                                  filters['maxAge'].toDouble(),
+                                  (filters['minAge'] ?? 18).toDouble(),
+                                  (filters['maxAge'] ?? 50).toDouble(),
                                 ),
+                                distance: (filters['maxDistance'] ?? 100).toDouble(),
+                                interests: interests,
+                                verifiedOnly: filters['verifiedOnly'] ?? false,
+                                hasPhotoOnly: filters['hasPhotoOnly'] ?? true,
+                                onlineOnly: filters['onlineOnly'] ?? false,
+                                relationshipGoal: filters['relationshipGoal'],
                               );
                             });
                             context.read<DiscoveryProvider>().loadDiscoveryUsers(
                               gender: filters['gender'] ?? 'all',
                               minAge: filters['minAge'] ?? 18,
                               maxAge: filters['maxAge'] ?? 50,
-                              interests: filters['interests'],
+                              interests: interests.isNotEmpty ? interests : null,
+                              maxDistance: filters['maxDistance'],
+                              verifiedOnly: filters['verifiedOnly'] ?? false,
+                              hasPhotoOnly: filters['hasPhotoOnly'] ?? true,
+                              onlineOnly: filters['onlineOnly'] ?? false,
+                              relationshipGoal: filters['relationshipGoal'],
                               forceRefresh: true,
                             );
                           },
@@ -1587,6 +1658,36 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       ),
                     ],
                   ),
+                  if (user.latitude != null && user.longitude != null) ...[
+                    const SizedBox(height: 6),
+                    Builder(
+                      builder: (context) {
+                        final currentUser = context.read<UserProvider>().currentUser;
+                        if (currentUser?.latitude == null || currentUser?.longitude == null) return const SizedBox.shrink();
+                        
+                        final dist = _calculateDistance(
+                          currentUser!.latitude!, currentUser.longitude!, 
+                          user.latitude!, user.longitude!
+                        );
+                        
+                        return Row(
+                          children: [
+                            Icon(Icons.location_on, color: AppColors.primary, size: 16),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${dist.toStringAsFixed(1)} KM UZAKTA',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -1787,6 +1888,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ),
       ),
     );
+  }
+
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    var p = 0.017453292519943295;
+    var c = math.cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p))/2;
+    return 12742 * math.asin(math.sqrt(a));
   }
 
   String _getGoalLabel(String? key) {

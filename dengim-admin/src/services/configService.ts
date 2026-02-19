@@ -13,6 +13,7 @@ export const ConfigService = {
                 isVipEnabled: false,
                 isAdsEnabled: true,
                 isCreditsEnabled: false,
+                isMapEnabled: false,
                 minVersion: "1.0.0",
                 contactEmail: "support@dengim.com"
             };

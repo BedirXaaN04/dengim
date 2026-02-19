@@ -68,7 +68,7 @@ class FeatureFlagService {
   }
 
   bool shouldShowAds(String tier) {
-    if (tier == 'platinum') return false;
+    if (tier == 'platinum' || tier == 'gold') return false;
     return _remoteConfig.getBool("show_ads");
   }
 }

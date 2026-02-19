@@ -5,8 +5,11 @@ import 'package:provider/provider.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/providers/subscription_provider.dart';
+import '../../core/providers/credit_provider.dart';
 import '../../core/providers/user_provider.dart';
+import '../../core/constants/tier_limits.dart';
 import '../../core/utils/log_service.dart';
+import '../ads/screens/watch_and_earn_screen.dart';
 
 class PremiumOfferScreen extends StatefulWidget {
   const PremiumOfferScreen({super.key});
@@ -68,14 +71,7 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                             title: 'GOLD',
                             color: AppColors.primary,
                             icon: Icons.star_rounded,
-                            features: [
-                              'Günde 1000 beğeni hakkı',
-                              'Günde 5 Super Like',
-                              'Geri al (Rewind) hakkı',
-                              'Sesli mesaj gönderme',
-                              'Gelişmiş filtreler',
-                              '8 fotoğraf ekleme',
-                            ],
+                            features: TierLimits.getFeaturesFor('gold'),
                             products: provider.products.where((p) => p.id.contains('gold')).toList(),
                             provider: provider,
                           ),
@@ -83,14 +79,7 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                             title: 'PLATINUM',
                             color: const Color(0xFFE5E4E2), // Platinum silver
                             icon: Icons.workspace_premium_rounded,
-                            features: [
-                              'Sınırsız beğeni hakkı',
-                              'Günde 10 Super Like',
-                              'Sınırsız video görüşme',
-                              'Seni beğenenleri görme',
-                              'Haftalık 1 Ücretsiz Boost',
-                              'Aramalarda öncelik',
-                            ],
+                            features: TierLimits.getFeaturesFor('platinum'),
                             products: provider.products.where((p) => p.id.contains('platinum')).toList(),
                             provider: provider,
                           ),
@@ -100,6 +89,52 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
 
                     // Page Indicator
                     _buildIndicator(),
+
+                    // İzle & Kazan butonu (Freemium için)
+                    Consumer<SubscriptionProvider>(
+                      builder: (context, sub, _) {
+                        if (sub.currentTier != 'free') return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (_) => const WatchAndEarnScreen()),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFF6C63FF),
+                                    const Color(0xFF6C63FF).withOpacity(0.7),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.play_circle_filled_rounded, color: Colors.white, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'REKLAM İZLE & KREDİ KAZAN',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8),
 
                     // Restore Button
                     TextButton(
@@ -135,27 +170,57 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.close, color: Colors.white70),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white10),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.wallet, color: AppColors.primary, size: 16),
-                const SizedBox(width: 8),
-                Text(
-                  'Mevcut: ${provider.currentTier.toUpperCase()}',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          Row(
+            children: [
+              // Mevcut Plan Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.wallet, color: AppColors.primary, size: 16),
+                    const SizedBox(width: 8),
+                    Text(
+                      TierLimits.getTierDisplayName(provider.currentTier),
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Kredi Bakiye Badge
+              Consumer<CreditProvider>(
+                builder: (context, credit, _) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    gradient: AppColors.goldGradient,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.monetization_on_rounded, color: Colors.black, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${credit.balance}',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),

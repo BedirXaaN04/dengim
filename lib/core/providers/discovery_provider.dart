@@ -6,8 +6,6 @@ import '../utils/log_service.dart';
 import '../../core/services/analytics_service.dart';
 import '../../features/ads/services/ad_service.dart';
 import '../../core/services/feature_flag_service.dart';
-import 'user_provider.dart';
-import 'package:provider/provider.dart';
 
 
 class DiscoveryProvider extends ChangeNotifier {
@@ -31,6 +29,11 @@ class DiscoveryProvider extends ChangeNotifier {
     int? minAge,
     int? maxAge,
     List<String>? interests,
+    int? maxDistance,
+    bool verifiedOnly = false,
+    bool hasPhotoOnly = true,
+    bool onlineOnly = false,
+    String? relationshipGoal,
     bool forceRefresh = false,
   }) async {
     // forceRefresh değilse ve zaten yükleniyorsa çık
@@ -46,6 +49,11 @@ class DiscoveryProvider extends ChangeNotifier {
         minAge: minAge,
         maxAge: maxAge,
         interests: interests,
+        maxDistance: maxDistance,
+        verifiedOnly: verifiedOnly,
+        hasPhotoOnly: hasPhotoOnly,
+        onlineOnly: onlineOnly,
+        relationshipGoal: relationshipGoal,
       );
 
       _users = realUsers;

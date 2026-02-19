@@ -72,7 +72,9 @@ export const AnalyticsService = {
                 matchesSnap,
                 todayUsersSnap,
                 weekUsersSnap,
-                monthUsersSnap
+                monthUsersSnap,
+                goldUsersSnap,
+                platinumUsersSnap
             ] = await Promise.all([
                 getCountFromServer(usersColl),
                 getCountFromServer(query(usersColl, where("isPremium", "==", true))),
@@ -104,7 +106,6 @@ export const AnalyticsService = {
                 pendingVerifications: verificationRequestsSnap.data().count,
                 newUsersToday: todayUsersSnap.data().count,
                 newUsersThisWeek: weekUsersSnap.data().count,
-                newUsersThisMonth: monthUsersSnap.data().count,
                 newUsersThisMonth: monthUsersSnap.data().count,
                 mrr: mrrValue,
                 arr: mrrValue * 12,

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/utils/log_service.dart';
@@ -19,6 +20,11 @@ class DiscoveryService {
     int? minAge,
     int? maxAge,
     List<String>? interests,
+    int? maxDistance,
+    bool verifiedOnly = false,
+    bool hasPhotoOnly = true,
+    bool onlineOnly = false,
+    String? relationshipGoal,
   }) async {
     final user = _currentUser;
     if (user == null) return [];
@@ -39,6 +45,12 @@ class DiscoveryService {
       if (userDoc.exists) {
         final blockedUsers = List<String>.from(userDoc.data()?['blockedUsers'] ?? []);
         swipedIds.addAll(blockedUsers);
+      }
+
+      // Get current user's location for distance filtering
+      UserProfile? currentUserProfile;
+      if (maxDistance != null && userDoc.exists) {
+        currentUserProfile = UserProfile.fromMap(userDoc.data()!);
       }
 
       // 2. Fetch users with basic filters
@@ -65,8 +77,6 @@ class DiscoveryService {
             .get();
         
         // Strategy A: No results? Maybe missing lastActive field or restrictive gender.
-        // Strategy A: No results? Maybe missing lastActive field or restrictive gender.
-        // We will try without ordering by lastActive, but we MUST keep the gender filter.
         if (snapshot.docs.isEmpty) {
           LogService.w("No results with gender/lastActive. Trying without lastActive ordering.");
           snapshot = await activeQuery.limit(limit * 3).get();
@@ -96,30 +106,86 @@ class DiscoveryService {
                 profile.email.toLowerCase().contains('test')) {
               return false;
             }
+            // Age filter
             if (snapshot.docs.length > 5) {
               if (minAge != null && profile.age < minAge) return false;
               if (maxAge != null && profile.age > maxAge) return false;
             }
+
+            // === ADVANCED FILTERS (Client-side) ===
+
+            // Distance filter
+            if (maxDistance != null && currentUserProfile != null &&
+                currentUserProfile.latitude != null && currentUserProfile.longitude != null) {
+              if (profile.latitude != null && profile.longitude != null) {
+                final distanceKm = _calculateDistanceKm(
+                  currentUserProfile.latitude!, currentUserProfile.longitude!,
+                  profile.latitude!, profile.longitude!,
+                );
+                if (distanceKm > maxDistance) return false;
+              }
+              // Eğer profilde konum yoksa ve mesafe filtresi varsa, gösterme
+              // (ancak az kullanıcı varsa yine de göster)
+              else if (snapshot.docs.length > 10) {
+                return false;
+              }
+            }
+
+            // Verified-only filter
+            if (verifiedOnly && profile.isVerified != true) return false;
+
+            // Photo filter
+            if (hasPhotoOnly) {
+              if (profile.imageUrl.isEmpty && (profile.photoUrls == null || profile.photoUrls!.isEmpty)) {
+                return false;
+              }
+            }
+
+            // Online-only filter (active in last 15 minutes)
+            if (onlineOnly) {
+              final minutesSinceActive = DateTime.now().difference(profile.lastActive).inMinutes;
+              if (minutesSinceActive > 15) return false;
+            }
+
+            // Relationship goal filter
+            if (relationshipGoal != null && relationshipGoal != 'all' && relationshipGoal!.isNotEmpty) {
+              if (profile.relationshipGoal != null && profile.relationshipGoal!.isNotEmpty) {
+                if (profile.relationshipGoal != relationshipGoal) return false;
+              }
+            }
+
             return true;
           })
           .toList();
 
       // SMART RANKING v2.0
-      final currentUserProfile = await _getProfileSync(user.uid);
-      if (currentUserProfile != null) {
+      final currentProfile = currentUserProfile ?? await _getProfileSync(user.uid);
+      if (currentProfile != null) {
         users.sort((a, b) {
-          final scoreA = _calculateCompatibilityScore(currentUserProfile, a);
-          final scoreB = _calculateCompatibilityScore(currentUserProfile, b);
+          final scoreA = _calculateCompatibilityScore(currentProfile, a);
+          final scoreB = _calculateCompatibilityScore(currentProfile, b);
           return scoreB.compareTo(scoreA); // High score first
         });
       }
 
-      LogService.i("Final discovery fetch: Found ${users.length} users ranked by score");
+      LogService.i("Final discovery fetch: Found ${users.length} users ranked by score (filters: gender=$gender, age=$minAge-$maxAge, dist=$maxDistance, verified=$verifiedOnly, photo=$hasPhotoOnly, online=$onlineOnly, goal=$relationshipGoal)");
       return users.take(limit).toList();
     } catch (e) {
       LogService.e("Critical failure in discovery query", e);
       return [];
     }
+  }
+
+  /// Calculate approximate distance between two coordinates in kilometers (Haversine)
+  double _calculateDistanceKm(double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371; // km
+    final dLat = (lat2 - lat1) * pi / 180.0;
+    final dLon = (lon2 - lon1) * pi / 180.0;
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1 * pi / 180.0) * cos(lat2 * pi / 180.0) *
+        sin(dLon / 2) * sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return earthRadius * c;
   }
 
 
@@ -326,9 +392,9 @@ class DiscoveryService {
         'type': type,
         'title': title,
         'body': body,
-        'fromUid': _currentUser?.uid,
-        'timestamp': FieldValue.serverTimestamp(),
-        'read': false,
+        'senderId': _currentUser?.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'isRead': false,
       });
     } catch (e) {
       LogService.e("Notification delivery failed", e);

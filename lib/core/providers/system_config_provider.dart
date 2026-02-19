@@ -9,6 +9,7 @@ class SystemConfigProvider extends ChangeNotifier {
   bool _isVipEnabled = false;
   bool _isAdsEnabled = true;
   bool _isCreditsEnabled = false;
+  bool _isMapEnabled = false;
   int _minimumAge = 18;
   int _maxDistance = 100;
   int _dailyLikeLimit = 25;
@@ -35,6 +36,7 @@ class SystemConfigProvider extends ChangeNotifier {
   bool get isVipEnabled => _isVipEnabled;
   bool get isAdsEnabled => _isAdsEnabled;
   bool get isCreditsEnabled => _isCreditsEnabled;
+  bool get isMapEnabled => _isMapEnabled;
   int get minimumAge => _minimumAge;
   int get maxDistance => _maxDistance;
   int get dailyLikeLimit => _dailyLikeLimit;
@@ -78,6 +80,7 @@ class SystemConfigProvider extends ChangeNotifier {
     _isVipEnabled = data['isVipEnabled'] ?? false;
     _isAdsEnabled = data['isAdsEnabled'] ?? true;
     _isCreditsEnabled = data['isCreditsEnabled'] ?? false;
+    _isMapEnabled = data['isMapEnabled'] ?? false;
     _minimumAge = data['minimumAge'] ?? 18;
     _maxDistance = data['maxDistance'] ?? 100;
     _dailyLikeLimit = data['dailyLikeLimit'] ?? 25;

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -6,17 +5,25 @@ import '../../../core/theme/app_colors.dart';
 /// Filtre ayarları için model
 class FilterSettings {
   RangeValues ageRange;
-  String gender; // 'male', 'female', 'other'
+  String gender; // 'male', 'female', 'all'
   double distance; // in km
   String location;
   List<String> interests;
+  bool verifiedOnly;
+  bool hasPhotoOnly;
+  bool onlineOnly;
+  String? relationshipGoal;
 
   FilterSettings({
     this.ageRange = const RangeValues(18, 99),
-    this.gender = 'other',
+    this.gender = 'all',
     this.distance = 100,
     this.location = 'Türkiye',
     this.interests = const [],
+    this.verifiedOnly = false,
+    this.hasPhotoOnly = true,
+    this.onlineOnly = false,
+    this.relationshipGoal,
   });
 
   FilterSettings copyWith({
@@ -25,6 +32,10 @@ class FilterSettings {
     double? distance,
     String? location,
     List<String>? interests,
+    bool? verifiedOnly,
+    bool? hasPhotoOnly,
+    bool? onlineOnly,
+    String? relationshipGoal,
   }) {
     return FilterSettings(
       ageRange: ageRange ?? this.ageRange,
@@ -32,7 +43,27 @@ class FilterSettings {
       distance: distance ?? this.distance,
       location: location ?? this.location,
       interests: interests ?? this.interests,
+      verifiedOnly: verifiedOnly ?? this.verifiedOnly,
+      hasPhotoOnly: hasPhotoOnly ?? this.hasPhotoOnly,
+      onlineOnly: onlineOnly ?? this.onlineOnly,
+      relationshipGoal: relationshipGoal ?? this.relationshipGoal,
     );
+  }
+
+  /// Convert to Map for passing to services
+  Map<String, dynamic> toMap() {
+    return {
+      'minAge': ageRange.start.toInt(),
+      'maxAge': ageRange.end.toInt(),
+      'gender': gender,
+      'maxDistance': distance.toInt(),
+      'location': location,
+      'interests': interests,
+      'verifiedOnly': verifiedOnly,
+      'hasPhotoOnly': hasPhotoOnly,
+      'onlineOnly': onlineOnly,
+      'relationshipGoal': relationshipGoal,
+    };
   }
 }
 

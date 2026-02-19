@@ -13,6 +13,10 @@ import '../../core/providers/user_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
 import 'widgets/video_player_modal.dart';
+import '../../core/providers/credit_provider.dart';
+import '../../core/providers/subscription_provider.dart';
+import '../payment/premium_offer_screen.dart';
+import '../ads/screens/watch_and_earn_screen.dart';
 
 
 class ProfileScreen extends StatefulWidget {
@@ -198,6 +202,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
 
                       const SizedBox(height: 48),
+
+                      // Kredi & Abonelik Kartı
+                      _buildCreditAndTierCard(profile),
+                      const SizedBox(height: 16),
+
                       // Buttons
                       _buildActionBtn(
                         icon: Icons.visibility_outlined,
@@ -577,6 +586,163 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCreditAndTierCard(dynamic profile) {
+    return Consumer2<CreditProvider, SubscriptionProvider>(
+      builder: (context, creditProvider, subProvider, _) {
+        final tier = subProvider.currentTier;
+        final isPremium = tier != 'free';
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF1E1E1E),
+                const Color(0xFF252525),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+          ),
+          child: Column(
+            children: [
+              // Üst satır: Kredi bakiye + Tier
+              Row(
+                children: [
+                  // Kredi
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            gradient: AppColors.goldGradient,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.monetization_on_rounded, color: Colors.black, size: 22),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${creditProvider.balance}',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              'Kredi',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                color: Colors.white38,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Streak
+                  if (creditProvider.streak > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.local_fire_department, color: Colors.orange, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${creditProvider.streak}',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Butonlar
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildMiniBtn(
+                      icon: Icons.play_circle_filled_rounded,
+                      label: 'İzle & Kazan',
+                      color: const Color(0xFF6C63FF),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const WatchAndEarnScreen()),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _buildMiniBtn(
+                      icon: isPremium ? Icons.workspace_premium_rounded : Icons.star_rounded,
+                      label: isPremium ? tier.toUpperCase() : 'Premium Al',
+                      color: AppColors.primary,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const PremiumOfferScreen()),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMiniBtn({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.25)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

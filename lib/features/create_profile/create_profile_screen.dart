@@ -545,7 +545,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         style: GoogleFonts.plusJakartaSans(color: Colors.white),
                         items: [
                           'Türkiye 🇹🇷',
-                          'Kurdistan 🟥⚪🟩',
                           'Almanya 🇩🇪',
                           'Fransa 🇫🇷',
                           'İngiltere 🇬🇧',
@@ -554,6 +553,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           'Belçika 🇧🇪',
                           'İsveç 🇸🇪',
                           'Norveç 🇳🇴',
+                          'Avusturya 🇦🇹',
+                          'İsviçre 🇨🇭',
+                          'Danimarka 🇩🇰',
+                          'Kanada 🇨🇦',
+                          'Avustralya 🇦🇺',
                           'Diğer',
                         ].map((country) => DropdownMenuItem(
                           value: country,

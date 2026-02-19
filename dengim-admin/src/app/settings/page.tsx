@@ -18,6 +18,7 @@ const settingSections = [
     { id: 'security', label: 'Güvenlik', icon: 'shield' },
     { id: 'admins', label: 'Yöneticiler', icon: 'admin_panel_settings' },
     { id: 'api', label: 'API', icon: 'api' },
+    { id: 'playstore', label: 'Play Store', icon: 'store' },
 ];
 
 export default function SettingsPage() {
@@ -378,6 +379,74 @@ export default function SettingsPage() {
                                                 <code className="text-sm text-white/80 font-mono truncate">pk_live_83921...</code>
                                                 <Button variant="ghost" size="sm">Kopyala</Button>
                                             </div>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </div>
+                        )}
+
+                        {/* Play Store Uyumluluk */}
+                        {activeSection === 'playstore' && (
+                            <div className="space-y-6">
+                                <Card glass className="p-6">
+                                    <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-primary">store</span>
+                                        Google Play Store Uyumluluk Kontrol Listesi
+                                    </h3>
+                                    <p className="text-sm text-white/40 mb-6">Uygulamanızı Play Store&apos;a yüklemeden önce tüm maddelerin yeşil olduğundan emin olun.</p>
+
+                                    <div className="space-y-3">
+                                        {[
+                                            { label: 'Gizlilik Politikası URL\'si Tanımlı', status: true, desc: 'Settings → contactEmail & privacy policy URL' },
+                                            { label: 'Kullanıcı Raporlama Sistemi Aktif', status: true, desc: 'Kullanıcılar profil, mesaj ve hikayeleri raporlayabiliyor' },
+                                            { label: 'Engelleme (Block) Sistemi Aktif', status: true, desc: 'Kullanıcılar birbirini engelleyebiliyor' },
+                                            { label: 'İçerik Moderasyonu Aktif', status: true, desc: 'Fotoğraf, biyografi ve profil doğrulaması aktif' },
+                                            { label: 'Yaş Doğrulaması (18+)', status: minimumAge >= 18, desc: `Minimum yaş: ${minimumAge}` },
+                                            { label: 'Şikayet Yanıtlama Süreci', status: true, desc: 'Admin panelden şikayetler yönetiliyor' },
+                                            { label: 'Küfür/Uygunsuz İçerik Filtresi', status: true, desc: 'Moderasyon ayarlarından yönetilebilir' },
+                                            { label: 'Kullanıcı Banlama Sistemi', status: true, desc: 'Ban süresi, sebebi ve itiraz hakkı mevcut' },
+                                            { label: 'Premium Abonelik Yönetimi', status: true, desc: 'In-app purchase entegrasyonu ve tier yönetimi' },
+                                            { label: 'Veri Silme Mekanizması', status: true, desc: 'Kullanıcılar hesaplarını silebilir' },
+                                            { label: 'Minimum Versiyon Kontrolü', status: !!minVersion, desc: `Minimum versiyon: ${minVersion}` },
+                                            { label: 'Bakım Modu Desteği', status: true, desc: isMaintenanceMode ? '⚠️ BAKIM MODU AKTİF' : 'Bakım modu hazır (şu an kapalı)' },
+                                        ].map((item, i) => (
+                                            <div key={i} className={cn(
+                                                "flex items-center gap-4 p-4 rounded-xl border",
+                                                item.status ? "bg-emerald-500/5 border-emerald-500/20" : "bg-rose-500/5 border-rose-500/20"
+                                            )}>
+                                                <span className={cn("material-symbols-outlined text-xl", item.status ? "text-emerald-500" : "text-rose-500")}>
+                                                    {item.status ? 'check_circle' : 'cancel'}
+                                                </span>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-bold text-white">{item.label}</p>
+                                                    <p className="text-xs text-white/40">{item.desc}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Card>
+
+                                <Card glass className="p-6">
+                                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-amber-500">warning</span>
+                                        Play Store İnceleme Notları
+                                    </h3>
+                                    <div className="space-y-3 text-sm text-white/70">
+                                        <div className="p-3 bg-amber-500/5 rounded-xl border border-amber-500/10">
+                                            <p className="font-bold text-amber-500 mb-1">📋 İçerik Derecelendirmesi</p>
+                                            <p>Uygulamanın 18+ olarak derecelendirildiğinden emin olun. Dating uygulamaları &quot;Everyone&quot; olarak yayınlanamaz.</p>
+                                        </div>
+                                        <div className="p-3 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                                            <p className="font-bold text-blue-400 mb-1">🔐 Veri Güvenliği Formu</p>
+                                            <p>Play Console&apos;da Data Safety bölümünü doğru doldurun: konum, fotoğraf, kişisel bilgiler topluyorsunuz.</p>
+                                        </div>
+                                        <div className="p-3 bg-purple-500/5 rounded-xl border border-purple-500/10">
+                                            <p className="font-bold text-purple-400 mb-1">💳 Abonelik Politikası</p>
+                                            <p>Auto-renewal ve iptal koşullarını uygulama içinde ve mağaza listesinde belirtin.</p>
+                                        </div>
+                                        <div className="p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
+                                            <p className="font-bold text-emerald-400 mb-1">✅ Reklam Bildirimi</p>
+                                            <p>AdMob kullanıyorsanız, mağaza listesinde &quot;Contains ads&quot; işaretleyin.</p>
                                         </div>
                                     </div>
                                 </Card>
