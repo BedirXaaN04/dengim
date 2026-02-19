@@ -92,7 +92,10 @@ class AnalyticsService {
     await _analytics.setCurrentScreen(screenName: screenName);
   }
 
-  Future<void> logEvent({required String name, Map<String, Object>? parameters}) async {
-    await _analytics.logEvent(name: name, parameters: parameters);
+  Future<void> logEvent({required String name, Map<String, dynamic>? parameters}) async {
+    await _analytics.logEvent(
+      name: name, 
+      parameters: parameters?.map((key, value) => MapEntry(key, value as Object)),
+    );
   }
 }

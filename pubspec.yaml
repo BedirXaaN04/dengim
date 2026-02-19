@@ -46,7 +46,7 @@ dependencies:
   # Ücretsiz Harita - OpenStreetMap (API key gerektirmez!)
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
-  geolocator: ^12.0.0
+  geolocator: ^13.0.0
   
   # Swipe Kartları
   flutter_card_swiper: ^7.0.0
@@ -85,6 +85,9 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.4.0
+
+dependency_overrides:
+  geolocator_android: ^5.0.2
 
 flutter_icons:
   android: "launcher_icon"

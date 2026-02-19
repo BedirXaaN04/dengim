@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.dengim.dengim"
-    compileSdk = 34  // Explicit version for plugin compatibility
+    compileSdk = 35  // SDK 35 required by flutter_plugin_android_lifecycle & geolocator
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -25,8 +25,8 @@ android {
         applicationId = "dengim.kim"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 21  // Explicit for better compatibility
-        targetSdk = 34  // Match compileSdk
+        minSdk = 23  // Required by modern Firebase/Google packages
+        targetSdk = 35  // Match compileSdk
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
