@@ -29,6 +29,20 @@ jobs:
         run: |
           flutter build web --release --base-href "/dengim/"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Build Admin Panel
+        run: |
+          cd dengim-admin
+          npm install
+          npm run build
+          cd ..
+          mkdir -p build/web/admin
+          cp -r dengim-admin/out/* build/web/admin/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
