@@ -51,5 +51,9 @@ dependencies {
     // Add the dependencies for the desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation("com.google.firebase:firebase-analytics")
+
+    // AndroidX Window libraries (required by some plugins to avoid R8 missing class errors)
+    implementation("androidx.window:window:1.2.0")
+    implementation("androidx.window:window-java:1.2.0")
 }
 
