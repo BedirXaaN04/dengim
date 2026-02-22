@@ -19,9 +19,20 @@ class SubscriptionProvider with ChangeNotifier {
   bool get isPlatinum => _currentTier == 'platinum';
 
   Future<void> init() async {
-    _setLoading(true);
-    await _purchaseService.init();
-    _setLoading(false);
+    try {
+      _setLoading(true);
+      // Timeout added to prevent permanent loading loop if store hangs
+      await _purchaseService.init().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          LogService.w("Purchase Service init timed out");
+        },
+      );
+    } catch (e) {
+      LogService.e("Subscription Provider init error", e);
+    } finally {
+      _setLoading(false);
+    }
   }
 
   void updateTier(String tier) {

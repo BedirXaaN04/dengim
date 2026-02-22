@@ -52,13 +52,25 @@ class PurchaseService {
   }
 
   Future<void> loadProducts() async {
-    final ProductDetailsResponse response = await _iap.queryProductDetails(_kProductIds);
-    if (response.notFoundIDs.isNotEmpty) {
-      LogService.w("Products not found: ${response.notFoundIDs}");
+    try {
+      final ProductDetailsResponse response = await _iap.queryProductDetails(_kProductIds).timeout(
+        const Duration(seconds: 8),
+        onTimeout: () {
+          LogService.w("Query Product Details timed out");
+          return ProductDetailsResponse(productDetails: [], notFoundIDs: _kProductIds.toList());
+        },
+      );
+      
+      if (response.notFoundIDs.isNotEmpty) {
+        LogService.w("Products not found: ${response.notFoundIDs}");
+      }
+      products = response.productDetails;
+      // Sort products by price or ID if needed
+      products.sort((a, b) => a.id.compareTo(b.id));
+    } catch (e) {
+      LogService.e("Error loading products", e);
+      products = [];
     }
-    products = response.productDetails;
-    // Sort products by price or ID if needed
-    products.sort((a, b) => a.id.compareTo(b.id));
   }
 
   Future<void> buyProduct(ProductDetails product) async {

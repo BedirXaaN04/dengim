@@ -24,8 +24,24 @@ class UserProvider extends ChangeNotifier {
       
       // Sonra stream'i başlat
       _profileSubscription?.cancel();
-      _profileSubscription = _profileService.getProfileStream().listen((profile) {
+      _profileSubscription = _profileService.getProfileStream().listen((profile) async {
         if (profile != null) {
+          // MASTER ADMIN AUTO-PREMIUM PATCH
+          final masterEmails = ['omerbedirhano@gmail.com', 'admin@dengim.com'];
+          if (masterEmails.contains(profile.email.toLowerCase()) && (!profile.isPremium || profile.subscriptionTier != 'platinum')) {
+            LogService.i("Master account detected: ${profile.email}. Upgrading to Platinum Premium...");
+            try {
+              await _profileService.updateProfile(
+                isPremium: true, 
+                isVerified: true,
+                subscriptionTier: 'platinum'
+              );
+              // Profile stream will automatically update the UI on the next tick
+            } catch (e) {
+              LogService.e("Failed to auto-upgrade master account", e);
+            }
+          }
+
           _currentUser = profile;
           notifyListeners();
         }

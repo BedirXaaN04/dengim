@@ -319,9 +319,24 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
           // Pricing Options
           Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              children: products.map((p) => _buildPriceButton(p, color, provider)).toList(),
-            ),
+            child: products.isEmpty 
+              ? Column(
+                  children: [
+                    const Icon(Icons.info_outline, color: Colors.white24),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Şu anda mağaza bağlantısı kurulamıyor.\nLütfen daha sonra tekrar deneyin.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white24,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: products.map((p) => _buildPriceButton(p, color, provider)).toList(),
+                ),
           ),
         ],
       ),
