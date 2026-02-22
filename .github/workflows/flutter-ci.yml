@@ -89,7 +89,7 @@ jobs:
         echo "Done patching plugins."
 
     - name: 🔧 Build APK
-      run: flutter build apk --release --verbose --stacktrace
+      run: flutter build apk --release --verbose
       
     - name: 📤 Upload Build Logs on Failure
       if: failure()
