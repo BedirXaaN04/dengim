@@ -1,0 +1,34 @@
+﻿
+Running Gradle task 'assembleDebug'...                          
+flutter : 
+At line:1 char:1
++ flutter build apk --debug 2>&1 | Out-File -FilePath C:\dengim\build_l ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':firebase_core:compileDebugJavaWithJavac'.
+> Could not resolve all files for configuration ':firebase_core:androidJdkImage'.
+   > Failed to transform core-for-system-modules.jar to match attributes {artifac
+tType=_internal_android_jdk_image, org.gradle.libraryelements=jar, org.gradle.usa
+ge=java-runtime}.
+      > Execution failed for JdkImageTransform: C:\Users\USER\AppData\Local\Andro
+id\sdk\platforms\android-34\core-for-system-modules.jar.
+         > Error while executing process C:\Program Files\Android\Android Studio\
+jbr\bin\jlink.exe with arguments {--module-path C:\Users\USER\.gradle\caches\tran
+sforms-3\d8c55405f7e922ce5e20445f76204e30\transformed\output\temp\jmod --add-modu
+les java.base --output C:\Users\USER\.gradle\caches\transforms-3\d8c55405f7e922ce
+5e20445f76204e30\transformed\output\jdkImage --disable-plugin system-modules}
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BU´┐¢LD FAILED in 48s
+Running Gradle task 'assembleDebug'...                             49,6s
+Gradle task assembleDebug failed with exit code 1

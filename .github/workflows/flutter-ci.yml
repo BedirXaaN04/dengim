@@ -119,15 +119,6 @@ jobs:
         
     - name: 📦 Install Dependencies
       run: flutter pub get
-
-    - name: 🔧 Patch google_fonts const evaluation bug
-      run: |
-        VARIANT_FILE=$(find $HOME/.pub-cache -name "google_fonts_variant.dart" -path "*/google_fonts*" | head -1)
-        if [ -n "$VARIANT_FILE" ]; then
-          echo "Patching: $VARIANT_FILE"
-          sed -i 's/^const _fontWeightToFilenameWeightParts/final _fontWeightToFilenameWeightParts/' "$VARIANT_FILE"
-          echo "Done."
-        fi
       
     - name: 🔧 Build Web
       run: flutter build web --release --base-href "/dengim/"

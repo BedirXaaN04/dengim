@@ -3,19 +3,32 @@ plugins {
 }
 
 // Kotlin version for plugins that use rootProject.ext.kotlin_version (Groovy compat)
-extra["kotlin_version"] = "1.9.23"
+extra.set("kotlin_version", "1.9.23")
+extra.set("compileSdkVersion", 35)
+extra.set("minSdkVersion", 23)
+extra.set("targetSdkVersion", 35)
 
 allprojects {
+    // Also set it in allprojects for maximum coverage
+    extra.set("kotlin_version", "1.9.23")
+    
     repositories {
         google()
         mavenCentral()
     }
 }
 
-val newBuildDir: Directory =
-    rootProject.layout.buildDirectory
-        .dir("../../build")
-        .get()
+// Redirect build output to ASCII-only path if project path contains non-ASCII chars (e.g. Turkish 'ü')
+val projectPath = rootProject.projectDir.absolutePath
+val hasNonAscii = projectPath.any { it.code > 127 }
+
+val newBuildDir: Directory = if (hasNonAscii) {
+    // Local Windows: use ASCII-safe temp path
+    rootProject.layout.projectDirectory.dir("C:/tmp/dengim-build")
+} else {
+    // CI (Linux): use relative path
+    rootProject.layout.buildDirectory.dir("../../build").get()
+}
 rootProject.layout.buildDirectory.value(newBuildDir)
 
 subprojects {

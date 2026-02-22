@@ -1,0 +1,165 @@
+﻿
+Running Gradle task 'assembleDebug'...                          
+flutter : warning: [options] source value 8 is obsolete and will be removed in a 
+future release
+At line:1 char:1
++ flutter build apk --debug 2>&1 | Out-File -FilePath C:\dengim\build_l ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: [optio... future release:S 
+   tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: [options] target value 8 is obsolete and will be removed in a future rel
+ease
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-optio
+ns.
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:3:
+ error: cannot find symbol
+import androidx.annotation.NonNull;
+                          ^
+  symbol:   class NonNull
+  location: package androidx.annotation
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:5:
+ error: package io.flutter.embedding.engine.plugins does not exist
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+                                          ^
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:6:
+ error: package io.flutter.plugin.common does not exist
+import io.flutter.plugin.common.MethodCall;
+                               ^
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:7:
+ error: package io.flutter.plugin.common does not exist
+import io.flutter.plugin.common.MethodChannel;
+                               ^
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:8:
+ error: package io.flutter.plugin.common.MethodChannel does not exist
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+                                             ^
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:9:
+ error: package io.flutter.plugin.common.MethodChannel does not exist
+import io.flutter.plugin.common.MethodChannel.Result;
+                                             ^
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:12
+: error: cannot find symbol
+public class IrisMethodChannelPlugin implements FlutterPlugin, MethodCallHandler 
+{
+                                                ^
+  symbol: class FlutterPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:12
+: error: cannot find symbol
+public class IrisMethodChannelPlugin implements FlutterPlugin, MethodCallHandler 
+{
+                                                               ^
+  symbol: class MethodCallHandler
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:17
+: error: cannot find symbol
+  private MethodChannel channel;
+          ^
+  symbol:   class MethodChannel
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:20
+: error: cannot find symbol
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBindi
+ng) {
+                                          ^
+  symbol:   class FlutterPluginBinding
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:26
+: error: cannot find symbol
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+                                    ^
+  symbol:   class MethodCall
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:26
+: error: cannot find symbol
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+                                                              ^
+  symbol:   class Result
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:31
+: error: cannot find symbol
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+                                            ^
+  symbol:   class FlutterPluginBinding
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:20
+: error: cannot find symbol
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBindi
+ng) {
+                                  ^
+  symbol:   class NonNull
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:26
+: error: cannot find symbol
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+                            ^
+  symbol:   class NonNull
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:26
+: error: cannot find symbol
+  public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+                                                      ^
+  symbol:   class NonNull
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:31
+: error: cannot find symbol
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+                                    ^
+  symbol:   class NonNull
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:19
+: error: method does not override or implement a method from a supertype
+  @Override
+  ^
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:21
+: error: cannot find symbol
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "iris_
+method_channel");
+                  ^
+  symbol:   class MethodChannel
+  location: class IrisMethodChannelPlugin
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:25
+: error: method does not override or implement a method from a supertype
+  @Override
+  ^
+C:\Users\USER\AppData\Local\Pub\Cache\hosted\pub.dev\iris_method_channel-2.2.4\an
+droid\src\main\java\com\agora\iris_method_channel\IrisMethodChannelPlugin.java:30
+: error: method does not override or implement a method from a supertype
+  @Override
+  ^
+21 errors
+3 warnings
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':iris_method_channel:compileDebugJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BU´┐¢LD FAILED in 10s
+Running Gradle task 'assembleDebug'...                             12,2s
+Gradle task assembleDebug failed with exit code 1

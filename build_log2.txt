@@ -1,0 +1,32 @@
+﻿
+Running Gradle task 'assembleDebug'...                          
+flutter : lib/core/theme/app_theme.dart:131:18: Error: Method not found: 'CardThe
+meData'.
+At line:1 char:1
++ flutter build apk --debug 2>&1 | Out-File -FilePath build_log2.txt -E ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (lib/core/theme/...CardThemeData'.:S 
+   tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+      cardTheme: CardThemeData(
+                 ^^^^^^^^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildDebug'.
+> Process 'command 'C:\flutter\flutter\bin\flutter.bat'' finished with non-zero e
+xit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BU´┐¢LD FAILED in 31s
+Running Gradle task 'assembleDebug'...                             33,0s
+Gradle task assembleDebug failed with exit code 1
