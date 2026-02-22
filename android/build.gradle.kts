@@ -3,18 +3,28 @@ plugins {
 }
 
 // Kotlin version for plugins that use rootProject.ext.kotlin_version (Groovy compat)
-extra.set("kotlin_version", "1.9.23")
+extra.set("kotlin_version", "1.9.24")
 extra.set("compileSdkVersion", 35)
 extra.set("minSdkVersion", 23)
 extra.set("targetSdkVersion", 35)
 
 allprojects {
-    // Also set it in allprojects for maximum coverage
-    extra.set("kotlin_version", "1.9.23")
+    extra.set("kotlin_version", "1.9.24")
     
     repositories {
         google()
         mavenCentral()
+    }
+}
+
+// Force specific Kotlin version for ALL dependencies to avoid mismatches
+subprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin") {
+                useVersion("1.9.24")
+            }
+        }
     }
 }
 

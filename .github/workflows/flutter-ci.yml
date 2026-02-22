@@ -91,14 +91,15 @@ jobs:
         echo "Done patching plugins."
 
     - name: 🔧 Build APK
-      run: flutter build apk --release
+      run: flutter build apk --release --verbose --stacktrace
       
-    - name: 📤 Upload APK Artifact
+    - name: 📤 Upload Build Logs on Failure
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: release-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
-        retention-days: 30
+        name: gradle-build-logs
+        path: build/app/outputs/logs/
+        retention-days: 7
 
   build-web:
     name: Build Web
