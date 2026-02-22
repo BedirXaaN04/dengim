@@ -215,6 +215,7 @@ class ProfileService {
     bool? isVerified,
     bool? isGhostMode,
     bool? isIncognitoMode,
+    String? subscriptionTier,
   }) async {
     final uid = _currentUser?.uid;
     if (uid == null) return;
@@ -242,6 +243,7 @@ class ProfileService {
     if (isVerified != null) updates['isVerified'] = isVerified;
     if (isGhostMode != null) updates['isGhostMode'] = isGhostMode;
     if (isIncognitoMode != null) updates['isIncognitoMode'] = isIncognitoMode;
+    if (subscriptionTier != null) updates['subscriptionTier'] = subscriptionTier;
 
     try {
       await _firestore.collection('users').doc(uid).update(updates);
