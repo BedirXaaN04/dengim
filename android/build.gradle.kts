@@ -2,6 +2,9 @@ plugins {
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
+// Kotlin version for plugins that use rootProject.ext.kotlin_version (Groovy compat)
+extra["kotlin_version"] = "1.9.23"
+
 allprojects {
     repositories {
         google()

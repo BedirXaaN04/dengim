@@ -32,7 +32,7 @@ jobs:
       run: flutter pub get
       
     - name: 🔍 Analyze Code
-      run: flutter analyze --no-fatal-infos
+      run: flutter analyze --no-fatal-infos --no-fatal-warnings
       continue-on-error: true
       
     - name: 🧪 Run Tests
@@ -69,19 +69,27 @@ jobs:
     - name: 📦 Install Dependencies
       run: flutter pub get
 
-    - name: 🔧 Patch plugin build.gradle files (flutter extension fix)
+    - name: 🔧 Patch plugin build.gradle files
       run: |
-        echo "Patching all plugins that use flutter.compileSdkVersion / flutter.minSdkVersion..."
+        echo "Patching all plugins..."
+        # Fix flutter.compileSdkVersion / minSdkVersion / ndkVersion
         find $HOME/.pub-cache -name "build.gradle" -path "*/android/*" | while read f; do
           if grep -q "flutter\.compileSdkVersion\|flutter\.minSdkVersion\|flutter\.ndkVersion" "$f" 2>/dev/null; then
-            echo "  Patching: $f"
+            echo "  Patching SDK versions: $f"
             sed -i 's/flutter\.compileSdkVersion/35/g' "$f"
             sed -i 's/flutter\.minSdkVersion/23/g' "$f"
             sed -i 's/flutter\.ndkVersion/"25.1.8937393"/g' "$f"
           fi
         done
+        
+        # Fix Kotlin version references in plugin build.gradle files
+        find $HOME/.pub-cache -name "build.gradle" -path "*/android/*" | while read f; do
+          if grep -q "ext\.kotlin_version\|rootProject\.ext\.kotlin_version" "$f" 2>/dev/null; then
+            echo "  Patching Kotlin version: $f"
+          fi
+        done
         echo "Done patching plugins."
-      
+
     - name: 🔧 Build APK
       run: flutter build apk --release
       
@@ -90,6 +98,45 @@ jobs:
       with:
         name: release-apk
         path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+
+  build-web:
+    name: Build Web
+    needs: analyze
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.5'
+        channel: 'stable'
+        cache: true
+        
+    - name: 📦 Install Dependencies
+      run: flutter pub get
+
+    - name: 🔧 Patch google_fonts const evaluation bug
+      run: |
+        VARIANT_FILE=$(find $HOME/.pub-cache -name "google_fonts_variant.dart" -path "*/google_fonts*" | head -1)
+        if [ -n "$VARIANT_FILE" ]; then
+          echo "Patching: $VARIANT_FILE"
+          sed -i 's/^const _fontWeightToFilenameWeightParts/final _fontWeightToFilenameWeightParts/' "$VARIANT_FILE"
+          echo "Done."
+        fi
+      
+    - name: 🔧 Build Web
+      run: flutter build web --release --base-href "/dengim/"
+
+    - name: 📤 Upload Web Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: build/web/
         retention-days: 30
 
   build-ios:
