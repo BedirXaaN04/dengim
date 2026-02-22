@@ -76,11 +76,17 @@ export default function LoginPage() {
                 lastLogin: new Date()
             }, { merge: true });
 
+            const validRoles = ["super_admin", "admin", "moderator", "support"] as const;
+            type Role = typeof validRoles[number];
+            const role: Role = validRoles.includes(adminCheck.role as Role)
+                ? adminCheck.role as Role
+                : "admin";
+
             setCurrentAdmin({
                 id: userCredential.user.uid,
                 name: adminCheck.name,
                 email: userCredential.user.email || '',
-                role: adminCheck.role,
+                role,
             });
             router.push('/');
         } catch (err: any) {
@@ -121,11 +127,17 @@ export default function LoginPage() {
                 lastLogin: new Date()
             }, { merge: true });
 
+            const validRoles = ["super_admin", "admin", "moderator", "support"] as const;
+            type Role = typeof validRoles[number];
+            const role: Role = validRoles.includes(adminCheck.role as Role)
+                ? adminCheck.role as Role
+                : "admin";
+
             setCurrentAdmin({
                 id: result.user.uid,
                 name: adminCheck.name || result.user.displayName || 'Admin',
                 email: result.user.email || '',
-                role: adminCheck.role,
+                role,
             });
             router.push('/');
         } catch (err: any) {
@@ -152,11 +164,17 @@ export default function LoginPage() {
 
         try {
             const newUser = await createUserWithEmailAndPassword(auth, email, password);
+            const validRoles = ["super_admin", "admin", "moderator", "support"] as const;
+            type Role = typeof validRoles[number];
+            const role: Role = validRoles.includes(adminCheck.role as Role)
+                ? adminCheck.role as Role
+                : "admin";
+
             setCurrentAdmin({
                 id: newUser.user.uid,
                 name: adminCheck.name,
                 email: newUser.user.email || '',
-                role: adminCheck.role,
+                role,
             });
             router.push('/');
         } catch (createErr: any) {
