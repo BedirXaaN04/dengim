@@ -387,7 +387,7 @@ class _EmailLoginFormState extends State<_EmailLoginForm> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.black, width: 2),
             ),
-            child: Text(_error!, style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.black)),
+            child: Text(_error!, style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w900)),
           ),
         TextField(
           controller: _emailController,
