@@ -375,31 +375,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   );
                 },
               ),
-                                // Users List
-                                SizedBox(
-                                  height: 120,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    physics: const BouncingScrollPhysics(),
-                                    itemCount: provider.nearbyUsers.length,
-                                    itemBuilder: (context, index) {
-                                       return NearbyUserAvatar(
-                                         user: provider.nearbyUsers[index], 
-                                         onTap: () => _onUserTap(provider.nearbyUsers[index])
-                                       );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(height: 100), // Bottom padding
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
             ],
           );
         },

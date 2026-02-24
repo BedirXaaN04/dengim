@@ -14,6 +14,14 @@ class AppColors {
   
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
+  static const Color orange = Color(0xFFFF9500);     // Neo Orange
+
+  // Gold Gradient (for VIP badges etc.)
+  static const LinearGradient goldGradient = LinearGradient(
+    colors: [Color(0xFFFFD500), Color(0xFFFFA000)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   // Metin Renkleri
   static const Color textPrimary = Color(0xFF000000);   // Siyah
