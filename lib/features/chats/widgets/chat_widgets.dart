@@ -28,55 +28,47 @@ class ChatListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      splashColor: AppColors.primary.withOpacity(0.1),
-      highlightColor: Colors.transparent,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.03))),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.black, width: 1)),
         ),
         child: Row(
           children: [
-            // Avatar with Gold Ring
+            // Avatar with thick border
             Stack(
               children: [
-                 Container(
-                  padding: const EdgeInsets.all(2.5),
+                Container(
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
+                    color: Colors.white,
                     shape: BoxShape.circle,
-                    gradient: chat.unreadCount > 0 ? AppColors.goldGradient : null,
-                    color: chat.unreadCount > 0 ? null : Colors.white.withOpacity(0.1),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                    ],
                   ),
-                  child: Container(
-                    padding: const EdgeInsets.all(2), // inner spacing
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.scaffold,
-                    ),
-                    child: Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: NetworkImage(chat.userAvatar),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: CachedNetworkImage(
+                      imageUrl: chat.userAvatar,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(color: Colors.white),
                     ),
                   ),
                 ),
                 if (chat.isOnline)
                   Positioned(
-                    right: 4,
-                    bottom: 4,
+                    right: 0,
+                    bottom: 0,
                     child: Container(
-                      width: 14,
-                      height: 14,
+                      width: 16,
+                      height: 16,
                       decoration: BoxDecoration(
-                        color: AppColors.success,
+                        color: AppColors.green,
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.scaffold, width: 2),
+                        border: Border.all(color: Colors.black, width: 1.5),
                       ),
                     ),
                   ),
@@ -94,34 +86,33 @@ class ChatListItem extends StatelessWidget {
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                      children: [
                        Text(
-                         chat.userName,
-                         style: GoogleFonts.plusJakartaSans(
+                         chat.userName.toUpperCase(),
+                         style: GoogleFonts.outfit(
                            fontSize: 16,
-                           fontWeight: chat.unreadCount > 0 ? FontWeight.w800 : FontWeight.w600,
-                           color: Colors.white,
+                           fontWeight: FontWeight.w900,
+                           color: Colors.black,
                          ),
                        ),
                        Text(
                          _formatTime(chat.lastMessageTime),
-                         style: GoogleFonts.plusJakartaSans(
+                         style: GoogleFonts.outfit(
                            fontSize: 11,
-                           color: chat.unreadCount > 0 ? AppColors.primary : Colors.white24,
-                           fontWeight: chat.unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
+                           color: Colors.black.withOpacity(0.5),
+                           fontWeight: FontWeight.w700,
                          ),
                        ),
                      ],
                    ),
-                   const SizedBox(height: 6),
+                   const SizedBox(height: 4),
                    Row(
                      children: [
                        Expanded(
                          child: Text(
                            chat.lastMessage,
-                           style: GoogleFonts.plusJakartaSans(
+                           style: GoogleFonts.outfit(
                              fontSize: 13,
-                             color: chat.unreadCount > 0 ? Colors.white : Colors.white30,
-                             fontWeight: chat.unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
-                             letterSpacing: 0.3,
+                             color: Colors.black.withOpacity(0.6),
+                             fontWeight: chat.unreadCount > 0 ? FontWeight.w800 : FontWeight.w500,
                            ),
                            maxLines: 1,
                            overflow: TextOverflow.ellipsis,
@@ -132,14 +123,15 @@ class ChatListItem extends StatelessWidget {
                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                            decoration: BoxDecoration(
                              color: AppColors.primary,
-                             borderRadius: BorderRadius.circular(12),
-                             boxShadow: [
-                               BoxShadow(color: AppColors.primary.withOpacity(0.4), blurRadius: 8, offset: const Offset(0, 2))
-                             ]
+                             borderRadius: BorderRadius.circular(8),
+                             border: Border.all(color: Colors.black, width: 1.5),
+                             boxShadow: const [
+                               BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                             ],
                            ),
                            child: Text(
                              '${chat.unreadCount}',
-                             style: GoogleFonts.plusJakartaSans(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                             style: GoogleFonts.outfit(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w900),
                            ),
                          ),
                      ],
@@ -261,11 +253,11 @@ class _ChatBubbleState extends State<ChatBubble> {
               margin: EdgeInsets.fromLTRB(isMe ? 64 : 0, 4, isMe ? 0 : 64, 2),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.black.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(12),
                 border: Border(
                   left: BorderSide(
-                    color: isMe ? AppColors.primary : Colors.white38,
+                    color: isMe ? AppColors.primary : Colors.black,
                     width: 3,
                   ),
                 ),
@@ -273,15 +265,16 @@ class _ChatBubbleState extends State<ChatBubble> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.reply, size: 12, color: Colors.white38),
+                  const Icon(Icons.reply, size: 12, color: Colors.black38),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(
                       widget.message.replyToContent!,
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.outfit(
                         fontSize: 11,
-                        color: Colors.white54,
+                        color: Colors.black54,
                         fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w600,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -304,8 +297,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 decoration: BoxDecoration(
-                  gradient: isMe ? AppColors.goldGradient : null,
-                  color: isMe ? null : Colors.white.withOpacity(0.08),
+                  color: isMe ? AppColors.primary : Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: isMe ? const Radius.circular(20) : const Radius.circular(4),
                     topRight: isMe ? const Radius.circular(4) : const Radius.circular(20),
@@ -313,15 +305,20 @@ class _ChatBubbleState extends State<ChatBubble> {
                     bottomRight: const Radius.circular(20),
                   ),
                   border: Border.all(
-                    color: isMe ? Colors.transparent : Colors.white.withOpacity(0.05),
+                    color: Colors.black,
+                    width: 2,
                   ),
                   boxShadow: isMe ? [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                    const BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(4, 4),
                     )
-                  ] : null,
+                  ] : [
+                    const BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(2, 2),
+                    )
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -331,9 +328,9 @@ class _ChatBubbleState extends State<ChatBubble> {
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white12),
+                          border: Border.all(color: Colors.black, width: 1.5),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -346,8 +343,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                   width: 40,
                                   height: 60,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(color: Colors.grey[800]),
-                                  errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 20, color: Colors.white54),
+                                  placeholder: (context, url) => Container(color: Colors.white),
                                 ),
                               ),
                             const SizedBox(width: 8),
@@ -355,9 +351,9 @@ class _ChatBubbleState extends State<ChatBubble> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Hikayeye Yanıt", style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white54, fontWeight: FontWeight.bold)),
+                                  Text("HİKAYEYE YANIT", style: GoogleFonts.outfit(fontSize: 10, color: Colors.black, fontWeight: FontWeight.w900)),
                                   const SizedBox(height: 2),
-                                  const Icon(Icons.reply, color: Colors.white54, size: 14),
+                                  const Icon(Icons.reply, color: Colors.black, size: 14),
                                 ],
                               ),
                             ),
@@ -374,9 +370,10 @@ class _ChatBubbleState extends State<ChatBubble> {
                       children: [
                         Text(
                           _formatTime(widget.message.timestamp),
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.outfit(
                             fontSize: 10,
-                            color: isMe ? Colors.black45 : Colors.white38,
+                            color: Colors.black.withOpacity(0.5),
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         if (isMe) ...[
@@ -396,16 +393,13 @@ class _ChatBubbleState extends State<ChatBubble> {
                   right: isMe ? 8 : null,
                   left: isMe ? null : 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 4,
-                        ),
+                      border: Border.all(color: Colors.black, width: 1.5),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
                       ],
                     ),
                     child: Row(
@@ -458,10 +452,10 @@ class _ChatBubbleState extends State<ChatBubble> {
       default:
         return Text(
           widget.message.content,
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.outfit(
             fontSize: 15,
-            color: isMe ? const Color(0xFF1F1F1F) : Colors.white.withOpacity(0.9),
-            fontWeight: isMe ? FontWeight.w600 : FontWeight.normal,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
             height: 1.4,
           ),
         );
@@ -483,12 +477,13 @@ class _ChatBubbleState extends State<ChatBubble> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isMe ? Colors.black.withOpacity(0.2) : AppColors.primary.withOpacity(0.2),
+              color: isMe ? Colors.black.withOpacity(0.15) : AppColors.primary,
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.black, width: 2),
             ),
             child: Icon(
               _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-              color: isMe ? Colors.black87 : AppColors.primary,
+              color: Colors.black,
               size: 24,
             ),
           ),
@@ -504,7 +499,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               Container(
                 height: 4,
                 decoration: BoxDecoration(
-                  color: isMe ? Colors.black.withOpacity(0.1) : Colors.white.withOpacity(0.1),
+                  color: Colors.black.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: FractionallySizedBox(
@@ -512,7 +507,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                   widthFactor: progress.clamp(0.0, 1.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isMe ? Colors.black87 : AppColors.primary,
+                      color: Colors.black,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -522,9 +517,10 @@ class _ChatBubbleState extends State<ChatBubble> {
               // Duration
               Text(
                 _isPlaying ? _formatDuration(_position) : _formatDuration(_duration),
-                style: GoogleFonts.plusJakartaSans(
+                style: GoogleFonts.outfit(
                   fontSize: 11,
-                  color: isMe ? Colors.black54 : Colors.white54,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -533,10 +529,10 @@ class _ChatBubbleState extends State<ChatBubble> {
         const SizedBox(width: 8),
         
         // Microphone icon
-        Icon(
+        const Icon(
           Icons.mic,
           size: 16,
-          color: isMe ? Colors.black38 : Colors.white38,
+          color: Colors.black38,
         ),
       ],
     );

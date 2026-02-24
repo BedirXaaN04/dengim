@@ -6,6 +6,7 @@ import '../auth/services/auth_service.dart';
 import '../auth/login_screen.dart';
 import '../support/support_screen.dart';
 import '../../core/services/config_service.dart';
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/services.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -14,12 +15,28 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Ayarlar", style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
+        title: Text("AYARLAR", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
+        backgroundColor: Colors.white,
         elevation: 0,
-        leading: const BackButton(color: Colors.white),
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Center(
+            child: Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 2.5),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.black, size: 18),
+            ),
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -27,19 +44,19 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader("HESAP"),
           _buildTile(
             icon: Icons.logout,
-            title: "Çıkış Yap",
+            title: "ÇIKIŞ YAP",
             color: Colors.orange,
             onTap: () => _signOut(context),
           ),
           _buildTile(
             icon: Icons.block,
-            title: "Engellenen Kullanıcılar",
-            color: Colors.white,
+            title: "ENGELLENEN KULLANICILAR",
+            color: Colors.black,
             onTap: () => _showBlockedUsers(context),
           ),
           _buildTile(
             icon: Icons.delete_forever,
-            title: "Hesabı Sil",
+            title: "HESABI SİL",
             color: Colors.red,
             onTap: () => _deleteAccount(context),
           ),
@@ -48,13 +65,14 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader("BİLDİRİMLER"),
           _buildTile(
             icon: Icons.notifications_outlined,
-            title: "Bildirim Ayarları",
-            color: Colors.white,
+            title: "BİLDİRİM AYARLARI",
+            color: Colors.black,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('📱 Bildirim ayarları cihaz ayarlarından yönetilebilir'),
+                SnackBar(
+                  content: Text('📱 BİLDİRİM AYARLARI CİHAZ AYARLARINDAN YÖNETİLEBİLİR', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
                   behavior: SnackBarBehavior.floating,
+                  backgroundColor: Colors.black,
                 ),
               );
             },
@@ -64,8 +82,8 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader("DESTEK"),
           _buildTile(
             icon: Icons.support_agent,
-            title: "Destek Talebi Oluştur",
-            color: const Color(0xFFFFD700),
+            title: "DESTEK TALEBİ OLUŞTUR",
+            color: Colors.black,
             onTap: () {
               Navigator.push(
                 context,
@@ -75,8 +93,8 @@ class SettingsScreen extends StatelessWidget {
           ),
           _buildTile(
             icon: Icons.email_outlined,
-            title: "E-posta ile İletişim",
-            color: Colors.white,
+            title: "E-POSTA İLE İLETİŞİM",
+            color: Colors.black,
             onTap: () => _launchEmail(context),
           ),
           
@@ -84,22 +102,23 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader("VERİ & GİZLİLİK"),
           _buildTile(
             icon: Icons.shield_outlined,
-            title: "Veri Güvenliği",
-            color: Colors.white,
+            title: "VERİ GÜVENLİĞİ",
+            color: Colors.black,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('🔒 Verileriniz end-to-end şifreleme ile korunmaktadır'),
+                SnackBar(
+                  content: Text('🔒 VERİLERİNİZ END-TO-END ŞİFRELEME İLE KORUNMAKTADIR', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
                   behavior: SnackBarBehavior.floating,
-                  duration: Duration(seconds: 3),
+                  backgroundColor: Colors.black,
+                  duration: const Duration(seconds: 3),
                 ),
               );
             },
           ),
           _buildTile(
             icon: Icons.download_outlined,
-            title: "Verilerimi İndir",
-            color: Colors.white,
+            title: "VERİLERİMİ İNDİR",
+            color: Colors.black,
             onTap: () => _downloadMyData(context),
           ),
           
@@ -107,20 +126,20 @@ class SettingsScreen extends StatelessWidget {
           _buildSectionHeader("HAKKINDA"),
           _buildTile(
             icon: Icons.info_outline,
-            title: "Uygulama Hakkında",
-            color: Colors.white,
+            title: "UYGULAMA HAKKINDA",
+            color: Colors.black,
             onTap: () => _showAboutApp(context),
           ),
           _buildTile(
             icon: Icons.privacy_tip_outlined,
-            title: "Gizlilik Sözleşmesi",
-            color: Colors.white,
+            title: "GİZLİLİK SÖZLEŞMESİ",
+            color: Colors.black,
             onTap: () => _launchUrl(context, ConfigService().privacyPolicyUrl),
           ),
           _buildTile(
             icon: Icons.description_outlined,
-            title: "Kullanım Koşulları (EULA)",
-            color: Colors.white,
+            title: "KULLANIM KOŞULLARI (EULA)",
+            color: Colors.black,
             onTap: () => _launchUrl(context, ConfigService().termsOfServiceUrl),
           ),
           
@@ -128,7 +147,7 @@ class SettingsScreen extends StatelessWidget {
           Center(
             child: Text(
               "DENGIM v${ConfigService().appVersion}",
-              style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12),
+              style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontSize: 12, fontWeight: FontWeight.w900),
             ),
           ),
         ],
@@ -141,10 +160,10 @@ class SettingsScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12, left: 4),
       child: Text(
         title,
-        style: GoogleFonts.plusJakartaSans(
-          color: Colors.white54,
+        style: GoogleFonts.outfit(
+          color: Colors.black.withOpacity(0.4),
           fontSize: 12,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w900,
           letterSpacing: 1.2,
         ),
       ),
@@ -155,13 +174,17 @@ class SettingsScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+        ],
       ),
       child: ListTile(
         leading: Icon(icon, color: color),
-        title: Text(title, style: GoogleFonts.plusJakartaSans(color: color, fontWeight: FontWeight.w500)),
-        trailing: const Icon(Icons.chevron_right, color: Colors.white30),
+        title: Text(title, style: GoogleFonts.outfit(color: color, fontWeight: FontWeight.w900, fontSize: 14)),
+        trailing: const Icon(Icons.chevron_right, color: Colors.black),
         onTap: onTap,
       ),
     );
@@ -236,21 +259,21 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text("Hesabı Sil?", style: TextStyle(color: Colors.white)),
-        content: const Text(
-          "Bu işlem geri alınamaz. Profiliniz, eşleşmeleriniz ve mesajlarınız kalıcı olarak silinecektir.",
-          style: TextStyle(color: Colors.white70),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.black, width: 3)),
+        title: Text("HESABI SİL?", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
+        content: Text(
+          "BU İŞLEM GERİ ALINAMAZ. PROFİLİNİZ, EŞLeŞMELERİNİZ VE MESAJLARINIZ KALICI OLARAK SİLİNECEKTİR.",
+          style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.w700),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("İptal")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text("İPTAL", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900))),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context); // İlk dialogu kapat
-               // İkinci ONAY
+              Navigator.pop(context);
                _showFinalDeleteConfirmation(context);
             },
-            child: const Text("Devam Et", style: TextStyle(color: Colors.red)),
+            child: Text("DEVAM ET", style: GoogleFonts.outfit(color: Colors.red, fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -261,24 +284,23 @@ class SettingsScreen extends StatelessWidget {
      showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text("Son Kararınız mı?", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: const Text(
-          "Yazık olacak... Yine de silmek istiyor musunuz?",
-          style: TextStyle(color: Colors.white70),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.black, width: 3)),
+        title: Text("SON KARARINIZ MI?", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
+        content: Text(
+          "YAZIK OLACAK... YİNE DE SİLMEK İSTİYOR MUSUNUZ?",
+          style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.w700),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Vazgeç")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () async {
+          TextButton(onPressed: () => Navigator.pop(context), child: Text("VAZGEÇ", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900))),
+          GestureDetector(
+            onTap: () async {
               Navigator.pop(context);
               try {
-                // Loading göster
                 showDialog(
                   context: context, 
                   barrierDismissible: false,
-                  builder: (_) => const Center(child: CircularProgressIndicator())
+                  builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.black))
                 );
                 
                 await ProfileService().deleteAccount();
@@ -288,11 +310,22 @@ class SettingsScreen extends StatelessWidget {
                   (route) => false,
                 );
               } catch (e) {
-                Navigator.pop(context); // Loading kapat
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Hata: $e")));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("HATA: $e", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)), backgroundColor: Colors.red));
               }
-          },
-            child: const Text("HESABI SİL", style: TextStyle(color: Colors.white)),
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
+              ),
+              child: Text("HESABI SİL", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
+            ),
           ),
         ],
       ),
@@ -303,16 +336,17 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text("Engellenen Kullanıcılar", style: TextStyle(color: Colors.white)),
-        content: const Text(
-          "Engellediğiniz kullanıcıları burada görebileceksiniz.",
-          style: TextStyle(color: Colors.white70),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.black, width: 3)),
+        title: Text("ENGELLENEN KULLANICILAR", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
+        content: Text(
+          "ENGELLEDİĞİNİZ KULLANICILARI BURADA GÖREBİLECEKSİNİZ.",
+          style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.w700),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("KAPAT"),
+            child: Text("KAPAT", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -323,28 +357,30 @@ class SettingsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text("Verilerimi İndir", style: TextStyle(color: Colors.white)),
-        content: const Text(
-          "Tüm verileriniz (profil, mesajlar, eşleşmeler) bir ZIP dosyası olarak e-postanıza gönderilecektir.\n\nBu işlem 24-48 saat sürebilir.",
-          style: TextStyle(color: Colors.white70),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.black, width: 3)),
+        title: Text("VERİLERİMİ İNDİR", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
+        content: Text(
+          "TÜM VERİLERİNİZ (PROFİL, MESAJLAR, EŞLeŞMELER) BİR ZIP DOSYASI OLARAK E-POSTANIZA GÖNDERİLECEKTİR.\n\nBU İŞLEM 24-48 SAAT SÜREBİLİR.",
+          style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.w700, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("İptal"),
+            child: Text("İPTAL", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('📧 Veri indirme talebi alındı. E-postanızı kontrol edin.'),
-                  duration: Duration(seconds: 3),
+                SnackBar(
+                  content: Text('📧 VERİ İNDİRME TALEBİ ALINDI. E-POSTANIZI KONTROL EDİN.', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
+                  backgroundColor: Colors.black,
+                  duration: const Duration(seconds: 3),
                 ),
               );
             },
-            child: const Text("TALEP OLUŞTUR"),
+            child: Text("TALEP OLUŞTUR", style: GoogleFonts.outfit(color: AppColors.primary, fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -361,36 +397,38 @@ class SettingsScreen extends StatelessWidget {
         height: 64,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          gradient: const LinearGradient(
-            colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-          ),
+          color: AppColors.primary,
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+          ],
         ),
         child: const Icon(Icons.favorite, color: Colors.black, size: 32),
       ),
       children: [
         const SizedBox(height: 16),
         Text(
-          'DENGİM - Türkiye\'nin en popüler flört uygulaması! 💛',
-          style: GoogleFonts.plusJakartaSans(fontSize: 14),
+          'DENGİM - TÜRKİYE\'NİN EN POPÜLER FLÖRT UYGULAMASI! 💛',
+          style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 12),
         Text(
-          'Özellikler:',
-          style: GoogleFonts.plusJakartaSans(
+          'ÖZELLİKLER:',
+          style: GoogleFonts.outfit(
             fontSize: 13,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          '• Akıllı eşleşme algoritması\n'
-          '• Video görüşme\n'
-          '• Sesli mesajlar\n'
-          '• Hikayeler\n'
-          '• Harita üzerinde keşfet\n'
-          '• Sesli sohbet odaları\n'
-          '• Premium özellikler',
-          style: GoogleFonts.plusJakartaSans(fontSize: 12, height: 1.6),
+          '• AKILLI EŞLeŞME ALGORİTMASI\n'
+          '• VİDEO GÖRÜŞME\n'
+          '• SESLİ MESAJLAR\n'
+          '• HİKAYELER\n'
+          '• HARİTA ÜZERİNDE KEŞFET\n'
+          '• SESLİ SOHBET ODALARI\n'
+          '• PREMİUM ÖZELLİKLER',
+          style: GoogleFonts.outfit(fontSize: 12, height: 1.6, fontWeight: FontWeight.w700),
         ),
       ],
     );

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_theme.dart';
 import '../auth/login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -20,20 +18,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingData> _pages = [
     OnboardingData(
-      title: 'Mükemmel Dengini Bul',
-      description: 'Zevklerinize ve yaşam tarzınıza en uygun kişilerle tanışın. Sizin için rafine edilmiş bir deneyim.',
-      imageUrl: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=800&q=80',
+      title: "Yüzeyselliğe Veda",
+      description: "Sadece fotoğraflara bakarak karar vermekten sıkılmadın mı? Karakterin ön planda.",
+      color: AppColors.secondary, // Neo Pink
+      icon: Icons.sentiment_very_satisfied_rounded,
     ),
     OnboardingData(
-      title: 'Güvenli ve Prestijli',
-      description: 'Doğrulanmış profiller ve elit bir topluluk. DENGİM\'de her etkileşim değerlidir.',
-      imageUrl: 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?w=800&q=80',
+      title: "Uyumunu Keşfet",
+      description: "Burç uyumları ve ortak zevklere dayalı eşleşme sistemiyle kimyanı bul.",
+      color: AppColors.primary, // Neo Yellow
+      icon: Icons.auto_awesome_rounded,
     ),
     OnboardingData(
-      title: 'Anı Yakala',
-      description: 'Yeni insanlarla tanışmanın en estetik yolu. Şimdi katılın ve ayrıcalıklı hissedin.',
-      imageUrl: 'https://images.unsplash.com/photo-1516589091380-5d8e87df6999?w=800&q=80',
-    ),
+      title: "Canlı Topluluk",
+      description: "Canlı odalara katıl, sesli sohbet et ve seninle aynı vibe'a sahip insanlarla tanış.",
+      color: AppColors.blue, // Neo Blue
+      icon: Icons.radio_rounded,
+    )
   ];
 
   Future<void> _completeOnboarding() async {
@@ -54,149 +55,181 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final current = _pages[_currentPage];
+    
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: current.color,
       body: Stack(
         children: [
-          // Background Imagery
-          PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) => setState(() => _currentPage = index),
-            itemCount: _pages.length,
-            itemBuilder: (context, index) {
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: _pages[index].imageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: AppColors.surface,
-                      highlightColor: AppColors.surfaceLight,
-                      child: Container(color: AppColors.scaffold),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: AppColors.scaffold,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.favorite_rounded,
-                              size: 80,
-                              color: AppColors.primary.withOpacity(0.3),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'DENGİM',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary.withOpacity(0.5),
-                                letterSpacing: 4,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  _buildGradientOverlay(),
-                ],
-              );
-            },
+          // Dotted Background
+          CustomPaint(
+            painter: DottedPainter(),
+            size: Size.infinite,
           ),
-
-          // Content
+          
           SafeArea(
-            child: Column(
-              children: [
-                const Spacer(flex: 2),
-                // Indicators
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(_pages.length, (index) => _buildIndicator(index)),
-                ),
-                const SizedBox(height: 48),
-                // Text Area
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Column(
+                children: [
+                  // Top Indicators & Skip
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        _pages[_currentPage].title,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: -1,
-                        ),
+                      Row(
+                        children: List.generate(_pages.length, (index) => _buildIndicator(index)),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _pages[_currentPage].description,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.6),
-                          height: 1.6,
+                      TextButton(
+                        onPressed: _completeOnboarding,
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          padding: EdgeInsets.zero,
+                          textStyle: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w900,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.black,
+                            decorationThickness: 2,
+                          ),
                         ),
+                        child: const Text('ATLA'),
                       ),
                     ],
                   ),
-                ),
-                const Spacer(),
-                // Button
-                Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: SizedBox(
+                  
+                  const Spacer(),
+                  
+                  // Icon/Graphic Container
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    child: Container(
+                      key: ValueKey(_currentPage),
+                      width: 180,
+                      height: 180,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(color: Colors.black, width: 4),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black,
+                            offset: Offset(8, 8),
+                            blurRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Icon(
+                          current.icon,
+                          size: 100,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 60),
+                  
+                  // Title Area
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black, width: 3),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black,
+                          offset: Offset(4, 4),
+                          blurRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      current.title.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                        letterSpacing: -1,
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Description
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.black, width: 3),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black,
+                          offset: Offset(4, 4),
+                          blurRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      current.description,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  
+                  const Spacer(),
+                  
+                  // Navigation Button
+                  const SizedBox(height: 40),
+                  SizedBox(
                     width: double.infinity,
-                    height: 64,
+                    height: 72,
                     child: ElevatedButton(
                       onPressed: () {
                         if (_currentPage < _pages.length - 1) {
-                          _pageController.nextPage(duration: const Duration(milliseconds: 600), curve: Curves.easeInOutCubic);
+                          setState(() => _currentPage++);
                         } else {
                           _completeOnboarding();
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-                        elevation: 0,
+                      style: AppTheme.lightTheme.elevatedButtonTheme.style?.copyWith(
+                        backgroundColor: const WidgetStatePropertyAll(Colors.white),
+                        shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: const BorderSide(color: Colors.black, width: 4),
+                          ),
+                        ),
                       ),
-                      child: Text(
-                        _currentPage == _pages.length - 1 ? 'BAŞLA' : 'İLERLE',
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, letterSpacing: 1),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _currentPage == _pages.length - 1 ? 'PROFİLİ OLUŞTUR' : 'İLERİ',
+                            style: GoogleFonts.outfit(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.arrow_forward_rounded, weight: 900),
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildGradientOverlay() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.transparent,
-            AppColors.scaffold.withOpacity(0.4),
-            AppColors.scaffold,
-          ],
-          stops: const [0.0, 0.4, 0.8],
-        ),
       ),
     );
   }
@@ -206,11 +239,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      height: 4,
-      width: active ? 24 : 8,
+      height: 12,
+      width: 12,
       decoration: BoxDecoration(
-        color: active ? Colors.white : Colors.white.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(2),
+        color: active ? Colors.black : Colors.transparent,
+        border: Border.all(color: Colors.black, width: 2),
+        borderRadius: BorderRadius.circular(6),
       ),
     );
   }
@@ -219,7 +253,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 class OnboardingData {
   final String title;
   final String description;
-  final String imageUrl;
+  final Color color;
+  final IconData icon;
 
-  OnboardingData({required this.title, required this.description, required this.imageUrl});
+  OnboardingData({
+    required this.title,
+    required this.description,
+    required this.color,
+    required this.icon,
+  });
+}
+
+class DottedPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black.withOpacity(0.1)
+      ..strokeWidth = 2;
+
+    const double gap = 24;
+    for (double x = 0; x < size.width; x += gap) {
+      for (double y = 0; y < size.height; y += gap) {
+        canvas.drawCircle(Offset(x, y), 2, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

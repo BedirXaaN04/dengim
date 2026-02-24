@@ -1,39 +1,49 @@
 import 'package:flutter/material.dart';
 
-/// DENGİM Renk Paleti - Midnight Luxury Teması
+/// DENGİM Renk Paleti - Neo-Brutalism Teması
 class AppColors {
   AppColors._();
 
-  // Ana Renkler
-  static const Color scaffold = Color(0xFF0F1115);      // Kömür Siyahı - Zemin
-  static const Color primary = Color(0xFFD4AF37);       // DENGIM Luxury Gold (#D4AF37)
-  static const Color secondary = Color(0xFFFFD900);     // DENGIM Vibrant Gold (#FFD900)
-  static const Color vibrantGold = Color(0xFFFFD900);   // Parlak Altın
+  // Ana Renkler (Neo-Brutalism)
+  static const Color scaffold = Color(0xFFF4F4F0);      // Krem Arka Plan
+  static const Color primary = Color(0xFFFFD500);       // Neo Yellow
+  static const Color secondary = Color(0xFFFF90E8);     // Neo Pink
+  static const Color blue = Color(0xFF38DBFF);          // Neo Blue
+  static const Color green = Color(0xFF00E676);         // Neo Green
+  static const Color red = Color(0xFFFF3366);           // Neo Red
   
+  static const Color black = Color(0xFF000000);
+  static const Color white = Color(0xFFFFFFFF);
+
   // Metin Renkleri
-  static const Color textPrimary = Color(0xFFFFFFFF);   // Beyaz
-  static const Color textSecondary = Color(0xFF9CA3AF); // Gri
+  static const Color textPrimary = Color(0xFF000000);   // Siyah
+  static const Color textSecondary = Color(0xFF4B5563); // Gri
   
   // Yüzey Renkleri
-  static const Color surface = Color(0xFF1C1F26);       // Charcoal Gray (#1C1F26)
-  static const Color surfaceLight = Color(0xFF2C303A);  // Hafif Açık Gri
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceLight = Color(0xFFF9FAFB);
   
   // Durum Renkleri
-  static const Color success = Color(0xFF10B981);       // Yeşil
-  static const Color error = Color(0xFFEF4444);         // Kırmızı
-  static const Color warning = Color(0xFFF59E0B);       // Turuncu
+  static const Color success = Color(0xFF00E676);
+  static const Color error = Color(0xFFFF3366);
+  static const Color warning = Color(0xFFFFD500);
   
-  // Luxury Gradient
-  static const LinearGradient goldGradient = LinearGradient(
-    colors: [Color(0xFFD4AF37), Color(0xFFF5E6AD), Color(0xFFC5A059)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+  // Neo Shadows
+  static const BoxShadow neoShadow = BoxShadow(
+    color: Colors.black,
+    offset: Offset(4, 4),
+    blurRadius: 0,
   );
 
-  static const LinearGradient storyGradient = LinearGradient(
-    colors: [Color(0xFF8B5CF6), Color(0xFFEC4899)], // Purple to Pink
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+  static const BoxShadow neoShadowLarge = BoxShadow(
+    color: Colors.black,
+    offset: Offset(8, 8),
+    blurRadius: 0,
   );
 
+  static const BoxShadow neoShadowSmall = BoxShadow(
+    color: Colors.black,
+    offset: Offset(3, 3),
+    blurRadius: 0,
+  );
 }

@@ -160,7 +160,7 @@ class _DengimAppState extends State<DengimApp> with WidgetsBindingObserver {
         return MaterialApp(
           title: 'DENGİM',
           debugShowCheckedModeBanner: false,
-          theme: AppTheme.darkTheme,
+          theme: AppTheme.lightTheme,
           builder: (context, child) => ResponsiveCenterWrapper(
             child: NetworkWrapper(child: child!),
           ),
@@ -199,7 +199,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.8, curve: Curves.easeOutBack)),
+      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.8, curve: Curves.bounceOut)),
     );
 
     _controller.forward();
@@ -213,7 +213,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkFirstTime() async {
-    // Biraz bekleyelim ki animasyon tadı çıksın
     await Future.delayed(const Duration(seconds: 2));
 
     try {
@@ -250,7 +249,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             
             if (!mounted) return;
 
-            // Kredi sağlayıcısını başlat ve günlük ödülü kontrol et
             final creditProvider = Provider.of<CreditProvider>(context, listen: false);
             await creditProvider.init();
             await creditProvider.claimDailyReward();
@@ -285,25 +283,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F0F), // Darker, more premium black
+      backgroundColor: AppColors.blue, // Neo Blue background
       body: Stack(
         children: [
-          // Background Glows
-          Positioned(
-            top: -100,
-            left: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.05),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-                child: Container(),
-              ),
-            ),
+          // Dotted Background Effect
+          CustomPaint(
+            painter: DottedPainter(),
+            size: Size.infinite,
           ),
           
           Center(
@@ -314,103 +300,77 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo Container
+                    // Neo Logo Container
                     Container(
-                      width: 140,
-                      height: 140,
+                      width: 160,
+                      height: 160,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(color: Colors.black, width: 4),
+                        boxShadow: const [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.2),
-                            blurRadius: 40,
-                            spreadRadius: 5,
+                            color: Colors.black,
+                            offset: Offset(8, 8),
+                            blurRadius: 0,
                           ),
                         ],
-                        gradient: const LinearGradient(
-                          colors: [AppColors.primary, Color(0xFFE5A110)], // Sophisticated gold gradient
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.local_fire_department_rounded,
-                          size: 70,
-                          color: Colors.white,
+                          size: 90,
+                          color: AppColors.primary, // Yellow flame
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 48),
                     
                     // Brand Name
-                    RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 42,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: -1,
-                        ),
-                        children: [
-                          const TextSpan(text: 'DENG'),
-                          TextSpan(
-                            text: 'İM',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              shadows: [
-                                Shadow(
-                                  color: AppColors.primary.withOpacity(0.4),
-                                  blurRadius: 15,
-                                ),
-                              ],
-                            ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.black, width: 4),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black,
+                            offset: Offset(4, 4),
+                            blurRadius: 0,
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'DENGİNİ BURADA BUL',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white38,
-                        letterSpacing: 4.0,
+                      child: Text(
+                        'DENGİM',
+                        style: GoogleFonts.outfit(
+                          fontSize: 48,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                          letterSpacing: -2,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          
-          // Bottom Loading Indicator
-          Positioned(
-            bottom: 64,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      width: 32,
-                      child: LinearProgressIndicator(
-                        backgroundColor: Colors.white10,
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
                         color: AppColors.primary,
-                        minHeight: 2,
+                        border: Border.all(color: Colors.black, width: 3),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black,
+                            offset: Offset(3, 3),
+                            blurRadius: 0,
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'BAŞLATILIYOR',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white24,
-                        letterSpacing: 2,
+                      child: Text(
+                        'RUH EŞİNİ BUL',
+                        style: GoogleFonts.outfit(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ],
@@ -422,4 +382,23 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       ),
     );
   }
+}
+
+class DottedPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black.withOpacity(0.1)
+      ..strokeWidth = 2;
+
+    const double gap = 24;
+    for (double x = 0; x < size.width; x += gap) {
+      for (double y = 0; y < size.height; y += gap) {
+        canvas.drawCircle(Offset(x, y), 2, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

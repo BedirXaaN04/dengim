@@ -80,21 +80,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       placeholder: (context, url) => Container(color: AppColors.surface),
                       errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
-                    // Soft Fade Gradient
-                    Container(
-                      height: 560,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            AppColors.scaffold.withOpacity(0.0),
-                            AppColors.scaffold.withOpacity(0.6),
-                            AppColors.scaffold,
-                          ],
-                          stops: const [0.0, 0.4, 0.7, 1.0],
-                        ),
+                    // Header Border
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 4,
+                        color: Colors.black,
                       ),
                     ),
                     // Buttons at Top
@@ -129,20 +122,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 // Profile Info
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
                           Text(
-                            '$name, $age',
-                            style: GoogleFonts.plusJakartaSans(
+                            '$name, $age'.toUpperCase(),
+                            style: GoogleFonts.outfit(
                               fontSize: 32,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              letterSpacing: -0.5,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black,
+                              letterSpacing: -1.0,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -154,63 +147,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(Icons.location_on, color: Colors.white54, size: 16),
+                          const Icon(Icons.location_on, color: Colors.black, size: 16),
                           const SizedBox(width: 6),
                           Text(
-                            location,
-                            style: GoogleFonts.plusJakartaSans(
+                            location.toUpperCase(),
+                            style: GoogleFonts.outfit(
                               fontSize: 14,
-                              color: Colors.white54,
-                              fontWeight: FontWeight.w300,
+                              color: Colors.black.withOpacity(0.6),
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ],
                       ),
 
                       const SizedBox(height: 32),
-                      // Profile Completion Indicator
                       _buildProfileCompletionCard(profile),
                       
                       const SizedBox(height: 40),
-                      _buildSectionTitle('HAKKINDA'),
-                      const SizedBox(height: 12),
-                      Text(
-                        bio,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
-                          fontWeight: FontWeight.w300,
-                          height: 1.6,
-                        ),
-                      ),
+                      _buildSectionHeader('HAKKINDA'),
+                      _buildBioCard(bio),
 
                       const SizedBox(height: 40),
-                      _buildSectionTitle('DETAYLAR'),
-                      const SizedBox(height: 8),
-                      _buildDetailRow('Meslek', job),
-                      _buildDetailRow('Eğitim', education),
-                      _buildDetailRow('İlgi Alanları', interests, isLast: true),
+                      _buildSectionHeader('DETAYLAR'),
+                      _buildDetailsCard(job, education, interests),
 
                       if (profile?.videoUrl != null) ...[
-                        const SizedBox(height: 40),
-                        _buildSectionTitle('VİDEO PROFİL'),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 199),
+                        _buildSectionHeader('VİDEO PROFİL'),
                         _buildVideoPreview(profile!.videoUrl!),
                       ],
 
                       const SizedBox(height: 48),
 
-                      // Kredi & Abonelik Kartı
                       _buildCreditAndTierCard(profile),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
-                      // Buttons
                       _buildActionBtn(
                         icon: Icons.visibility_outlined,
-                        label: 'Profil Ziyaretçileri',
+                        label: 'PROFİL ZİYARETÇİLERİ',
                         onTap: () {
                           Navigator.push(
                             context,
@@ -218,23 +195,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       _buildActionBtn(
                         icon: Icons.share_outlined,
-                        label: 'Profili Paylaş',
+                        label: 'PROFİLİ PAYLAŞ',
                         onTap: () {
                           if (profile != null) {
                             Share.share('DENGİM uygulamasında beni bul! Kullanıcı Adım: ${profile.name} \n\nHemen indir: https://dengimapp.com');
                           }
                         },
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       _buildActionBtn(
                         icon: Icons.logout,
-                        label: 'Çıkış Yap',
-                        color: Colors.redAccent.withOpacity(0.1),
-                        textColor: Colors.redAccent.withOpacity(0.8),
-                        borderColor: Colors.redAccent.withOpacity(0.1),
+                        label: 'ÇIKIŞ YAP',
+                        color: AppColors.red,
+                        textColor: Colors.black,
+                        borderColor: Colors.black,
                         onTap: () async {
                           await AuthService().signOut();
                           if (context.mounted) {
@@ -246,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                         },
                       ),
-                      const SizedBox(height: 120), // Bottom nav space
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
@@ -263,26 +240,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 40,
-        height: 40,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.white,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.black, width: 2),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+          ],
         ),
-        child: Icon(icon, color: Colors.white.withOpacity(0.9), size: 20),
+        child: Icon(icon, color: Colors.black, size: 20),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.plusJakartaSans(
-        fontSize: 10,
-        fontWeight: FontWeight.bold,
-        color: Colors.white.withOpacity(0.4),
-        letterSpacing: 3.0,
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: GoogleFonts.outfit(
+          fontSize: 12,
+          fontWeight: FontWeight.w900,
+          color: Colors.black,
+          letterSpacing: 1.0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBioCard(String bio) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
+      ),
+      child: Text(
+        bio,
+        style: GoogleFonts.outfit(
+          fontSize: 16,
+          color: Colors.black,
+          fontWeight: FontWeight.w500,
+          height: 1.6,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailsCard(String job, String education, String interests) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildDetailRow('MESLEK', job),
+          _buildDetailRow('EĞİTİM', education),
+          _buildDetailRow('İLGİ ALANLARI', interests, isLast: true),
+        ],
       ),
     );
   }
@@ -291,13 +319,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        border: isLast ? null : Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
+        border: isLast ? null : Border(bottom: BorderSide(color: Colors.black.withOpacity(0.1), width: 1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.white54, fontWeight: FontWeight.w300)),
-          Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.white, fontWeight: FontWeight.normal)),
+          Text(label, style: GoogleFonts.outfit(fontSize: 14, color: Colors.black.withOpacity(0.5), fontWeight: FontWeight.w800)),
+          Text(value, style: GoogleFonts.outfit(fontSize: 14, color: Colors.black, fontWeight: FontWeight.w900)),
         ],
       ),
     );
@@ -316,21 +344,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          color: color ?? Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor ?? Colors.white.withOpacity(0.1)),
+          color: color ?? Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderColor ?? Colors.black, width: 2.5),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: textColor ?? Colors.white.withOpacity(0.9)),
+            Icon(icon, size: 18, color: textColor ?? Colors.black),
             const SizedBox(width: 8),
             Text(
               label,
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.outfit(
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: textColor ?? Colors.white.withOpacity(0.9),
+                fontWeight: FontWeight.w900,
+                color: textColor ?? Colors.black,
               ),
             ),
           ],
@@ -418,22 +449,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.primary.withOpacity(0.2),
-              AppColors.primary.withOpacity(0.05),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: Colors.white,
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 2),
               ),
               child: const Icon(Icons.verified, color: Colors.black, size: 20),
             ),
@@ -442,20 +472,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message,
-                    style: GoogleFonts.plusJakartaSans(
+                   Text(
+                    message.toUpperCase(),
+                    style: GoogleFonts.outfit(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Profilin tamamen dolu ve keşfedilmeye hazır!',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      color: Colors.white70,
+                    'PROFİLİN TAMAMEN DOLU VE KEŞFEDİLMEYE HAZIR!',
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black.withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -470,9 +501,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,31 +516,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Text(
                 'PROFİL TAMAMLANMA',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white54,
-                  letterSpacing: 2.0,
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
                 ),
               ),
               Text(
                 '%$percentage',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.outfit(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
                   color: AppColors.primary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: percentage / 100,
-              minHeight: 8,
-              backgroundColor: Colors.white.withOpacity(0.1),
-              color: AppColors.primary,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: percentage / 100,
+                minHeight: 12,
+                backgroundColor: Colors.transparent,
+                color: AppColors.primary,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -514,16 +554,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Expanded(
                 child: Text(
-                  message,
-                  style: GoogleFonts.plusJakartaSans(
+                  message.toUpperCase(),
+                  style: GoogleFonts.outfit(
                     fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              TextButton(
-                onPressed: () {
+              GestureDetector(
+                onTap: () {
                   if (profile != null) {
                     Navigator.push(
                       context,
@@ -533,13 +573,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   }
                 },
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                ),
-                child: Text(
-                  'Tamamla',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                  child: Text(
+                    'TAMAMLA',
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
@@ -555,16 +602,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        gradient: isPlatinum 
-            ? const LinearGradient(colors: [Color(0xFFE5E4E2), Color(0xFFB4B4B4)]) 
-            : AppColors.goldGradient,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: (isPlatinum ? Colors.white : AppColors.primary).withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
+        color: isPlatinum ? Colors.white : AppColors.primary,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
         ],
       ),
       child: Row(
@@ -572,17 +614,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(
             isPlatinum ? Icons.workspace_premium_rounded : Icons.star_rounded,
-            color: isPlatinum ? Colors.black87 : Colors.black,
+            color: Colors.black,
             size: 14,
           ),
           const SizedBox(width: 4),
           Text(
             tier.toUpperCase(),
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.outfit(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: isPlatinum ? Colors.black87 : Colors.black,
-              letterSpacing: 0.5,
+              color: Colors.black,
             ),
           ),
         ],
@@ -599,31 +640,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF1E1E1E),
-                const Color(0xFF252525),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black, width: 3),
+            boxShadow: const [
+              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+            ],
           ),
           child: Column(
             children: [
-              // Üst satır: Kredi bakiye + Tier
               Row(
                 children: [
-                  // Kredi
                   Expanded(
                     child: Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            gradient: AppColors.goldGradient,
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 2),
                           ),
                           child: const Icon(Icons.monetization_on_rounded, color: Colors.black, size: 22),
                         ),
@@ -633,17 +669,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Text(
                               '${creditProvider.balance}',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 24,
+                              style: GoogleFonts.outfit(
+                                fontSize: 26,
                                 fontWeight: FontWeight.w900,
-                                color: Colors.white,
+                                color: Colors.black,
                               ),
                             ),
                             Text(
-                              'Kredi',
-                              style: GoogleFonts.plusJakartaSans(
+                              'KREDİ',
+                              style: GoogleFonts.outfit(
                                 fontSize: 11,
-                                color: Colors.white38,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black.withOpacity(0.5),
                               ),
                             ),
                           ],
@@ -651,25 +688,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  // Streak
                   if (creditProvider.streak > 0)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.orange,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.black, width: 1.5),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.local_fire_department, color: Colors.orange, size: 16),
+                          const Icon(Icons.local_fire_department, color: Colors.black, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             '${creditProvider.streak}',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.outfit(
                               fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -678,13 +718,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              // Butonlar
               Row(
                 children: [
                   Expanded(
                     child: _buildMiniBtn(
                       icon: Icons.play_circle_filled_rounded,
-                      label: 'İzle & Kazan',
+                      label: 'İZLE & KAZAN',
                       color: const Color(0xFF6C63FF),
                       onTap: () => Navigator.push(
                         context,
@@ -692,11 +731,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: _buildMiniBtn(
                       icon: isPremium ? Icons.workspace_premium_rounded : Icons.star_rounded,
-                      label: isPremium ? tier.toUpperCase() : 'Premium Al',
+                      label: isPremium ? tier.toUpperCase() : 'PREMIUM AL',
                       color: AppColors.primary,
                       onTap: () => Navigator.push(
                         context,
@@ -724,21 +763,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.25)),
+          color: color,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.black, width: 2),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 18),
+            Icon(icon, color: Colors.black, size: 18),
             const SizedBox(width: 6),
             Text(
-              label,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: color,
+              label.toUpperCase(),
+              style: GoogleFonts.outfit(
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
               ),
             ),
           ],

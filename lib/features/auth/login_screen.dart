@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'register_screen.dart';
 import '../create_profile/create_profile_screen.dart';
@@ -69,19 +70,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
+      SnackBar(
+        content: Text(message, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), 
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Colors.black, width: 2),
+        ),
+      ),
     );
   }
 
-  // Email Giriş Formunu Aç
   void _showEmailLoginForm() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.scaffold,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -90,9 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
           top: 32,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF151515),
+          color: AppColors.scaffold,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: const Border(top: BorderSide(color: Colors.black, width: 4)),
         ),
         child: _EmailLoginForm(
           authService: _authService,
@@ -105,22 +110,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: AppColors.blue, // Neo Blue
       body: Stack(
         children: [
-          // Background Gradient Glow
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.08),
-              ),
-              child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120), child: Container()),
-            ),
+          // Dotted Background
+          CustomPaint(
+            painter: DottedPainter(),
+            size: Size.infinite,
           ),
           
           SafeArea(
@@ -134,31 +130,75 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(20),
+                        width: 120,
+                        height: 120,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.primary.withOpacity(0.1),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                        ),
-                        child: const Icon(Icons.local_fire_department_rounded, color: AppColors.primary, size: 48),
-                      ),
-                      const SizedBox(height: 32),
-                      Text(
-                        'DENGIM',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 42,
-                          fontWeight: FontWeight.w800,
                           color: Colors.white,
-                          letterSpacing: -1,
+                          borderRadius: BorderRadius.circular(32),
+                          border: Border.all(color: Colors.black, width: 4),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(8, 8),
+                              blurRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.local_fire_department_rounded, 
+                            color: AppColors.primary, 
+                            size: 70,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Gerçek bağlantılar, kaliteli deneyim.',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 16,
-                          color: Colors.white54,
-                          fontWeight: FontWeight.w400,
+                      const SizedBox(height: 48),
+                      // Brand Name Plate
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black, width: 4),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(6, 6),
+                              blurRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'DENGİM',
+                          style: GoogleFonts.outfit(
+                            fontSize: 48,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            letterSpacing: -2,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black,
+                              offset: Offset(3, 3),
+                              blurRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'RUH EŞİNİ BUL.',
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ],
@@ -174,23 +214,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       _LoginButton(
                         icon: Icons.email_rounded,
-                        text: 'E-posta ile Giriş Yap',
-                        color: AppColors.primary,
+                        text: 'Google ile Giriş Yap',
+                        color: Colors.white,
                         textColor: Colors.black,
-                        onTap: _showEmailLoginForm,
+                        onTap: _signInWithGoogle,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       _LoginButton(
                         icon: Icons.cloud_outlined,
-                        text: 'Google ile Devam Et',
-                        color: Colors.white.withOpacity(0.05),
+                        text: 'Apple ile Giriş Yap',
+                        color: Colors.black,
                         textColor: Colors.white,
-                        borderColor: Colors.white.withOpacity(0.1),
-                        isImage: true,
-                        imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
-                        onTap: _isLoading ? null : _signInWithGoogle,
+                        onTap: () => _showError('Apple Girişi yakında eklenecektir.'),
                       ),
-
                     ],
                   ),
                 ),
@@ -200,13 +236,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Footer
                 Padding(
                   padding: const EdgeInsets.fromLTRB(48, 0, 48, 32),
-                  child: Text(
-                    'Devam ederek Kullanım Koşullarını ve Gizlilik Politikamızı kabul etmiş olursunuz.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 11,
-                      color: Colors.white24,
-                      height: 1.6,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.4),
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Devam ederek Kullanım Koşullarını ve Gizlilik Politikamızı kabul etmiş olursunuz.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                        height: 1.4,
+                      ),
                     ),
                   ),
                 ),
@@ -224,57 +269,54 @@ class _LoginButton extends StatelessWidget {
   final String text;
   final Color color;
   final Color textColor;
-  final Color? borderColor;
   final VoidCallback? onTap;
-  final bool isImage;
-  final String? imageUrl;
 
   const _LoginButton({
     required this.icon,
     required this.text,
     required this.color,
     required this.textColor,
-    this.borderColor,
     this.onTap,
-    this.isImage = false,
-    this.imageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
         borderRadius: BorderRadius.circular(20),
-        child: Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: borderColor != null ? Border.all(color: borderColor!) : null,
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(4, 4),
+            blurRadius: 0,
           ),
-          child: Row(
-            children: [
-              if (isImage && imageUrl != null)
-                Image.network(imageUrl!, width: 22, height: 22)
-              else
-                Icon(icon, color: textColor, size: 22),
-              
-              Expanded(
-                child: Text(
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            height: 68,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: textColor, size: 28),
+                const SizedBox(width: 12),
+                Text(
                   text,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                  style: GoogleFonts.outfit(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
                     color: textColor,
                   ),
                 ),
-              ),
-              const SizedBox(width: 22),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -320,73 +362,6 @@ class _EmailLoginFormState extends State<_EmailLoginForm> {
     }
   }
 
-  void _showForgotPassword() {
-    final resetEmailController = TextEditingController(text: _emailController.text);
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('Şifremi Unuttum', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Şifre sıfırlama bağlantısı göndermek için e-posta adresinizi girin.',
-              style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 13),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: resetEmailController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'E-posta adresiniz',
-                hintStyle: const TextStyle(color: Colors.white30),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.05),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('İptal', style: TextStyle(color: Colors.white60)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final email = resetEmailController.text.trim();
-              if (email.isNotEmpty) {
-                try {
-                  await widget.authService.resetPassword(email);
-                  if (mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sıfırlama bağlantısı e-postanıza gönderildi.')),
-                    );
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Hata: ${e.toString()}'), backgroundColor: Colors.red),
-                  );
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Text('Gönder'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -394,97 +369,80 @@ class _EmailLoginFormState extends State<_EmailLoginForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Giriş Yap',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
+          'GİRİŞ YAP',
+          style: GoogleFonts.outfit(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+            letterSpacing: -1,
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'E-posta ve şifrenizle devam edin.',
-          style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 14),
         ),
         const SizedBox(height: 24),
         if (_error != null)
           Container(
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: Text(_error!, style: const TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+            decoration: BoxDecoration(
+              color: AppColors.red.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black, width: 2),
+            ),
+            child: Text(_error!, style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.black)),
           ),
         TextField(
           controller: _emailController,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'E-posta',
-            hintStyle: const TextStyle(color: Colors.white30),
-            prefixIcon: const Icon(Icons.email_outlined, color: Colors.white30),
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 1)),
+            prefixIcon: Icon(Icons.email_outlined, color: Colors.black),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         TextField(
           controller: _passwordController,
           obscureText: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-
+          decoration: const InputDecoration(
             hintText: 'Şifre',
-            hintStyle: const TextStyle(color: Colors.white30),
-            prefixIcon: const Icon(Icons.lock_outline, color: Colors.white30),
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 1)),
+            prefixIcon: Icon(Icons.lock_outline, color: Colors.black),
           ),
         ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: _showForgotPassword,
-            child: Text(
-              'Şifremi Unuttum?',
-              style: GoogleFonts.plusJakartaSans(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 32),
         ElevatedButton(
           onPressed: _isLoading ? null : _login,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.black,
-            minimumSize: const Size(double.infinity, 56),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            minimumSize: const Size(double.infinity, 64),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: const BorderSide(color: Colors.black, width: 3),
+            ),
             elevation: 0,
           ),
           child: _isLoading 
-            ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2)) 
-            : Text('Giriş Yap', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16)),
-        ),
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Hesabınız yok mu?', style: TextStyle(color: Colors.white38)),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (c) => const RegisterScreen()));
-              },
-              child: const Text('Hemen Kayıt Ol', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-            ),
-          ],
+            ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 4)) 
+            : Text('GİRİŞ YAP', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 20)),
         ),
         const SizedBox(height: 32),
       ],
     );
   }
+}
+
+class DottedPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black.withOpacity(0.1)
+      ..strokeWidth = 2;
+
+    const double gap = 24;
+    for (double x = 0; x < size.width; x += gap) {
+      for (double y = 0; y < size.height; y += gap) {
+        canvas.drawCircle(Offset(x, y), 2, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

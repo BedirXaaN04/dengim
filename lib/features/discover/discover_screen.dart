@@ -535,15 +535,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: Colors.white,
       body: Consumer2<DiscoveryProvider, StoryProvider>(
         builder: (context, provider, storyProvider, child) {
           return Stack(
             children: [
               RefreshIndicator(
                 onRefresh: _refreshData,
-                color: AppColors.primary,
-                backgroundColor: AppColors.surfaceLight,
+                color: Colors.black,
+                backgroundColor: Colors.white,
                 displacement: 40,
                 strokeWidth: 3,
                 child: CustomScrollView(
@@ -682,15 +682,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             children: [
               Text(
                 "ÖNE ÇIKANLAR",
-                style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 11,
-                  letterSpacing: 1.5,
+                style: GoogleFonts.outfit(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  letterSpacing: -0.5,
                 ),
               ),
               if (!isPremium) 
-                const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 14),
+                const Icon(Icons.lock_outline_rounded, color: Colors.black, size: 16),
             ],
           ),
         ),
@@ -723,38 +723,33 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       },
       child: Container(
         width: 100,
-        margin: const EdgeInsets.symmetric(horizontal: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white10),
-          boxShadow: [
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black,
+              offset: Offset(4, 4),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(13),
           child: Stack(
             fit: StackFit.expand,
             children: [
               CachedNetworkImage(
                 imageUrl: user.imageUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(color: Colors.white.withOpacity(0.05)),
+                placeholder: (context, url) => Container(color: Colors.black12),
               ),
               if (!isPremium)
-                ClipRRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.4),
-                      child: const Center(
-                        child: Icon(Icons.lock_outline_rounded, color: Colors.white70, size: 24),
-                      ),
-                    ),
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Center(
+                    child: Icon(Icons.lock_outline_rounded, color: Colors.white, size: 24),
                   ),
                 ),
               Positioned(
@@ -762,20 +757,17 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
-                    ),
+                    color: AppColors.primary,
+                    border: Border(top: BorderSide(color: Colors.black, width: 2.5)),
                   ),
                   child: Text(
-                    isPremium ? user.name : 'Aç',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                    (isPremium ? user.name : 'AÇ').toUpperCase(),
+                    style: GoogleFonts.outfit(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,
@@ -795,21 +787,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       bottom: false,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.scaffold.withOpacity(0.8),
-          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(bottom: BorderSide(color: Colors.black, width: 4)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Sol: Kullanıcı Profil Avatarı
+            // Left: User Profile Avatar
             Consumer<UserProvider>(
               builder: (context, userProvider, _) {
                 final user = userProvider.currentUser;
                 return GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    // Profil sayfasına git (bottom nav index 4)
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Profilini görmek için alt menüden Profil sekmesine git!'),
@@ -818,88 +809,56 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     );
                   },
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
+                      color: Colors.white,
                       shape: BoxShape.circle,
-                      gradient: user?.isPremium == true ? AppColors.goldGradient : null,
-                      border: user?.isPremium == true ? null : Border.all(color: Colors.white.withOpacity(0.2), width: 1),
-                      boxShadow: user?.isPremium == true ? [
-                        BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8, spreadRadius: 1)
-                      ] : null,
+                      border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                      ],
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(user?.isPremium == true ? 2 : 0),
-                      child: Container(
-                        decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.scaffold),
-                        child: ClipOval(
-                          child: user?.imageUrl != null
-                              ? CachedNetworkImage(
-                                  imageUrl: user!.imageUrl,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => Container(color: AppColors.surface),
-                                  errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.white54, size: 18),
-                                )
-                              : const Icon(Icons.person, color: Colors.white54, size: 18),
-                        ),
-                      ),
+                    child: ClipOval(
+                      child: user?.imageUrl != null
+                          ? CachedNetworkImage(
+                              imageUrl: user!.imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => Container(color: AppColors.scaffold),
+                              errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.black, size: 20),
+                            )
+                          : const Icon(Icons.person, color: Colors.black, size: 20),
                     ),
                   ),
                 );
               },
             ),
             
-            // Orta: DENGIM (Luxury style)
+            // Middle: DENGIM
             Text(
-              'DENGIM',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 4.0,
-                color: Colors.white,
+              'DENGİM',
+              style: GoogleFonts.outfit(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1.0,
+                color: Colors.black,
               ),
             ),
             
-            // Sağ: Arama, Spaces, Notifications ve Filtre
+            // Right: Icons
             Row(
               children: [
-                // 🎙️ Sesli Odalar (Spaces)
                 GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SpacesScreen()),
-                    );
-                  },
-                  child: const Icon(
-                    Icons.graphic_eq_rounded,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SpacesScreen())),
+                  child: const Icon(Icons.graphic_eq_rounded, color: Colors.black, size: 28),
                 ),
                 const SizedBox(width: 16),
-                // 🔍 Arama butonu
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
                     setState(() => _showSearchBar = !_showSearchBar);
-                    if (!_showSearchBar) {
-                      _searchController.clear();
-                      _searchResults.clear();
-                      _searchQuery = '';
-                    }
                   },
-                  child: Icon(
-                    _showSearchBar ? Icons.close : Icons.search_rounded,
-                    color: _showSearchBar ? AppColors.primary : Colors.white.withOpacity(0.8),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                GestureDetector(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
-                  child: Icon(Icons.notifications_outlined, color: Colors.white.withOpacity(0.8), size: 24),
+                  child: Icon(_showSearchBar ? Icons.close : Icons.search_rounded, color: Colors.black, size: 28),
                 ),
                 const SizedBox(width: 16),
                 GestureDetector(
@@ -951,18 +910,17 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                      border: Border.all(color: Colors.black, width: 2),
                     ),
-                    child: const Icon(Icons.filter_list_rounded, color: AppColors.primary, size: 20),
+                    child: const Icon(Icons.filter_list_rounded, color: Colors.black, size: 20),
                   ),
                 ),
               ],
             ),
-
           ],
         ),
       ),
@@ -977,31 +935,34 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       height: _showSearchBar ? null : 0,
       child: _showSearchBar ? Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(bottom: BorderSide(color: Colors.black, width: 2)),
         ),
         child: Column(
           children: [
             // Arama input
             Container(
               decoration: BoxDecoration(
-                color: AppColors.scaffold,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
               ),
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
                 autofocus: true,
-                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 15),
+                style: GoogleFonts.outfit(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
                 decoration: InputDecoration(
-                  hintText: 'Profil ara...',
-                  hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white38, fontSize: 15),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white38, size: 20),
+                  hintText: 'PROFİL ARA...',
+                  hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.bold),
+                  prefixIcon: const Icon(Icons.search, color: Colors.black, size: 22),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear, color: Colors.white38, size: 18),
+                          icon: const Icon(Icons.clear, color: Colors.black, size: 20),
                           onPressed: () {
                             _searchController.clear();
                             _onSearchChanged('');
@@ -1021,16 +982,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.primary,
+                        color: Colors.black,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Text('Aranıyor...', style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 12)),
+                    const SizedBox(width: 12),
+                    Text('ARANIYOR...', style: GoogleFonts.outfit(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900)),
                   ],
                 ),
               )
@@ -1164,13 +1125,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           }
         }
         
-        // Combine for viewer (My Story first if exists)
         final List<UserStories> allViewableStories = [];
         if (myStories != null) allViewableStories.add(myStories);
         allViewableStories.addAll(otherStories);
 
         return Container(
-          height: 110,
+          height: 120,
           padding: const EdgeInsets.only(top: 16),
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1179,7 +1139,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             itemCount: otherStories.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
-                // My Story Slot
                 if (myStories != null) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 20),
@@ -1201,22 +1160,21 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.primary, width: 2),
+                              border: Border.all(color: Colors.black, width: 2),
                             ),
                             child: CircleAvatar(
                               radius: 28,
-                              backgroundColor: Colors.grey[900],
+                              backgroundColor: AppColors.scaffold,
                               backgroundImage: NetworkImage(myStories.userAvatar),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'SİZ',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.outfit(
                               fontSize: 10,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5
+                              color: Colors.black,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
                         ],
@@ -1234,22 +1192,31 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             width: 65,
                             height: 65,
                             decoration: BoxDecoration(
-                              color: AppColors.surface,
+                              color: Colors.white,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.08)),
+                              border: Border.all(color: Colors.black, width: 2),
+                              boxShadow: const [
+                                BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                              ],
                             ),
-                            child: const Icon(Icons.add, color: AppColors.primary, size: 24),
+                            child: const Icon(Icons.add, color: Colors.black, size: 28),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text('SİZ', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white24, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                        Text(
+                          'SİZ', 
+                          style: GoogleFonts.outfit(
+                            fontSize: 10, 
+                            color: Colors.black.withOpacity(0.5), 
+                            fontWeight: FontWeight.w900
+                          )
+                        ),
                       ],
                     ),
                   );
                 }
               }
 
-              // Other Users
               final userStories = otherStories[index - 1];
               final name = userStories.userName.toUpperCase();
 
@@ -1259,7 +1226,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        // Find correct index in allViewableStories
                         final viewIndex = allViewableStories.indexOf(userStories);
                         Navigator.push(
                           context,
@@ -1272,25 +1238,26 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         );
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(2.5),
+                        padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: userStories.stories.any((s) => s.isPremium) 
-                              ? AppColors.goldGradient 
-                              : AppColors.storyGradient,
+                          border: Border.all(color: Colors.black, width: 2),
+                          color: userStories.stories.any((s) => s.isPremium) 
+                              ? AppColors.primary 
+                              : AppColors.secondary,
                         ),
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.scaffold, width: 2),
+                            border: Border.all(color: Colors.black, width: 2),
                           ),
                           child: ClipOval(
                              child: CachedNetworkImage(
-                              imageUrl: userStories.userAvatar,
-                              width: 56,
-                              height: 56,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(color: AppColors.surface),
+                               imageUrl: userStories.userAvatar,
+                               width: 54,
+                               height: 54,
+                               fit: BoxFit.cover,
+                               placeholder: (context, url) => Container(color: AppColors.scaffold),
                             ),
                           ),
                         ),
@@ -1299,11 +1266,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     const SizedBox(height: 8),
                     Text(
                       name.length > 8 ? '${name.substring(0, 7)}..' : name, 
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.outfit(
                         fontSize: 10, 
-                        color: Colors.white, 
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
+                        color: Colors.black, 
+                        fontWeight: FontWeight.w900,
                       )
                     ),
                   ],
@@ -1320,7 +1286,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
 
 
-  // Yeni Kart Tasarımı (Glassmorphism)
   Widget _buildUserCard(UserProfile user, double percentX, double percentY) {
     final showLike = percentX > 0.2;
     final showNope = percentX < -0.2;
@@ -1331,17 +1296,18 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         onTap: () => _onCardTap(user),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(40),
-            boxShadow: [
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.black, width: 4),
+            boxShadow: const [
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
-                blurRadius: 40,
-                offset: const Offset(0, 20),
+                color: Colors.black,
+                offset: Offset(8, 8),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(20),
             child: Stack(
               fit: StackFit.expand,
               children: _buildStackChildren(user, showLike, showNope, percentX),
@@ -1364,55 +1330,49 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   Widget _buildActionButtons() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 24),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildCircleButton(
             onTap: _onUndo,
-            size: 40,
-            icon: Icons.undo,
-            color: AppColors.secondary.withOpacity(0.7),
-            borderColor: AppColors.secondary.withOpacity(0.4),
-            bgColor: Colors.transparent,
+            size: 48,
+            icon: Icons.undo_rounded,
+            color: Colors.black,
+            bgColor: AppColors.secondary,
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           _buildCircleButton(
             onTap: _onDislike,
-            size: 56,
-            icon: Icons.close,
-            color: Colors.white.withOpacity(0.5),
-            borderColor: Colors.white.withOpacity(0.1),
-            bgColor: Colors.white.withOpacity(0.03),
+            size: 64,
+            icon: Icons.close_rounded,
+            color: Colors.black,
+            bgColor: Colors.white,
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           _buildCircleButton(
             onTap: _onLike,
             size: 80,
-            icon: Icons.favorite,
+            icon: Icons.favorite_rounded,
             iconSize: 36,
-            color: AppColors.primary,
-            borderColor: AppColors.primary.withOpacity(0.3),
-            bgColor: AppColors.primary.withOpacity(0.1),
-            hasShadow: true,
+            color: AppColors.red,
+            bgColor: AppColors.primary,
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           _buildCircleButton(
             onTap: _onSuperLike,
-            size: 56,
-            icon: Icons.star,
-            color: Colors.white.withOpacity(0.5),
-            borderColor: Colors.white.withOpacity(0.1),
-            bgColor: Colors.white.withOpacity(0.03),
+            size: 64,
+            icon: Icons.star_rounded,
+            color: Colors.black,
+            bgColor: AppColors.blue,
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 16),
           _buildCircleButton(
             onTap: _onBoost,
-            size: 40,
+            size: 48,
             icon: Icons.bolt_rounded,
-            color: Colors.purpleAccent,
-            borderColor: Colors.purpleAccent.withOpacity(0.4),
-            bgColor: Colors.transparent,
+            color: Colors.black,
+            bgColor: AppColors.green,
           ),
         ],
       ),
@@ -1424,10 +1384,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     required double size,
     required IconData icon,
     required Color color,
-    Color? borderColor,
-    Color? bgColor,
+    required Color bgColor,
     double? iconSize,
-    bool hasShadow = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -1435,21 +1393,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: bgColor ?? Colors.transparent,
+          color: bgColor,
           shape: BoxShape.circle,
-          border: Border.all(
-            color: borderColor ?? Colors.transparent,
-            width: 1,
-          ),
-          boxShadow: hasShadow
-              ? [
-                  BoxShadow(
-                    color: color.withOpacity(0.15),
-                    blurRadius: 30,
-                    spreadRadius: 0,
-                  )
-                ]
-              : null,
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
         ),
         child: Icon(
           icon,
@@ -1464,16 +1413,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     return Transform.rotate(
       angle: text == 'NOPE' ? 0.3 : text == 'LIKE' ? -0.3 : 0,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          border: Border.all(color: color.withOpacity(opacity.clamp(0.0, 1.0)), width: 3),
-          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+          border: Border.all(color: Colors.black, width: 4),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(color: color.withOpacity(opacity.clamp(0.0, 1.0)), offset: const Offset(4, 4)),
+          ],
         ),
         child: Text(
           text,
-          style: GoogleFonts.poppins(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.outfit(
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
             color: color.withOpacity(opacity.clamp(0.0, 1.0)),
           ),
         ),
@@ -1494,27 +1447,16 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           return CachedNetworkImage(
             imageUrl: photoUrls[index],
             fit: BoxFit.cover,
-            placeholder: (context, url) => Shimmer.fromColors(
-              baseColor: Colors.white10,
-              highlightColor: Colors.white24,
-              child: Container(color: Colors.white),
-            ),
+            placeholder: (context, url) => Container(color: Colors.black12),
             errorWidget: (context, url, error) => Container(
-              color: AppColors.surface,
-              child: const Icon(Icons.person, size: 80, color: Colors.white10),
+              color: Colors.white,
+              child: const Icon(Icons.person, size: 80, color: Colors.black12),
             ),
           );
         },
       ),
-      Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.center,
-            colors: [Colors.black.withOpacity(0.3), Colors.transparent],
-          ),
-        ),
-      ),
+      // Remove gradient overlay
+      const SizedBox.shrink(),
       Positioned(
         top: 24,
         right: 24,
@@ -1533,28 +1475,31 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 8, height: 8, 
+                    width: 10, height: 10, 
                     decoration: BoxDecoration(
-                      color: user.isOnline ? const Color(0xFF10B981) : Colors.white30, 
-                      shape: BoxShape.circle
+                      color: user.isOnline ? AppColors.green : AppColors.red, 
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 1.5),
                     )
                   ),
                   const SizedBox(width: 8),
                   Text(
                     user.isOnline ? 'AKTİF' : 'ÇEVRİMDIŞI', 
-                    style: GoogleFonts.plusJakartaSans(
+                    style: GoogleFonts.outfit(
                       fontSize: 10, 
-                      fontWeight: FontWeight.bold, 
-                      color: user.isOnline ? Colors.white : Colors.white30, 
-                      letterSpacing: 1.0
+                      fontWeight: FontWeight.w900, 
+                      color: Colors.black, 
                     )
                   ),
                 ],
@@ -1581,7 +1526,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   shape: BoxShape.circle,
                   color: _currentPhotoIndex == index
                     ? AppColors.primary
-                    : Colors.white.withOpacity(0.5),
+                    : Colors.white,
+                  border: Border.all(color: Colors.black, width: 1.5),
                 ),
               ),
             ),
@@ -1589,108 +1535,108 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ),
       // User Info
       Positioned(
-        bottom: 24,
-        left: 24,
-        right: 24,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+        bottom: 12,
+        left: 12,
+        right: 12,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black, width: 3),
+            boxShadow: const [
+              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        '${user.name}, ${user.age}',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      if (user.isVerified) ...[
-                        const SizedBox(width: 8),
-                        const Icon(Icons.verified, color: AppColors.primary, size: 22),
-                      ],
-                    ],
-                  ),
-                  if (user.relationshipGoal != null) ...[
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.5)),
-                      ),
-                      child: Text(
-                        _getGoalLabel(user.relationshipGoal),
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                  Expanded(
+                    child: Text(
+                      '${user.name}, ${user.age}'.toUpperCase(),
+                      style: GoogleFonts.outfit(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Icon(Icons.architecture, color: Colors.white.withOpacity(0.5), size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        (user.job ?? 'Kreatif Direktör').toUpperCase(),
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white.withOpacity(0.5),
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ],
                   ),
-                  if (user.latitude != null && user.longitude != null) ...[
-                    const SizedBox(height: 6),
-                    Builder(
-                      builder: (context) {
-                        final currentUser = context.read<UserProvider>().currentUser;
-                        if (currentUser?.latitude == null || currentUser?.longitude == null) return const SizedBox.shrink();
-                        
-                        final dist = _calculateDistance(
-                          currentUser!.latitude!, currentUser.longitude!, 
-                          user.latitude!, user.longitude!
-                        );
-                        
-                        return Row(
-                          children: [
-                            Icon(Icons.location_on, color: AppColors.primary, size: 16),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${dist.toStringAsFixed(1)} KM UZAKTA',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                    ),
+                  if (user.isVerified) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.verified, color: Colors.blue, size: 22),
                   ],
                 ],
               ),
-            ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  if (user.relationshipGoal != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: Text(
+                        _getGoalLabel(user.relationshipGoal).toUpperCase(),
+                        style: GoogleFonts.outfit(
+                          fontSize: 10,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  Expanded(
+                    child: Text(
+                      (user.job ?? 'Kreatif Direktör').toUpperCase(),
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black.withOpacity(0.6),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              if (user.latitude != null && user.longitude != null) ...[
+                const SizedBox(height: 8),
+                Builder(
+                  builder: (context) {
+                    final currentUser = context.read<UserProvider>().currentUser;
+                    if (currentUser?.latitude == null || currentUser?.longitude == null) return const SizedBox.shrink();
+                    
+                    final dist = _calculateDistance(
+                      currentUser!.latitude!, currentUser.longitude!, 
+                      user.latitude!, user.longitude!
+                    );
+                    
+                    return Row(
+                      children: [
+                        const Icon(Icons.location_on, color: Colors.black, size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${dist.toStringAsFixed(1)} KM UZAKTA'.toUpperCase(),
+                          style: GoogleFonts.outfit(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                ),
+              ],
+            ],
           ),
         ),
       ),
@@ -1715,55 +1661,82 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: Colors.white,
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 3),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                ],
               ),
-              child: const Icon(Icons.explore_rounded, size: 60, color: AppColors.primary),
+              child: const Icon(Icons.explore_rounded, size: 60, color: Colors.black),
             ),
             const SizedBox(height: 32),
             Text(
-              "Şu an için bu kadar! 🎉",
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
+              "ŞU AN İÇİN BU KADAR! 🎉",
+              style: GoogleFonts.outfit(
+                color: Colors.black,
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              "Yakındaki tüm profilleri gördün.\nDaha fazla kişi için filtrelerini genişlet\nveya daha sonra tekrar dene.",
+              "YAKINDAKİ TÜM PROFİLLERİ GÖRDÜN.\nDAHA FAZLA KİŞİ İÇİN FİLTRELERİNİ GENİŞLET\nVEYA DAHA SONRA TEKRAR DENE.",
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                color: Colors.white38,
+              style: GoogleFonts.outfit(
+                color: Colors.black.withOpacity(0.5),
                 fontSize: 14,
                 height: 1.5,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
-                  onPressed: _showFilters,
-                  icon: const Icon(Icons.tune_rounded, size: 18),
-                  label: Text("Filtreleri Değiştir", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _showFilters,
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.black, width: 2.5),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          "FİLTRELER",
+                          style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
-                OutlinedButton.icon(
-                  onPressed: () => context.read<DiscoveryProvider>().loadDiscoveryUsers(),
-                  icon: const Icon(Icons.refresh_rounded, size: 18),
-                  label: Text("Yenile", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white54,
-                    side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => context.read<DiscoveryProvider>().loadDiscoveryUsers(),
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.black, width: 2.5),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          "YENİLE",
+                          style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -1777,114 +1750,129 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Widget _buildMatchOverlay() {
     if (_matchedUser == null) return const SizedBox.shrink();
     return Positioned.fill(
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: Colors.black.withOpacity(0.9),
-            child: Column(
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                border: Border.all(color: Colors.black, width: 4),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(8, 8)),
+                ],
+              ),
+              child: Text(
+                "EŞLEŞTİNİZ!",
+                style: GoogleFonts.outfit(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                  letterSpacing: -1.0,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              "ARTIK ${_matchedUser?.name.toUpperCase()} İLE KONUŞABİLİRSİN",
+              style: GoogleFonts.outfit(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 60),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "EŞLEŞTİNİZ!",
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 42,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
-                    letterSpacing: 5.0,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  "Artık ${_matchedUser?.name} ile konuşabilirsin",
-                  style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontSize: 13),
-                ),
-                const SizedBox(height: 60),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Kullanıcının kendi avatarı (dinamik)
-                    Consumer<UserProvider>(
-                      builder: (context, userProvider, _) {
-                        final myAvatar = userProvider.currentUser?.imageUrl ?? '';
-                        return Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 3),
-                          ),
-                          child: ClipOval(
-                            child: myAvatar.isNotEmpty
-                                ? CachedNetworkImage(
-                                    imageUrl: myAvatar,
-                                    fit: BoxFit.cover,
-                                    placeholder: (_, __) => Container(
-                                      color: AppColors.surface,
-                                      child: const Icon(Icons.person, size: 40, color: Colors.white24),
-                                    ),
-                                    errorWidget: (_, __, ___) => Container(
-                                      color: AppColors.surface,
-                                      child: const Icon(Icons.person, size: 40, color: Colors.white24),
-                                    ),
-                                  )
-                                : Container(
-                                    color: AppColors.surface,
-                                    child: const Icon(Icons.person, size: 40, color: Colors.white24),
-                                  ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(width: 24),
-                    const Icon(Icons.favorite_rounded, color: AppColors.primary, size: 40),
-                    const SizedBox(width: 24),
-                    // Eşleşilen kullanıcının avatarı
-                    Container(
-                      width: 120,
-                      height: 120,
+                // Kullanıcının kendi avatarı
+                Consumer<UserProvider>(
+                  builder: (context, userProvider, _) {
+                    final myAvatar = userProvider.currentUser?.imageUrl ?? '';
+                    return Container(
+                      width: 130,
+                      height: 130,
                       decoration: BoxDecoration(
+                        color: Colors.white,
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 3),
+                        border: Border.all(color: Colors.black, width: 3),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                        ],
                       ),
                       child: ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: _matchedUser!.imageUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (_, __) => Container(
-                            color: AppColors.surface,
-                            child: const Icon(Icons.person, size: 40, color: Colors.white24),
-                          ),
-                          errorWidget: (_, __, ___) => Container(
-                            color: AppColors.surface,
-                            child: const Icon(Icons.person, size: 40, color: Colors.white24),
-                          ),
-                        ),
+                        child: myAvatar.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: myAvatar,
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) => Container(color: Colors.black12),
+                              )
+                            : const Icon(Icons.person, size: 60, color: Colors.black),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-                const SizedBox(height: 80),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: ElevatedButton(
-                    onPressed: _dismissMatch,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.black,
-                      minimumSize: const Size(double.infinity, 56),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    child: Text("MESAJ GÖNDER", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, letterSpacing: 1.0)),
+                const SizedBox(width: 24),
+                const Icon(Icons.favorite_rounded, color: AppColors.red, size: 40),
+                const SizedBox(width: 24),
+                // Eşleşilen kullanıcının avatarı
+                Container(
+                  width: 130,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 3),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                    ],
                   ),
-                ),
-                TextButton(
-                  onPressed: _dismissMatch,
-                  child: Text("ŞİMDİ DEĞİL", style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12, letterSpacing: 1.0)),
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: _matchedUser!.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(color: Colors.black12),
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 80),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: GestureDetector(
+                onTap: _dismissMatch,
+                child: Container(
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 3),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      "MESAJ GÖNDER",
+                      style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: _dismissMatch,
+              child: Text(
+                "ŞİMDİ DEĞİL", 
+                style: GoogleFonts.outfit(
+                  color: Colors.black.withOpacity(0.5), 
+                  fontSize: 14, 
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.0,
+                )
+              ),
+            ),
+          ],
         ),
       ),
     );

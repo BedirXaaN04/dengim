@@ -26,41 +26,19 @@ class _SpacesScreenState extends State<SpacesScreen> {
     final currentUser = userProvider.currentUser;
 
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
-      body: Stack(
-        children: [
-          // Background Glow
-          Positioned(
-            top: -150,
-            right: -150,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.03),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-                child: Container(),
-              ),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: spaceProvider.spaces.isEmpty
+                  ? _buildEmptyState()
+                  : _buildSpacesList(spaceProvider.spaces),
             ),
-          ),
-
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: spaceProvider.spaces.isEmpty
-                      ? _buildEmptyState()
-                      : _buildSpacesList(spaceProvider.spaces),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: _buildCreateButton(currentUser),
     );
@@ -75,32 +53,42 @@ class _SpacesScreenState extends State<SpacesScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.05),
-                  padding: const EdgeInsets.all(12),
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  width: 44, height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 2.5),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                    ],
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 18),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  border: Border.all(color: Colors.black, width: 2.5),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.graphic_eq_rounded, color: AppColors.primary, size: 16),
+                    const Icon(Icons.graphic_eq_rounded, color: Colors.black, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       'SESLİ ODALAR',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.outfit(
                         fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
-                        letterSpacing: 1.2,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                        letterSpacing: 1.0,
                       ),
                     ),
                   ],
@@ -110,21 +98,22 @@ class _SpacesScreenState extends State<SpacesScreen> {
           ),
           const SizedBox(height: 32),
           Text(
-            'Neler Konuşuluyor?',
-            style: GoogleFonts.plusJakartaSans(
+            'NELER KONUŞULUYOR?',
+            style: GoogleFonts.outfit(
               fontSize: 32,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: -0.5,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
+              letterSpacing: -1.0,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Canlı sohbetlere katılın veya kendi odanızı oluşturun.',
-            style: GoogleFonts.plusJakartaSans(
+            'CANLI SOHBETLERE KATILIN VEYA KENDİ ODANIZI OLUŞTURUN.',
+            style: GoogleFonts.outfit(
               fontSize: 14,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
+              color: Colors.black.withOpacity(0.5),
+              fontWeight: FontWeight.w800,
+              height: 1.4,
             ),
           ),
         ],
@@ -161,30 +150,35 @@ class _SpacesScreenState extends State<SpacesScreen> {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.03),
+              color: Colors.white,
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.black, width: 3),
+              boxShadow: const [
+                BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+              ],
             ),
-            child: Icon(
+            child: const Icon(
               Icons.mic_none_rounded,
               size: 64,
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.black,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           Text(
-            'Henüz aktif oda yok',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Colors.white70,
+            'HENÜZ AKTİF ODA YOK',
+            style: GoogleFonts.outfit(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'İlk odayı sen başlatabilirsin!',
-            style: GoogleFonts.plusJakartaSans(
+            'İLK ODAYI SEN BAŞLATABİLİRSİN!',
+            style: GoogleFonts.outfit(
               fontSize: 14,
-              color: Colors.white38,
+              color: Colors.black.withOpacity(0.5),
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
@@ -202,20 +196,36 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
     if (!canCreate) return null;
 
-    return FloatingActionButton.extended(
-      onPressed: () => _showCreateSpaceModal(context),
-      backgroundColor: AppColors.primary,
-      foregroundColor: Colors.black,
-      elevation: 4,
-      label: Text(
-        'ODA BAŞLAT',
-        style: GoogleFonts.plusJakartaSans(
-          fontWeight: FontWeight.w800,
-          fontSize: 14,
-          letterSpacing: 1.0,
+    return GestureDetector(
+      onTap: () => _showCreateSpaceModal(context),
+      child: Container(
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.add_rounded, color: Colors.black, size: 24),
+            const SizedBox(width: 12),
+            Text(
+              'ODA BAŞLAT',
+              style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w900,
+                fontSize: 14,
+                color: Colors.black,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ],
         ),
       ),
-      icon: const Icon(Icons.add_rounded, size: 24),
     );
   }
 

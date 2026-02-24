@@ -19,24 +19,14 @@ class SpaceCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1D23),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: space.status == SpaceStatus.live 
-                ? AppColors.primary.withOpacity(0.3) 
-                : Colors.white.withOpacity(0.05),
-            width: 1.5,
-          ),
-          boxShadow: [
-            if (space.status == SpaceStatus.live)
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.05),
-                blurRadius: 15,
-                spreadRadius: 2,
-              ),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
           ],
         ),
         child: Column(
@@ -48,23 +38,24 @@ class SpaceCard extends StatelessWidget {
                   _buildLiveIndicator(),
                 const Spacer(),
                 Text(
-                  _getCategoryName(space.category),
-                  style: GoogleFonts.plusJakartaSans(
+                  _getCategoryName(space.category).toUpperCase(),
+                  style: GoogleFonts.outfit(
                     fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white38,
-                    letterSpacing: 1.2,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black.withOpacity(0.4),
+                    letterSpacing: 1.0,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
-              space.title,
-              style: GoogleFonts.plusJakartaSans(
+              space.title.toUpperCase(),
+              style: GoogleFonts.outfit(
                 fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+                height: 1.2,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -72,28 +63,29 @@ class SpaceCard extends StatelessWidget {
             if (space.description != null && space.description!.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                space.description!,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  color: Colors.white60,
+                space.description!.toUpperCase(),
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  color: Colors.black.withOpacity(0.6),
+                  fontWeight: FontWeight.w700,
                   height: 1.4,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Row(
               children: [
                 _buildSpeakerAvatars(),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '${space.hostName} ve ${space.speakers.length + space.listenerIds.length - 1} kişi',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white54,
+                    '${space.hostName} ve ${space.speakers.length + space.listenerIds.length - 1} kişi'.toUpperCase(),
+                    style: GoogleFonts.outfit(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -108,22 +100,27 @@ class SpaceCard extends StatelessWidget {
 
   Widget _buildLiveIndicator() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.graphic_eq_rounded, size: 12, color: Colors.black),
-          const SizedBox(width: 4),
+          const Icon(Icons.graphic_eq_rounded, size: 14, color: Colors.black),
+          const SizedBox(width: 6),
           Text(
             'CANLI',
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.outfit(
               fontSize: 10,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w900,
               color: Colors.black,
+              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -134,31 +131,29 @@ class SpaceCard extends StatelessWidget {
   Widget _buildSpeakerAvatars() {
     final speakers = space.speakers.take(3).toList();
     return SizedBox(
-      height: 32,
-      width: 32.0 + (speakers.length > 1 ? (speakers.length - 1) * 20 : 0),
+      height: 36,
+      width: 36.0 + (speakers.length > 1 ? (speakers.length - 1) * 22 : 0),
       child: Stack(
         children: List.generate(speakers.length, (index) {
           return Positioned(
-            left: index * 20.0,
+            left: index * 22.0,
             child: Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
+                color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF1A1D23), width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 5,
-                  )
+                border: Border.all(color: Colors.black, width: 2),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
                 ],
               ),
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: speakers[index].avatarUrl ?? 'https://ui-avatars.com/api/?name=${speakers[index].name}',
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(color: Colors.white12),
-                  errorWidget: (context, url, error) => const Icon(Icons.person, size: 16),
+                  placeholder: (context, url) => Container(color: Colors.black12),
+                  errorWidget: (context, url, error) => const Icon(Icons.person, size: 18, color: Colors.black),
                 ),
               ),
             ),
@@ -172,19 +167,23 @@ class SpaceCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+        ],
       ),
       child: Row(
         children: [
-          const Icon(Icons.headset_rounded, size: 14, color: Colors.white38),
+          const Icon(Icons.headset_rounded, size: 14, color: Colors.black),
           const SizedBox(width: 6),
           Text(
             '${space.listenerCount}',
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.outfit(
               fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white70,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
             ),
           ),
         ],

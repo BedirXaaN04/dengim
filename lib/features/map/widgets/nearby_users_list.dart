@@ -23,43 +23,42 @@ class NearbyUserAvatar extends StatelessWidget {
         margin: const EdgeInsets.only(right: 16),
         child: Column(
           children: [
-            // Gold Gradient Avatar
             Container(
-              padding: const EdgeInsets.all(2.5),
-              decoration: const BoxDecoration(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.white,
                 shape: BoxShape.circle,
-                gradient: AppColors.goldGradient,
+                border: Border.all(color: Colors.black, width: 2.5),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.scaffold, width: 2),
-                ),
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(user.avatarUrl),
-                  onBackgroundImageError: (_, __) => const Icon(Icons.person),
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: user.avatarUrl,
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(color: Colors.black12),
+                  errorWidget: (context, url, error) => const Icon(Icons.person, color: Colors.black),
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            // İsim
             Text(
               user.name.toUpperCase(),
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.outfit(
                 fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
               ),
             ),
-            // Mesafe
             Text(
-              '${user.distance.toStringAsFixed(1)} KM',
-              style: GoogleFonts.plusJakartaSans(
+              '${user.distance.toStringAsFixed(1)} KM'.toUpperCase(),
+              style: GoogleFonts.outfit(
                 fontSize: 9,
-                color: Colors.white.withOpacity(0.5),
-                letterSpacing: 0.5,
+                color: Colors.black.withOpacity(0.5),
+                fontWeight: FontWeight.w800,
               ),
             ),
           ],

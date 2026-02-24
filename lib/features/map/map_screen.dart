@@ -78,133 +78,137 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-          child: Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F172A).withOpacity(0.9),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      builder: (context) => Container(
+        margin: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.black, width: 4),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(8, 8)),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 24),
+            Row(
               children: [
-                // Tutamaç
+                const SizedBox(width: 24),
+                // Avatar
                 Container(
-                  width: 40, height: 4, margin: const EdgeInsets.only(bottom: 24),
-                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(2)),
-                ),
-                
-                Row(
-                  children: [
-                    // Avatar
-                    Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: AppColors.goldGradient,
-                      ),
-                      child: Container(
-                        width: 84, height: 84,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.scaffold, width: 3),
-                        ),
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: user.avatarUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(color: AppColors.surface),
-                            errorWidget: (context, url, error) => const Icon(Icons.person),
-                          ),
-                        ),
-                      ),
+                  width: 90,
+                  height: 90,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 3),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: user.avatarUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(color: Colors.black12),
+                      errorWidget: (context, url, error) => const Icon(Icons.person, color: Colors.black, size: 40),
                     ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${user.name}, ${user.age}'.toUpperCase(), 
+                        style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.black)
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
                         children: [
-                          Text(
-                            '${user.name}, ${user.age}', 
-                            style: GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)
+                          Container(
+                            width: 10, height: 10, 
+                            decoration: BoxDecoration(
+                              color: user.isOnline ? AppColors.green : AppColors.red, 
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black, width: 1.5),
+                            )
                           ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Container(
-                                width: 8, height: 8, 
-                                decoration: BoxDecoration(
-                                  color: user.isOnline ? AppColors.success : Colors.grey, 
-                                  shape: BoxShape.circle
-                                )
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '${user.distance.toStringAsFixed(1)} KM UZAKTA', 
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 12, 
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white.withOpacity(0.5),
-                                  letterSpacing: 1.0,
-                                )
-                              ),
-                            ],
+                          const SizedBox(width: 8),
+                          Text(
+                            '${user.distance.toStringAsFixed(1)} KM UZAKTA'.toUpperCase(), 
+                            style: GoogleFonts.outfit(
+                              fontSize: 12, 
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black.withOpacity(0.5),
+                            )
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 32),
-                
-                // Butonlar
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => UserProfileDetailScreen(userId: user.id)),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.black,
-                          elevation: 0,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                        child: Text(
-                          'PROFİLE GİT', 
-                          style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.0)
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Container(
-                      width: 56, height: 56,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withOpacity(0.1)),
-                      ),
-                      child: IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close, color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(width: 24),
               ],
             ),
-          ),
+            const SizedBox(height: 32),
+            
+            // Butonlar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => UserProfileDetailScreen(userId: user.id)),
+                        );
+                      },
+                      child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.black, width: 3),
+                          boxShadow: const [
+                            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            'PROFİLE GİT', 
+                            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.black)
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 60, height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.black, width: 3),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                        ],
+                      ),
+                      child: const Icon(Icons.close, color: Colors.black, size: 28),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+          ],
         ),
       ),
     );
@@ -278,73 +282,99 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 minChildSize: 0.12,
                 maxChildSize: 0.6,
                 builder: (context, scrollController) {
-                  return ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0F172A).withOpacity(0.9),
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-                          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
-                        ),
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: Padding(
-                            padding: const EdgeInsets.all(24.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                      border: Border.all(color: Colors.black, width: 4),
+                    ),
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Handle
+                            Center(
+                              child: Container(
+                                width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
+                                decoration: BoxDecoration(color: Colors.black.withOpacity(0.2), borderRadius: BorderRadius.circular(2)),
+                              ),
+                            ),
+                            
+                            // Header
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // Handle
-                                Center(
-                                  child: Container(
-                                    width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
-                                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(2)),
+                                Text('YAKININDAKİLER', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black, letterSpacing: 1.0)),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary, 
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.black, width: 2),
+                                    boxShadow: const [
+                                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                                    ],
+                                  ),
+                                  child: Text('${provider.nearbyUsers.length} KİŞİ', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 10)),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            // Slider
+                            Row(
+                              children: [
+                                Text('MESAFE: ${provider.searchRadius.toInt()} KM'.toUpperCase(), style: GoogleFonts.outfit(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900)),
+                                Expanded(
+                                  child: SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      activeTrackColor: Colors.black,
+                                      inactiveTrackColor: Colors.black12,
+                                      thumbColor: AppColors.primary,
+                                      overlayColor: AppColors.primary.withOpacity(0.2),
+                                      trackHeight: 4,
+                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10, elevation: 2),
+                                    ),
+                                    child: Slider(
+                                      value: provider.searchRadius,
+                                      min: 10,
+                                      max: 1000,
+                                      onChanged: (val) {
+                                        provider.setSearchRadius(val);
+                                      },
+                                    ),
                                   ),
                                 ),
-                                
-                                // Header
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('YAKININDAKİLER', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 2)),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                                      child: Text('${provider.nearbyUsers.length} KİŞİ', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 10)),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                
-                                // Slider
-                                Row(
-                                  children: [
-                                    Text('Mesafe: ${provider.searchRadius.toInt()} km', style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 12)),
-                                    Expanded(
-                                      child: SliderTheme(
-                                        data: SliderTheme.of(context).copyWith(
-                                          activeTrackColor: AppColors.primary,
-                                          inactiveTrackColor: Colors.white10,
-                                          thumbColor: AppColors.primary,
-                                          overlayColor: AppColors.primary.withOpacity(0.2),
-                                          trackHeight: 2,
-                                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                                        ),
-                                        child: Slider(
-                                          value: provider.searchRadius,
-                                          min: 10,
-                                          max: 1000,
-                                          onChanged: (val) {
-                                            provider.setSearchRadius(val);
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
 
+                            // Users List
+                            SizedBox(
+                              height: 120,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: provider.nearbyUsers.length,
+                                itemBuilder: (context, index) {
+                                   return NearbyUserAvatar(
+                                     user: provider.nearbyUsers[index], 
+                                     onTap: () => _onUserTap(provider.nearbyUsers[index])
+                                   );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 100), // Bottom padding
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
                                 // Users List
                                 SizedBox(
                                   height: 120,
@@ -379,42 +409,14 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
 
   Widget _buildMyLocationMarker() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Dış Halka (Glow)
-        Container(
-          width: 80, height: 80,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.primary.withOpacity(0.15),
-          ),
-        ),
-        // Orta Halka
-        Container(
-          width: 40, height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.primary.withOpacity(0.3),
-            border: Border.all(color: AppColors.primary, width: 1),
-          ),
-        ),
-        // Merkez
-        Container(
-          width: 16, height: 16,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.primary,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.6),
-                blurRadius: 10,
-                spreadRadius: 2,
-              )
-            ]
-          ),
-        ),
-      ],
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.black, width: 3),
+      ),
     );
   }
 
@@ -423,34 +425,38 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Container(
-          width: 48, height: 48,
+          width: 52, height: 52,
           decoration: BoxDecoration(
+            color: Colors.white,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.primary, width: 2),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 8, offset: const Offset(0, 4))
+            border: Border.all(color: Colors.black, width: 2.5),
+            boxShadow: const [
+              BoxShadow(color: Colors.black, offset: Offset(3, 3))
             ],
-            color: AppColors.scaffold,
           ),
           child: ClipOval(
-            child: Image.network(
-              user.avatarUrl, 
+            child: CachedNetworkImage(
+              imageUrl: user.avatarUrl, 
               fit: BoxFit.cover, 
-              errorBuilder: (_,__,___) => Container(color: AppColors.surface, child: const Icon(Icons.person, color: Colors.white54))
+              placeholder: (_, __) => Container(color: Colors.black12),
+              errorWidget: (_,__,___) => const Icon(Icons.person, color: Colors.black45)
             ),
           ),
         ),
         const SizedBox(height: 4),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.6), 
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            color: Colors.white, 
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.black, width: 2),
+            boxShadow: const [
+              BoxShadow(color: Colors.black, offset: Offset(2, 2))
+            ],
           ),
           child: Text(
             user.name.toUpperCase(), 
-            style: GoogleFonts.plusJakartaSans(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5)
+            style: GoogleFonts.outfit(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.black)
           ),
         ),
       ],
@@ -458,66 +464,70 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildTopBar(int activeCount) {
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 12, left: 24, right: 24, bottom: 16),
-          decoration: BoxDecoration(
-            color: AppColors.scaffold.withOpacity(0.8),
-            border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'HARİTA',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 3.0,
-                  color: Colors.white,
-                ),
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'HARİTA',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: activeCount > 0 
-                      ? AppColors.primary.withOpacity(0.1)
-                      : Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: activeCount > 0 
-                        ? AppColors.primary.withOpacity(0.2)
-                        : Colors.white.withOpacity(0.1),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: activeCount > 0 
+                    ? AppColors.primary
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.black,
+                  width: 2,
+                ),
+                boxShadow: activeCount > 0 ? const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ] : null,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 8, 
+                    height: 8, 
+                    decoration: BoxDecoration(
+                      color: activeCount > 0 ? AppColors.green : AppColors.red, 
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 1.5),
+                    )
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 6, 
-                      height: 6, 
-                      decoration: BoxDecoration(
-                        color: activeCount > 0 ? AppColors.primary : Colors.white38, 
-                        shape: BoxShape.circle
-                      )
+                  const SizedBox(width: 8),
+                  Text(
+                    activeCount > 0 
+                        ? '$activeCount AKTİF'
+                        : 'KEŞFET',
+                    style: GoogleFonts.outfit(
+                      fontSize: 10, 
+                      fontWeight: FontWeight.w900, 
+                      color: Colors.black,
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      activeCount > 0 
-                          ? '$activeCount AKTİF'
-                          : 'KEŞFET',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10, 
-                        fontWeight: FontWeight.bold, 
-                        color: activeCount > 0 ? AppColors.primary : Colors.white38,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -538,20 +548,17 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   Widget _buildControlButton({required IconData icon, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            width: 44, height: 44,
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
+      child: Container(
+        width: 48, height: 48,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+          ],
         ),
+        child: Icon(icon, color: Colors.black, size: 24),
       ),
     );
   }

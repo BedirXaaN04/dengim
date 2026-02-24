@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
@@ -46,7 +45,7 @@ class _LikesScreenState extends State<LikesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: Colors.white,
       body: Consumer<LikesProvider>(
         builder: (context, provider, child) {
           return SafeArea(
@@ -105,12 +104,11 @@ class _LikesScreenState extends State<LikesScreen> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            "SENI BEĞENENLER",
-                                            style: GoogleFonts.plusJakartaSans(
+                                            "SENİ BEĞENENLER",
+                                            style: GoogleFonts.outfit(
                                               fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1.2,
-                                              color: Colors.white.withOpacity(0.9),
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.black,
                                             ),
                                           ),
                                           const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 16),
@@ -188,27 +186,32 @@ class _LikesScreenState extends State<LikesScreen> {
                                     width: 80,
                                     height: 80,
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.1),
+                                      color: Colors.white,
                                       shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.black, width: 2),
+                                      boxShadow: const [
+                                        BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                                      ],
                                     ),
-                                    child: const Icon(Icons.favorite_border_rounded, size: 40, color: AppColors.primary),
+                                    child: const Icon(Icons.favorite_border_rounded, size: 40, color: Colors.black),
                                   ),
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 24),
                                   Text(
-                                    "Profilini güçlendir! 💪",
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: Colors.white, 
+                                    "PROFİLİNİ GÜÇLENDİR! 💪",
+                                    style: GoogleFonts.outfit(
+                                      color: Colors.black, 
                                       fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w900,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 12),
                                   Text(
-                                    "Daha fazla fotoğraf ekle ve\nilgi çekici bir biyografi yaz.",
+                                    "DAHA FAZLA FOTOĞRAF EKLE VE\nİLGİ ÇEKİCİ BİR BİYOGRAFİ YAZ.",
                                     textAlign: TextAlign.center,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: Colors.white38, 
-                                      fontSize: 13,
+                                    style: GoogleFonts.outfit(
+                                      color: Colors.black.withOpacity(0.5), 
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
                                       height: 1.4,
                                     ),
                                   ),
@@ -238,20 +241,24 @@ class _LikesScreenState extends State<LikesScreen> {
             children: [
               Expanded(
                 child: Container(
-                  height: 48,
+                  height: 52,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                    ],
                   ),
                   child: TextField(
                     controller: _searchController,
                     onChanged: (val) => setState(() => _searchQuery = val),
                     enabled: isPremium,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    style: GoogleFonts.outfit(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search, color: isPremium ? Colors.white38 : Colors.white12, size: 20),
-                      hintText: "Beğenilerde ara...",
-                      hintStyle: TextStyle(color: isPremium ? Colors.white24 : Colors.white10, fontSize: 13),
+                      prefixIcon: const Icon(Icons.search, color: Colors.black, size: 20),
+                      hintText: "BEĞENİLERDE ARA...",
+                      hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontSize: 13, fontWeight: FontWeight.bold),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14),
                     ),
@@ -268,20 +275,23 @@ class _LikesScreenState extends State<LikesScreen> {
                   }
                 },
                 child: Container(
-                  height: 48,
+                  height: 52,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: _onlyOnline ? AppColors.primary.withOpacity(0.2) : Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: _onlyOnline ? AppColors.primary : Colors.transparent),
+                    color: _onlyOnline ? AppColors.green : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                    ],
                   ),
                   child: Center(
                     child: Text(
-                      "Online",
-                      style: GoogleFonts.plusJakartaSans(
-                        color: _onlyOnline ? AppColors.primary : Colors.white54,
+                      "ONLINE",
+                      style: GoogleFonts.outfit(
+                        color: Colors.black,
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ),
@@ -297,8 +307,8 @@ class _LikesScreenState extends State<LikesScreen> {
                   const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 12),
                   const SizedBox(width: 6),
                   Text(
-                    "Beğenileri filtrelemek için Platinum'a yüksel",
-                    style: GoogleFonts.plusJakartaSans(color: AppColors.primary, fontSize: 10),
+                    "BEĞENİLERİ FİLTRELEMEK İÇİN PLATINUM'A YÜKSEL",
+                    style: GoogleFonts.outfit(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w900),
                   ),
                 ],
               ),
@@ -315,19 +325,19 @@ class _LikesScreenState extends State<LikesScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
           child: Text(
-            "YENI EŞLEŞMELER",
-            style: GoogleFonts.plusJakartaSans(
+            "YENİ EŞLEŞMELER",
+            style: GoogleFonts.outfit(
               fontSize: 12,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: Colors.white.withOpacity(0.5),
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
+              letterSpacing: 1.0,
             ),
           ),
         ),
         SizedBox(
-          height: 140,
+          height: 150,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
@@ -336,34 +346,36 @@ class _LikesScreenState extends State<LikesScreen> {
             itemBuilder: (context, index) {
               final user = matches[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 16),
+                padding: const EdgeInsets.only(right: 16, bottom: 8),
                 child: Column(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: CachedNetworkImage(
-                        imageUrl: user.imageUrl,
-                        width: 80,
-                        height: 110,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Shimmer.fromColors(
-                          baseColor: Colors.white10,
-                          highlightColor: Colors.white24,
-                          child: Container(color: Colors.white),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: AppColors.surface,
-                          child: const Icon(Icons.person, color: Colors.white10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.black, width: 2.5),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(13),
+                        child: CachedNetworkImage(
+                          imageUrl: user.imageUrl,
+                          width: 80,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(color: Colors.black12),
                         ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      user.name,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white.withOpacity(0.8),
+                      user.name.toUpperCase(),
+                      style: GoogleFonts.outfit(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -377,35 +389,58 @@ class _LikesScreenState extends State<LikesScreen> {
   }
 
   Widget _buildTopBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Colors.black, width: 3)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(Icons.arrow_back_ios_new, color: Colors.white.withOpacity(0.9), size: 20),
+          _buildCircleIcon(Icons.arrow_back_ios_new, onTap: () => Navigator.pop(context)),
           Text(
-            "Beğeniler",
-            style: GoogleFonts.poppins(
+            "BEĞENİLER",
+            style: GoogleFonts.outfit(
               fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
               letterSpacing: -0.5,
             ),
           ),
-          Icon(Icons.filter_list_rounded, color: AppColors.primary, size: 24),
+          _buildCircleIcon(Icons.filter_list_rounded, color: AppColors.primary),
         ],
       ),
     );
   }
 
+  Widget _buildCircleIcon(IconData icon, {VoidCallback? onTap, Color? color}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40, height: 40,
+        decoration: BoxDecoration(
+          color: color ?? Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.black, width: 2),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+          ],
+        ),
+        child: Icon(icon, color: Colors.black, size: 20),
+      ),
+    );
+  }
+
   Widget _buildTabs() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
         children: [
-          _buildTabItem("Seni Beğenenler", 0),
-          const SizedBox(width: 32),
-          _buildTabItem("Eşleşmeler", 1),
+          Expanded(child: _buildTabItem("SENİ BEĞENENLER", 0)),
+          const SizedBox(width: 12),
+          Expanded(child: _buildTabItem("EŞLEŞMELER", 1)),
         ],
       ),
     );
@@ -415,29 +450,29 @@ class _LikesScreenState extends State<LikesScreen> {
     bool isActive = _activeTab == index;
     return GestureDetector(
       onTap: () => setState(() => _activeTab = index),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(
-              title,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 14,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-                color: isActive ? Colors.white : Colors.white.withOpacity(0.4),
-              ),
-            ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.primary : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black, width: 2.5),
+          boxShadow: isActive ? const [
+            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+          ] : const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
+        ),
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.outfit(
+            fontSize: 10,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+            letterSpacing: 0.5,
           ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: 2,
-            width: 40,
-            decoration: BoxDecoration(
-              color: isActive ? AppColors.primary : Colors.transparent,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -452,27 +487,32 @@ class _LikesScreenState extends State<LikesScreen> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.pink.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.favorite, size: 50, color: Colors.pinkAccent),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            "Henüz eşleşme yok",
-            style: GoogleFonts.plusJakartaSans(
               color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.black, width: 2),
+              boxShadow: const [
+                BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+              ],
+            ),
+            child: const Icon(Icons.favorite, size: 50, color: AppColors.red),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            "HENÜZ EŞLEŞME YOK",
+            style: GoogleFonts.outfit(
+              color: Colors.black,
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
-            "Keşfet'e gidip insanları beğenmeye başla.\nKarşılıklı beğeniler eşleşme oluşturur!",
+            "KEŞFET'E GİDİP İNSANLARI BEĞENMEYE BAŞLA.\nKARŞILIKLI BEĞENİLER EŞLEŞME OLUŞTURUR!",
             textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(
-              color: Colors.white38,
-              fontSize: 14,
+            style: GoogleFonts.outfit(
+              color: Colors.black.withOpacity(0.5),
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
               height: 1.5,
             ),
           ),
@@ -489,59 +529,56 @@ class _LockedLikeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        image: const DecorationImage(
-          image: NetworkImage('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400'),
-          fit: BoxFit.cover,
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen())),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF0F172A).withOpacity(0.6), // Midnight Blue Tint
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.05),
-                    Colors.black.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(17),
+        child: GestureDetector(
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen())),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              CachedNetworkImage(
+                imageUrl: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400',
+                fit: BoxFit.cover,
+              ),
+              Container(
+                color: Colors.black.withOpacity(0.6),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: const Icon(Icons.lock_outline_rounded, color: Colors.black, size: 28),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        "GÖRMEK İÇİN PREMIUM'A GEÇ",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-                    ),
-                    child: Icon(Icons.lock_outline_rounded, color: AppColors.primary.withOpacity(0.8), size: 28),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "Görmek için Premium'a geç",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
         ),
       ),
@@ -565,132 +602,133 @@ class _UnlockedLikeCard extends StatelessWidget {
       onTap: () => _showProfileDetail(context),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(17),
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Profil fotoğrafı
+              // Photo
               CachedNetworkImage(
                 imageUrl: user.imageUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Shimmer.fromColors(
-                  baseColor: Colors.white10,
-                  highlightColor: Colors.white24,
-                  child: Container(color: Colors.white),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: AppColors.surface,
-                  child: const Icon(Icons.person, color: Colors.white10, size: 40),
-                ),
+                placeholder: (context, url) => Container(color: Colors.white),
               ),
               
-              // Gradient overlay
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.8),
-                      ],
-                      stops: const [0.5, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-              
-              // Kullanıcı bilgileri
+              // Info Area
               Positioned(
-                bottom: showActions ? 56 : 12,
-                left: 12,
-                right: 12,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "${user.name}, ${user.age}",
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (user.location != null) ...[
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on, size: 10, color: Colors.white54),
-                          const SizedBox(width: 2),
-                          Expanded(
-                            child: Text(
-                              user.location!,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 10,
-                                color: Colors.white.withOpacity(0.6),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              
-              // Kabul/Ret butonları (sadece beğeniler için)
-              if (showActions)
-                Positioned(
-                  bottom: 8,
-                  left: 12,
-                  right: 12,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(top: BorderSide(color: Colors.black, width: 3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Ret butonu
-                      _ActionButton(
-                        icon: Icons.close_rounded,
-                        color: Colors.red,
-                        onTap: () => _rejectLike(context),
+                      Text(
+                        "${user.name}, ${user.age}".toUpperCase(),
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                          letterSpacing: -0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      // Kabul butonu (Eşleş)
-                      _ActionButton(
-                        icon: Icons.favorite_rounded,
-                        color: AppColors.primary,
-                        isMain: true,
-                        onTap: () => _acceptLike(context),
-                      ),
+                      if (user.location != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_rounded, color: Colors.black, size: 10),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                user.location!.toUpperCase(),
+                                style: GoogleFonts.outfit(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black.withOpacity(0.5),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (showActions) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _rejectLike(context),
+                                child: Container(
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.red,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.black, width: 2),
+                                    boxShadow: const [
+                                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                                    ],
+                                  ),
+                                  child: const Icon(Icons.close_rounded, color: Colors.black, size: 22),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _acceptLike(context),
+                                child: Container(
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.black, width: 2),
+                                    boxShadow: const [
+                                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                                    ],
+                                  ),
+                                  child: const Icon(Icons.favorite_rounded, color: Colors.black, size: 22),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
+              ),
+              
+               // Action Buttons (Removed from separate Stack position, integrated into Info Area)
 
-              // Beğeni kalp ikonu (üst sağ)
+              // Like Icon (top-right)
               Positioned(
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.white,
                     shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 1.5),
                   ),
-                  child: const Icon(Icons.favorite, color: Colors.red, size: 14),
+                  child: const Icon(Icons.favorite, color: Colors.red, size: 12),
                 ),
               ),
             ],
@@ -723,13 +761,13 @@ class _UnlockedLikeCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  '${user.name} ile eşleştiniz! 🎉',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+                  '${user.name} İLE EŞLEŞTİNİZ! 🎉',
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white),
                 ),
               ),
             ],
           ),
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.black,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
         ),
@@ -741,7 +779,8 @@ class _UnlockedLikeCard extends StatelessWidget {
     await context.read<LikesProvider>().rejectLike(user.uid);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${user.name} reddedildi'),
+        content: Text('${user.name} REDDEDİLDİ', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
+        backgroundColor: Colors.black,
         duration: const Duration(seconds: 1),
       ),
     );
@@ -757,9 +796,14 @@ class _UnlockedLikeCard extends StatelessWidget {
         maxChildSize: 0.95,
         minChildSize: 0.5,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: const Border(
+              top: BorderSide(color: Colors.black, width: 3),
+              left: BorderSide(color: Colors.black, width: 3),
+              right: BorderSide(color: Colors.black, width: 3),
+            ),
           ),
           child: SingleChildScrollView(
             controller: scrollController,
@@ -771,24 +815,34 @@ class _UnlockedLikeCard extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: Colors.black.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
                 
                 // Profil fotoğrafı
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: CachedNetworkImage(
-                    imageUrl: user.imageUrl,
-                    width: double.infinity,
-                    height: 400,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => Container(
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.black, width: 3),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(17),
+                    child: CachedNetworkImage(
+                      imageUrl: user.imageUrl,
+                      width: double.infinity,
                       height: 400,
-                      color: Colors.grey[900],
-                      child: const Icon(Icons.person, size: 100, color: Colors.white24),
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.black)),
+                      errorWidget: (context, url, error) => Container(
+                        height: 400,
+                        color: Colors.white,
+                        child: const Icon(Icons.person, size: 100, color: Colors.black26),
+                      ),
                     ),
                   ),
                 ),
@@ -798,13 +852,12 @@ class _UnlockedLikeCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // İsim ve yaş
                       Text(
-                        "${user.name}, ${user.age}",
-                        style: GoogleFonts.plusJakartaSans(
+                        "${user.name}, ${user.age}".toUpperCase(),
+                        style: GoogleFonts.outfit(
                           fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
                         ),
                       ),
                       
@@ -812,13 +865,14 @@ class _UnlockedLikeCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(Icons.location_on, size: 18, color: AppColors.primary),
+                            const Icon(Icons.location_on, size: 18, color: Colors.black),
                             const SizedBox(width: 4),
                             Text(
-                              user.location!,
-                              style: GoogleFonts.plusJakartaSans(
+                              user.location!.toUpperCase(),
+                              style: GoogleFonts.outfit(
                                 fontSize: 14,
-                                color: Colors.white70,
+                                color: Colors.black.withOpacity(0.5),
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
                           ],
@@ -828,19 +882,20 @@ class _UnlockedLikeCard extends StatelessWidget {
                       if (user.bio != null && user.bio!.isNotEmpty) ...[
                         const SizedBox(height: 20),
                         Text(
-                          "Hakkında",
-                          style: GoogleFonts.plusJakartaSans(
+                          "HAKKINDA",
+                          style: GoogleFonts.outfit(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           user.bio!,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.outfit(
                             fontSize: 14,
-                            color: Colors.white70,
+                            color: Colors.black.withOpacity(0.6),
+                            fontWeight: FontWeight.w600,
                             height: 1.5,
                           ),
                         ),
@@ -848,44 +903,61 @@ class _UnlockedLikeCard extends StatelessWidget {
                       
                       const SizedBox(height: 32),
                       
-                      // Aksiyon butonları
                       if (showActions)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
+                              child: GestureDetector(
+                                onTap: () {
                                   Navigator.pop(context);
                                   _rejectLike(context);
                                 },
-                                icon: const Icon(Icons.close),
-                                label: const Text("Geç"),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red.withOpacity(0.2),
-                                  foregroundColor: Colors.red,
+                                child: Container(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
                                     borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.black, width: 3),
+                                    boxShadow: const [
+                                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.close, color: Colors.white),
+                                      const SizedBox(width: 8),
+                                      Text("GEÇ", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
+                              child: GestureDetector(
+                                onTap: () {
                                   Navigator.pop(context);
                                   _acceptLike(context);
                                 },
-                                icon: const Icon(Icons.favorite),
-                                label: const Text("Eşleş"),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  foregroundColor: Colors.black,
+                                child: Container(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary,
                                     borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.black, width: 3),
+                                    boxShadow: const [
+                                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.favorite, color: Colors.black),
+                                      const SizedBox(width: 8),
+                                      Text("EŞLEŞ", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 14)),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -928,18 +1000,14 @@ class _ActionButton extends StatelessWidget {
         width: isMain ? 44 : 36,
         height: isMain ? 44 : 36,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.2),
+          color: color,
           shape: BoxShape.circle,
-          border: Border.all(color: color, width: isMain ? 2 : 1),
-          boxShadow: isMain ? [
-            BoxShadow(
-              color: color.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
+          border: Border.all(color: Colors.black, width: isMain ? 2.5 : 2),
+          boxShadow: isMain ? const [
+            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
           ] : null,
         ),
-        child: Icon(icon, color: color, size: isMain ? 22 : 18),
+        child: Icon(icon, color: Colors.black, size: isMain ? 22 : 18),
       ),
     );
   }

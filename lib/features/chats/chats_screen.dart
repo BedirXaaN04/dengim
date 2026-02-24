@@ -95,21 +95,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            // Header Area (remains same)
             _buildHeader(),
-            
             const SizedBox(height: 10),
-
             // Chat List
             Expanded(
               child: Consumer<ChatProvider>(
                 builder: (context, provider, child) {
                   if (provider.isLoading) {
-                    return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+                    return const Center(child: CircularProgressIndicator(color: Colors.black));
                   }
                   
                   final chats = provider.conversations;
@@ -132,10 +129,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           children: [
                             SlidableAction(
                               onPressed: (_) => _deleteChat(chat),
-                              backgroundColor: Colors.red.shade800,
+                              backgroundColor: AppColors.red,
                               foregroundColor: Colors.white,
                               icon: Icons.delete_rounded,
-                              label: 'Sil',
+                              label: 'SİL',
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ],
@@ -158,40 +155,36 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black, width: 2),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                  ],
                 ),
-                child: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.primary, size: 24),
+                child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.black, size: 24),
               ),
               const SizedBox(width: 16),
               Text(
                 "MESAJLAR",
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 2.0,
-                  color: Colors.white,
+                style: GoogleFonts.outfit(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                  letterSpacing: -1.0,
                 ),
               ),
               const Spacer(),
               _buildIconButton(Icons.more_vert_rounded, () {
-                // Menü göster
                 HapticFeedback.lightImpact();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Daha fazla seçenek yakında!'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
               }),
             ],
           ),
@@ -207,40 +200,36 @@ class _ChatsScreenState extends State<ChatsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       height: 52,
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withOpacity(0.5),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
-        boxShadow: [
-           BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(3, 3)),
         ],
       ),
       child: Row(
         children: [
-          Icon(Icons.search, color: Colors.white.withOpacity(0.4)),
+          const Icon(Icons.search, color: Colors.black, size: 22),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
               onChanged: (value) {
-                // Arama filtreleme
                 context.read<ChatProvider>().filterChats(value);
               },
               decoration: InputDecoration(
-                hintText: "Sohbetlerde ara...",
-                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white.withOpacity(0.4), fontSize: 13),
+                hintText: "SOHBETLERDE ARA...",
+                hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontSize: 13, fontWeight: FontWeight.bold),
                 border: InputBorder.none,
               ),
-              style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
+              style: GoogleFonts.outfit(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
-          // Arama temizle butonu
           Consumer<ChatProvider>(
             builder: (context, provider, _) {
               if (provider.searchQuery.isEmpty) return const SizedBox.shrink();
               return GestureDetector(
-                onTap: () {
-                  provider.clearSearch();
-                },
-                child: Icon(Icons.close_rounded, color: Colors.white.withOpacity(0.4), size: 20),
+                onTap: () => provider.clearSearch(),
+                child: const Icon(Icons.close_rounded, color: Colors.black, size: 20),
               );
             },
           ),
@@ -260,49 +249,67 @@ class _ChatsScreenState extends State<ChatsScreen> {
                width: 100,
                height: 100,
                decoration: BoxDecoration(
-                 color: AppColors.primary.withOpacity(0.1),
+                 color: Colors.white,
                  shape: BoxShape.circle,
+                 border: Border.all(color: Colors.black, width: 3),
+                 boxShadow: const [
+                   BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                 ],
                ),
-               child: const Icon(Icons.chat_bubble_outline_rounded, size: 48, color: AppColors.primary),
+               child: const Icon(Icons.chat_bubble_outline_rounded, size: 48, color: Colors.black),
              ),
-             const SizedBox(height: 24),
+             const SizedBox(height: 32),
              Text(
-               "Henüz mesajınız yok 💬", 
-               style: GoogleFonts.plusJakartaSans(
-                 color: Colors.white, 
+               "HENÜZ MESAJINIZ YOK 💬", 
+               style: GoogleFonts.outfit(
+                 color: Colors.black, 
                  fontSize: 20, 
-                 fontWeight: FontWeight.bold,
+                 fontWeight: FontWeight.w900,
                ),
              ),
              const SizedBox(height: 12),
              Text(
-               "Eşleşmelerinizle sohbet etmeye\nburadan başlayabilirsiniz.", 
+               "EŞLEŞMELERİNİZLE SOHBET ETMEYE BURADAN BAŞLAYABİLİRSİNİZ.", 
                textAlign: TextAlign.center,
-               style: GoogleFonts.plusJakartaSans(
-                 color: Colors.white38, 
+               style: GoogleFonts.outfit(
+                 color: Colors.black.withOpacity(0.5), 
                  fontSize: 14, 
+                 fontWeight: FontWeight.w800,
                  height: 1.5,
                ),
              ),
-             const SizedBox(height: 28),
-             ElevatedButton.icon(
-               onPressed: () {
-                 // Navigate to discover tab (index 0)
-                 // This will be handled by bottom nav - just show toast for now
+             const SizedBox(height: 32),
+             GestureDetector(
+               onTap: () {
                  ScaffoldMessenger.of(context).showSnackBar(
-                   const SnackBar(
-                     content: Text('Keşfet sekmesine gidip yeni kişilerle eşleş!'),
-                     duration: Duration(seconds: 2),
+                   SnackBar(
+                     content: Text('KEŞFET SEKMESİNE GİDİP YENİ KİŞİLERLE EŞLEŞ!'.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
+                     duration: const Duration(seconds: 2),
+                     backgroundColor: Colors.black,
                    ),
                  );
                },
-               icon: const Icon(Icons.explore_rounded, size: 18),
-               label: Text("Keşfetmeye Başla", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-               style: ElevatedButton.styleFrom(
-                 backgroundColor: AppColors.primary,
-                 foregroundColor: Colors.black,
-                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+               child: Container(
+                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                 decoration: BoxDecoration(
+                   color: AppColors.primary,
+                   borderRadius: BorderRadius.circular(16),
+                   border: Border.all(color: Colors.black, width: 3),
+                   boxShadow: const [
+                     BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                   ],
+                 ),
+                 child: Row(
+                   mainAxisSize: MainAxisSize.min,
+                   children: [
+                     const Icon(Icons.explore_rounded, color: Colors.black, size: 20),
+                     const SizedBox(width: 12),
+                     Text(
+                       "KEŞFETMEYE BAŞLA", 
+                       style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.black)
+                     ),
+                   ],
+                 ),
                ),
              ),
            ],
@@ -317,11 +324,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
       child: Container(
         width: 44, height: 44,
         decoration: BoxDecoration(
-           color: Colors.white.withOpacity(0.05),
-           borderRadius: BorderRadius.circular(14),
-           border: Border.all(color: Colors.white.withOpacity(0.05)),
+           color: Colors.white,
+           borderRadius: BorderRadius.circular(10),
+           border: Border.all(color: Colors.black, width: 2),
+           boxShadow: const [
+             BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+           ],
         ),
-        child: Icon(icon, color: Colors.white70, size: 22),
+        child: Icon(icon, color: Colors.black, size: 22),
       ),
     );
   }

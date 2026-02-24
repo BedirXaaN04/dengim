@@ -105,23 +105,39 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          "Bildirimler",
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.white),
+          "BİLDİRİMLER",
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black, letterSpacing: -0.5),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Center(
+            child: Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 2.5),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.black, size: 18),
+            ),
+          ),
         ),
         actions: [
-          // Tümünü Okundu İşaretle
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: Colors.white.withOpacity(0.6)),
-            color: const Color(0xFF1E293B),
+            icon: const Icon(Icons.more_vert, color: Colors.black),
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Colors.black, width: 2),
+            ),
             onSelected: (value) {
               if (value == 'mark_all') {
                 _markAllAsRead(currentUser.uid);
@@ -134,9 +150,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 value: 'mark_all',
                 child: Row(
                   children: [
-                    const Icon(Icons.done_all, color: AppColors.primary, size: 18),
+                    const Icon(Icons.done_all, color: Colors.black, size: 18),
                     const SizedBox(width: 8),
-                    Text('Tümünü Okundu İşaretle', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 13)),
+                    Text('TÜMÜNÜ OKUNDU İŞARETLE', style: GoogleFonts.outfit(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900)),
                   ],
                 ),
               ),
@@ -146,7 +162,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   children: [
                     const Icon(Icons.delete_sweep, color: Colors.red, size: 18),
                     const SizedBox(width: 8),
-                    Text('Tümünü Sil', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 13)),
+                    Text('TÜMÜNÜ SİL', style: GoogleFonts.outfit(color: Colors.red, fontSize: 12, fontWeight: FontWeight.w900)),
                   ],
                 ),
               ),
@@ -164,7 +180,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return const Center(child: CircularProgressIndicator(color: Colors.black));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -172,14 +188,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.notifications_off_outlined, size: 64, color: Colors.white.withOpacity(0.2)),
-                  const SizedBox(height: 16),
-                  Text("Henüz bildirim yok", style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 3),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                      ],
+                    ),
+                    child: const Icon(Icons.notifications_off_outlined, size: 48, color: Colors.black),
+                  ),
+                  const SizedBox(height: 24),
+                  Text("HENÜZ BİLDİRİM YOK", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 18)),
                   const SizedBox(height: 8),
                   Text(
-                    "Eşleşmeler, beğeniler ve duyurular\nburada görünecek.",
+                    "EŞLEŞMELER, BEĞENİLER VE DUYURULAR\nBURADA GÖRÜNECEK.",
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12),
+                    style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.5), fontSize: 12, fontWeight: FontWeight.w800, height: 1.5),
                   ),
                 ],
               ),
@@ -187,11 +214,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
 
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               final doc = snapshot.data!.docs[index];
               final data = doc.data() as Map<String, dynamic>;
-              // Backward compatibility: support both old ('read', 'timestamp', 'fromUid') and new ('isRead', 'createdAt', 'senderId') formats
               final isRead = data['isRead'] ?? data['read'] ?? false;
               final timestamp = (data['createdAt'] ?? data['timestamp']) as Timestamp?;
               final type = data['type'] as String?;
@@ -200,83 +227,100 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 key: Key(doc.id),
                 direction: DismissDirection.endToStart,
                 background: Container(
-                  color: AppColors.error.withOpacity(0.2),
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(right: 20),
-                  child: const Icon(Icons.delete, color: AppColors.error),
+                  child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 onDismissed: (direction) {
                   doc.reference.delete();
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: isRead ? Colors.transparent : _getNotifBgColor(type),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: isRead ? null : Border.all(color: _getNotifBorderColor(type)),
+                    border: Border.all(color: Colors.black, width: isRead ? 1.5 : 2.5),
+                    boxShadow: isRead ? [] : const [
+                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                    ],
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    leading: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: _getIconBgColor(type),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(child: _getIconForType(type)),
-                    ),
-                    title: Text(
-                      data['title'] ?? 'Bildirim',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white,
-                        fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 4),
-                        Text(
-                          data['body'] ?? '',
-                          style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 12),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (timestamp != null) ...[
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Text(
-                                _formatTime(timestamp.toDate()),
-                                style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.3)),
-                              ),
-                              if (type == 'announcement') ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    '📢 Duyuru',
-                                    style: TextStyle(fontSize: 9, color: Colors.blue.withOpacity(0.7), fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
+                  child: InkWell(
                     onTap: () {
                       if (!isRead) {
                         doc.reference.update({'isRead': true});
                       }
                       _handleNotificationTap(context, data);
                     },
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: _getIconBgColor(type),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: Center(child: _getIconForType(type)),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                (data['title'] ?? 'BİLDİRİM').toString().toUpperCase(),
+                                style: GoogleFonts.outfit(
+                                  color: Colors.black,
+                                  fontWeight: isRead ? FontWeight.w700 : FontWeight.w900,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                data['body'] ?? '',
+                                style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontSize: 12, fontWeight: FontWeight.w600),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (timestamp != null) ...[
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    Text(
+                                      _formatTime(timestamp.toDate()),
+                                      style: GoogleFonts.outfit(fontSize: 10, color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w700),
+                                    ),
+                                    if (type == 'announcement') ...[
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(color: Colors.black, width: 1.5),
+                                        ),
+                                        child: Text(
+                                          '📢 DUYURU',
+                                          style: GoogleFonts.outfit(fontSize: 9, color: Colors.black, fontWeight: FontWeight.w900),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -307,24 +351,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Color _getIconBgColor(String? type) {
     switch (type) {
-      case 'announcement': return Colors.blue.withOpacity(0.15);
-      case 'match': return AppColors.primary.withOpacity(0.15);
-      case 'like': return Colors.pink.withOpacity(0.15);
-      case 'message': return Colors.green.withOpacity(0.15);
-      case 'story_like': return Colors.red.withOpacity(0.15);
-      default: return Colors.white.withOpacity(0.05);
+      case 'announcement': return AppColors.primary;
+      case 'match': return AppColors.primary;
+      case 'like': return const Color(0xFFFF6B8A);
+      case 'message': return const Color(0xFF22C55E);
+      case 'story_like': return const Color(0xFFEF4444);
+      default: return Colors.black.withOpacity(0.08);
     }
   }
 
   Icon _getIconForType(String? type) {
-    double size = 20;
+    double size = 22;
     switch (type) {
-      case 'announcement': return Icon(Icons.campaign_rounded, color: Colors.blue, size: size);
-      case 'match': return Icon(Icons.favorite, color: AppColors.primary, size: size);
-      case 'like': return Icon(Icons.thumb_up, color: Colors.pink, size: size);
-      case 'story_like': return Icon(Icons.favorite_border, color: Colors.red, size: size);
-      case 'message': return Icon(Icons.message, color: Colors.green, size: size);
-      default: return Icon(Icons.notifications, color: Colors.white, size: size);
+      case 'announcement': return Icon(Icons.campaign_rounded, color: Colors.black, size: size);
+      case 'match': return Icon(Icons.favorite, color: Colors.black, size: size);
+      case 'like': return Icon(Icons.thumb_up, color: Colors.white, size: size);
+      case 'story_like': return Icon(Icons.favorite_border, color: Colors.white, size: size);
+      case 'message': return Icon(Icons.message, color: Colors.white, size: size);
+      default: return Icon(Icons.notifications, color: Colors.black, size: size);
     }
   }
 
@@ -406,8 +450,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${snapshot.docs.length} bildirim okundu olarak işaretlendi'),
-            backgroundColor: AppColors.primary.withOpacity(0.9),
+            content: Text('${snapshot.docs.length} BİLDİRİM OKUNDU OLARAK İŞARETLENDİ', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
+            backgroundColor: Colors.black,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -421,17 +465,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: Text('Tüm Bildirimleri Sil', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text('Tüm bildirimler silinecek. Bu işlem geri alınamaz.', style: GoogleFonts.plusJakartaSans(color: Colors.white70)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.black, width: 3)),
+        title: Text('TÜM BİLDİRİMLERİ SİL', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
+        content: Text('TÜM BİLDİRİMLER SİLİNECEK. BU İŞLEM GERİ ALINAMAZ.', style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.w700)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('İptal', style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
+            child: Text('İPTAL', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Sil', style: GoogleFonts.plusJakartaSans(color: Colors.red)),
+            child: Text('SİL', style: GoogleFonts.outfit(color: Colors.red, fontWeight: FontWeight.w900)),
           ),
         ],
       ),

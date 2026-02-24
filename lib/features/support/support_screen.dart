@@ -23,12 +23,12 @@ class _SupportScreenState extends State<SupportScreen> {
   bool _submitted = false;
 
   final List<Map<String, dynamic>> _categories = [
-    {'id': 'general', 'label': 'Genel Soru', 'icon': Icons.help_outline},
-    {'id': 'bug', 'label': 'Hata Bildirimi', 'icon': Icons.bug_report_outlined},
-    {'id': 'account', 'label': 'Hesap Sorunu', 'icon': Icons.person_outline},
-    {'id': 'payment', 'label': 'Ödeme Sorunu', 'icon': Icons.payment_outlined},
-    {'id': 'report', 'label': 'Kullanıcı Şikayeti', 'icon': Icons.report_outlined},
-    {'id': 'suggestion', 'label': 'Öneri', 'icon': Icons.lightbulb_outline},
+    {'id': 'general', 'label': 'GENEL SORU', 'icon': Icons.help_outline},
+    {'id': 'bug', 'label': 'HATA BİLDİRİMİ', 'icon': Icons.bug_report_outlined},
+    {'id': 'account', 'label': 'HESAP SORUNU', 'icon': Icons.person_outline},
+    {'id': 'payment', 'label': 'ÖDEME SORUNU', 'icon': Icons.payment_outlined},
+    {'id': 'report', 'label': 'KULLANICI ŞİKAYETİ', 'icon': Icons.report_outlined},
+    {'id': 'suggestion', 'label': 'ÖNERİ', 'icon': Icons.lightbulb_outline},
   ];
 
   @override
@@ -70,7 +70,7 @@ class _SupportScreenState extends State<SupportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gönderimde hata oluştu: $e'),
+            content: Text('GÖNDERİMDE HATA OLUŞTU: $e', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
             backgroundColor: Colors.red,
           ),
         );
@@ -81,16 +81,34 @@ class _SupportScreenState extends State<SupportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Center(
+            child: Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 2.5),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.black, size: 18),
+            ),
+          ),
+        ),
         title: Text(
           'DESTEK',
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.outfit(
             fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
             letterSpacing: 2,
+            color: Colors.black,
           ),
         ),
         centerTitle: true,
@@ -111,9 +129,11 @@ class _SupportScreenState extends State<SupportScreen> {
               height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.primary.withOpacity(0.6)],
-                ),
+                color: AppColors.primary,
+                border: Border.all(color: Colors.black, width: 3),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                ],
               ),
               child: const Icon(
                 Icons.check_rounded,
@@ -123,41 +143,46 @@ class _SupportScreenState extends State<SupportScreen> {
             ),
             const SizedBox(height: 32),
             Text(
-              'Talebiniz Alındı!',
-              style: GoogleFonts.plusJakartaSans(
+              'TALEBİNİZ ALINDI!',
+              style: GoogleFonts.outfit(
                 fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              'En kısa sürede size dönüş yapacağız.\nOrtalama yanıt süresi: 24 saat',
+              'EN KISA SÜREDE SİZE DÖNÜŞ YAPACAĞIZ.\nORTALAMA YANIT SÜRESİ: 24 SAAT',
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.outfit(
                 fontSize: 14,
-                color: Colors.white54,
+                color: Colors.black.withOpacity(0.5),
+                fontWeight: FontWeight.w800,
                 height: 1.5,
               ),
             ),
             const SizedBox(height: 40),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                  ],
                 ),
-                child: Text(
-                  'Geri Dön',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                child: Center(
+                  child: Text(
+                    'GERİ DÖN',
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
@@ -180,16 +205,12 @@ class _SupportScreenState extends State<SupportScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primary.withOpacity(0.15),
-                    AppColors.secondary.withOpacity(0.1),
-                  ],
-                ),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                border: Border.all(color: Colors.black, width: 3),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                ],
               ),
               child: Row(
                 children: [
@@ -197,12 +218,13 @@ class _SupportScreenState extends State<SupportScreen> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(
-                      Icons.support_agent_rounded,
                       color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: const Icon(
+                      Icons.support_agent_rounded,
+                      color: Colors.black,
                       size: 28,
                     ),
                   ),
@@ -212,19 +234,20 @@ class _SupportScreenState extends State<SupportScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Nasıl yardımcı olabiliriz?',
-                          style: GoogleFonts.plusJakartaSans(
+                          'NASIL YARDIMCI OLABİLİRİZ?',
+                          style: GoogleFonts.outfit(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Sorularınızı 7/24 yanıtlıyoruz',
-                          style: GoogleFonts.plusJakartaSans(
+                          'SORULARINIZI 7/24 YANITLIYORUZ',
+                          style: GoogleFonts.outfit(
                             fontSize: 12,
-                            color: Colors.white54,
+                            color: Colors.black.withOpacity(0.5),
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
@@ -237,11 +260,11 @@ class _SupportScreenState extends State<SupportScreen> {
 
             // Kategori Seçimi
             Text(
-              'Kategori',
-              style: GoogleFonts.plusJakartaSans(
+              'KATEGORİ',
+              style: GoogleFonts.outfit(
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.white54,
+                fontWeight: FontWeight.w900,
+                color: Colors.black.withOpacity(0.4),
                 letterSpacing: 1,
               ),
             ),
@@ -257,15 +280,15 @@ class _SupportScreenState extends State<SupportScreen> {
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
-                      color: isSelected 
-                          ? AppColors.primary.withOpacity(0.2) 
-                          : Colors.white.withOpacity(0.05),
+                      color: isSelected ? AppColors.primary : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isSelected 
-                            ? AppColors.primary 
-                            : Colors.white.withOpacity(0.1),
+                        color: Colors.black,
+                        width: isSelected ? 2.5 : 2,
                       ),
+                      boxShadow: isSelected ? const [
+                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                      ] : null,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -273,15 +296,15 @@ class _SupportScreenState extends State<SupportScreen> {
                         Icon(
                           cat['icon'],
                           size: 18,
-                          color: isSelected ? AppColors.primary : Colors.white54,
+                          color: Colors.black,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           cat['label'],
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 13,
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                            color: isSelected ? AppColors.primary : Colors.white70,
+                          style: GoogleFonts.outfit(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -294,34 +317,34 @@ class _SupportScreenState extends State<SupportScreen> {
 
             // Konu
             Text(
-              'Konu',
-              style: GoogleFonts.plusJakartaSans(
+              'KONU',
+              style: GoogleFonts.outfit(
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.white54,
+                fontWeight: FontWeight.w900,
+                color: Colors.black.withOpacity(0.4),
                 letterSpacing: 1,
               ),
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _subjectController,
-              style: GoogleFonts.plusJakartaSans(color: Colors.white),
+              style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
               decoration: InputDecoration(
-                hintText: 'Kısa bir başlık yazın',
-                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
+                hintText: 'KISA BİR BAŞLIK YAZIN',
+                hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.w700),
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.05),
+                fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: AppColors.primary),
+                  borderSide: const BorderSide(color: Colors.black, width: 3),
                 ),
               ),
               validator: (value) {
@@ -335,11 +358,11 @@ class _SupportScreenState extends State<SupportScreen> {
 
             // Mesaj
             Text(
-              'Mesajınız',
-              style: GoogleFonts.plusJakartaSans(
+              'MESAJINIZ',
+              style: GoogleFonts.outfit(
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.white54,
+                fontWeight: FontWeight.w900,
+                color: Colors.black.withOpacity(0.4),
                 letterSpacing: 1,
               ),
             ),
@@ -347,23 +370,23 @@ class _SupportScreenState extends State<SupportScreen> {
             TextFormField(
               controller: _messageController,
               maxLines: 6,
-              style: GoogleFonts.plusJakartaSans(color: Colors.white),
+              style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
-                hintText: 'Sorununuzu veya sorunuzu detaylı açıklayın...',
-                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
+                hintText: 'SORUNUNUZU VEYA SORUNUZU DETAYLI AÇIKLAYIN...',
+                hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.w700, fontSize: 13),
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.05),
+                fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: AppColors.primary),
+                  borderSide: const BorderSide(color: Colors.black, width: 3),
                 ),
               ),
               validator: (value) {
@@ -379,43 +402,45 @@ class _SupportScreenState extends State<SupportScreen> {
             const SizedBox(height: 32),
 
             // Gönder Butonu
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _isSubmitting ? null : _submitTicket,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.black,
-                  disabledBackgroundColor: AppColors.primary.withOpacity(0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
+            GestureDetector(
+              onTap: _isSubmitting ? null : _submitTicket,
+              child: Container(
+                width: double.infinity,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: _isSubmitting ? AppColors.primary.withOpacity(0.5) : AppColors.primary,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                  ],
                 ),
-                child: _isSubmitting
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.black,
-                        ),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.send_rounded, size: 20),
-                          const SizedBox(width: 10),
-                          Text(
-                            'Talebi Gönder',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
+                child: Center(
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.black,
                           ),
-                        ],
-                      ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.send_rounded, size: 20, color: Colors.black),
+                            const SizedBox(width: 10),
+                            Text(
+                              'TALEBİ GÖNDER',
+                              style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -423,10 +448,11 @@ class _SupportScreenState extends State<SupportScreen> {
             // Alt Bilgi
             Center(
               child: Text(
-                'Yanıt için kayıtlı e-posta adresinizi kontrol edin',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12,
-                  color: Colors.white38,
+                'YANIT İÇİN KAYITLI E-POSTA ADRESİNİZİ KONTROL EDİN',
+                style: GoogleFonts.outfit(
+                  fontSize: 11,
+                  color: Colors.black.withOpacity(0.3),
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),

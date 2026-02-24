@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/services/notification_service.dart';
 import '../discover/discover_screen.dart';
 import '../map/map_screen.dart';
@@ -14,7 +15,6 @@ import '../../core/providers/badge_provider.dart';
 import '../../core/providers/system_config_provider.dart';
 import '../../core/widgets/offline_banner.dart';
 
-/// MainScaffold - Ana uygulama iskeleti
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
 
@@ -28,7 +28,6 @@ class _MainScaffoldState extends State<MainScaffold> {
   @override
   void initState() {
     super.initState();
-    // FCM Token güncelle
     NotificationService.updateToken();
   }
 
@@ -63,7 +62,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       const _NavItem(
         icon: Icons.chat_bubble_outline_rounded,
         activeIcon: Icons.chat_bubble_rounded,
-        label: 'Sohbetler',
+        label: 'Mesajlar',
       ),
       const _NavItem(
         icon: Icons.person_outline_rounded,
@@ -88,22 +87,16 @@ class _MainScaffoldState extends State<MainScaffold> {
     final screens = _getScreens(isMapEnabled);
     final navItems = _getNavItems(isMapEnabled);
 
-    // Eğer map kapalıysa ve index map'i (1) veya sonrasını gösteriyorsa düzeltme gerekebilir
-    // Ancak IndexedStack index'i ile nav items index'i uyumlu olmalı.
-    // _currentIndex range check:
     if (_currentIndex >= screens.length) {
       _currentIndex = 0;
     }
 
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
-      extendBody: true, // Bottom nav overlap
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Offline banner
           if (!connectivityProvider.isConnected)
             const OfflineBanner(),
-          // Main content
           Expanded(
             child: IndexedStack(
               index: _currentIndex,
@@ -118,36 +111,21 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   Widget _buildBottomNav(List<_NavItem> navItems) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-      height: 72,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(36),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F1115).withOpacity(0.85),
-              borderRadius: BorderRadius.circular(36),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.1),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                )
-              ]
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(
-                navItems.length,
-                (index) => _buildNavItem(index, navItems),
-              ),
-            ),
-          ),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.black, width: 4)),
+      ),
+      padding: EdgeInsets.only(
+        left: 12, 
+        right: 12, 
+        top: 12, 
+        bottom: MediaQuery.of(context).padding.bottom + 12
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(
+          navItems.length,
+          (index) => _buildNavItem(index, navItems),
         ),
       ),
     );
@@ -158,9 +136,8 @@ class _MainScaffoldState extends State<MainScaffold> {
     final item = navItems[index];
     final badgeProvider = context.watch<BadgeProvider>();
     
-    // Determine badge count based on label (dynamic index)
     int badgeCount = 0;
-    if (item.label == 'Sohbetler') { 
+    if (item.label == 'Mesajlar') { 
       badgeCount = badgeProvider.chatBadge;
     } else if (item.label == 'Beğeniler') {
       badgeCount = badgeProvider.likesBadge;
@@ -169,55 +146,66 @@ class _MainScaffoldState extends State<MainScaffold> {
     return GestureDetector(
       onTap: () => _onTabTapped(index),
       behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Icon(
-                isSelected ? item.activeIcon : item.icon,
-                size: 24,
-                color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.3),
-              ),
-              if (badgeCount > 0)
-                Positioned(
-                  right: -8,
-                  top: -4,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
-                    child: Text(
-                      badgeCount > 9 ? '9+' : '$badgeCount',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected ? Border.all(color: Colors.black, width: 2) : Border.all(color: Colors.transparent, width: 2),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  isSelected ? item.activeIcon : item.icon,
+                  size: 24,
+                  color: Colors.black,
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    right: -10,
+                    top: -6,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: AppColors.red,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 1.5),
                       ),
-                      textAlign: TextAlign.center,
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        badgeCount > 9 ? '9+' : '$badgeCount',
+                        style: GoogleFonts.outfit(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            item.label.toUpperCase(),
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 8,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.3),
+              ],
             ),
-          ),
-        ],
+            if (isSelected) ...[
+              const SizedBox(height: 4),
+              Text(
+                item.label.toUpperCase(),
+                style: GoogleFonts.outfit(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                ),
+              ),
+            ]
+          ],
+        ),
       ),
     );
   }

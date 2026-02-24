@@ -194,44 +194,64 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-          onPressed: () {
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildCircleIcon(Icons.arrow_back_ios_new, onTap: () {
             if (_hasChanges) {
               _showDiscardDialog();
             } else {
               Navigator.pop(context);
             }
-          },
+          }),
         ),
         centerTitle: true,
         title: Text(
           "PROFİLİ DÜZENLE",
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2.0,
-            color: Colors.white,
+          style: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+            letterSpacing: -0.5,
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: _isSaving ? null : _saveProfile,
-            child: _isSaving
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
-                : Text(
-                    'Kaydet',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: GestureDetector(
+              onTap: _isSaving ? null : _saveProfile,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.black, width: 2),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                  ],
+                ),
+                child: _isSaving
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                    : Text(
+                        'KAYDET',
+                        style: GoogleFonts.outfit(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12,
+                        ),
+                      ),
+              ),
+            ),
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(color: Colors.black, height: 1),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -290,20 +310,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.plusJakartaSans(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: AppColors.primary,
-        letterSpacing: 1.5,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title.toUpperCase(),
+        style: GoogleFonts.outfit(
+          fontSize: 12,
+          fontWeight: FontWeight.w900,
+          color: Colors.black,
+          letterSpacing: 1.0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCircleIcon(IconData icon, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40, height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.black, width: 2),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+          ],
+        ),
+        child: Icon(icon, color: Colors.black, size: 18),
       ),
     );
   }
 
   Widget _buildPhotosGrid() {
     return SizedBox(
-      height: 120,
+      height: 140,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _photoUrls.length + 1,
@@ -314,21 +355,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               onTap: _pickAndUploadPhoto,
               child: Container(
                 width: 100,
-                height: 120,
-                margin: const EdgeInsets.only(right: 12),
+                height: 140,
+                margin: const EdgeInsets.only(right: 16, bottom: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.5), style: BorderStyle.solid),
+                  border: Border.all(color: Colors.black, width: 2.5),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_photo_alternate_outlined, color: AppColors.primary, size: 28),
+                    const Icon(Icons.add_photo_alternate_outlined, color: Colors.black, size: 32),
                     const SizedBox(height: 8),
                     Text(
-                      'Ekle',
-                      style: GoogleFonts.plusJakartaSans(color: AppColors.primary, fontSize: 12),
+                      'EKLE',
+                      style: GoogleFonts.outfit(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w900),
                     ),
                   ],
                 ),
@@ -341,41 +385,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Container(
                 width: 100,
-                height: 120,
-                margin: const EdgeInsets.only(right: 12),
+                height: 140,
+                margin: const EdgeInsets.only(right: 16, bottom: 8),
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: index == 0 
-                      ? Border.all(color: AppColors.primary, width: 2) 
-                      : null,
+                  border: Border.all(color: Colors.black, width: 2.5),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                  ],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
                   child: CachedNetworkImage(
                     imageUrl: _photoUrls[index],
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(color: AppColors.surface),
+                    placeholder: (context, url) => Container(color: Colors.black12),
                     errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
               ),
               if (index == 0)
                 Positioned(
-                  bottom: 4,
+                  bottom: 12,
                   left: 0,
-                  right: 12,
+                  right: 16,
                   child: Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.black, width: 2),
                       ),
                       child: Text(
-                        'Ana',
-                        style: GoogleFonts.plusJakartaSans(
+                        'ANA',
+                        style: GoogleFonts.outfit(
                           fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                           color: Colors.black,
                         ),
                       ),
@@ -385,16 +432,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               // Delete Button
               Positioned(
                 top: 4,
-                right: 16,
+                right: 20,
                 child: GestureDetector(
                   onTap: () => _removePhoto(index),
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.7),
+                      color: AppColors.red,
                       shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 1.5),
                     ),
-                    child: const Icon(Icons.close, color: Colors.white, size: 14),
+                    child: const Icon(Icons.close, color: Colors.black, size: 12),
                   ),
                 ),
               ),
@@ -412,13 +460,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         width: double.infinity,
         height: 120,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: _videoUrl != null ? AppColors.primary : Colors.white.withOpacity(0.1),
-            width: _videoUrl != null ? 2 : 1,
-            style: BorderStyle.solid,
-          ),
+          border: Border.all(color: Colors.black, width: 2.5),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
         ),
         child: _videoUrl != null
             ? Stack(
@@ -430,10 +477,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         const Icon(Icons.video_library, color: AppColors.primary, size: 40),
                         const SizedBox(height: 8),
                         Text(
-                          "Video Yüklendi",
-                          style: GoogleFonts.plusJakartaSans(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
+                          "VİDEO YÜKLENDİ",
+                          style: GoogleFonts.outfit(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w900,
                             fontSize: 14,
                           ),
                         ),
@@ -451,12 +498,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.black54,
+                          color: AppColors.red,
                           shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black, width: 1.5),
                         ),
-                        child: const Icon(Icons.close, color: Colors.white, size: 18),
+                        child: const Icon(Icons.close, color: Colors.black, size: 18),
                       ),
                     ),
                   ),
@@ -465,13 +513,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.video_call_outlined, color: Colors.white24, size: 32),
+                  const Icon(Icons.video_call_outlined, color: Colors.black26, size: 32),
                   const SizedBox(height: 8),
                   Text(
-                    "Video Profil Ekle (Max 30sn)",
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white38,
-                      fontSize: 13,
+                    "VİDEO PROFİL EKLE (MAX 30SN)",
+                    style: GoogleFonts.outfit(
+                      color: Colors.black38,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ],
@@ -489,33 +538,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String? hint,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
+      ),
       child: TextField(
         controller: controller,
         maxLines: maxLines,
         keyboardType: keyboardType,
-        style: GoogleFonts.plusJakartaSans(color: Colors.white),
+        style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold),
         onChanged: (_) => _hasChanges = true,
         decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white30),
-          labelStyle: GoogleFonts.plusJakartaSans(color: Colors.white54),
-          prefixIcon: Icon(icon, color: Colors.white54, size: 20),
+          labelText: label.toUpperCase(),
+          hintText: hint?.toUpperCase(),
+          hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.2), fontSize: 12, fontWeight: FontWeight.w900),
+          labelStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.4), fontSize: 12, fontWeight: FontWeight.w900),
+          prefixIcon: Icon(icon, color: Colors.black, size: 20),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.05),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.primary),
-          ),
+          fillColor: Colors.transparent,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
@@ -523,8 +570,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildInterestsGrid() {
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: 12,
+      runSpacing: 12,
       children: _allInterests.map((interest) {
         final isSelected = _selectedInterests.contains(interest);
         return GestureDetector(
@@ -533,18 +580,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary.withOpacity(0.2) : Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(20),
+              color: isSelected ? AppColors.primary : Colors.white,
+              borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.1),
+                color: Colors.black,
+                width: 2,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black,
+                  offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
+                ),
+              ],
             ),
             child: Text(
-              interest,
-              style: GoogleFonts.plusJakartaSans(
-                color: isSelected ? AppColors.primary : Colors.white70,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                fontSize: 13,
+              interest.toUpperCase(),
+              style: GoogleFonts.outfit(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
+                fontSize: 12,
               ),
             ),
           ),
@@ -565,15 +619,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             });
           },
           child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+              color: isSelected ? AppColors.primary : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isSelected ? AppColors.primary : Colors.transparent,
-                width: 2,
+                color: Colors.black,
+                width: 2.5,
               ),
+              boxShadow: const [
+                BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+              ],
             ),
             child: Row(
               children: [
@@ -582,26 +639,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        goal['label']!,
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white,
+                        goal['label']!.toUpperCase(),
+                        style: GoogleFonts.outfit(
+                          color: Colors.black,
                           fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
-                        goal['desc']!,
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white54,
-                          fontSize: 13,
+                        goal['desc']!.toUpperCase(),
+                        style: GoogleFonts.outfit(
+                          color: Colors.black.withOpacity(0.5),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
                   ),
                 ),
                 if (isSelected)
-                  const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 24),
+                  const Icon(Icons.check_circle_rounded, color: Colors.black, size: 24),
               ],
             ),
           ),
@@ -614,29 +672,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1F2937),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Değişiklikler Kaybolacak", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Colors.black, width: 3),
+        ),
+        title: Text(
+          "DEĞİŞİKLİKLER KAYBOLACAK",
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black),
+        ),
         content: Text(
-          "Yaptığınız değişiklikler kaydedilmedi. Çıkmak istediğinize emin misiniz?",
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
+          "YAPTIĞINIZ DEĞİŞİKLİKLER KAYDEDİLMEDİ. ÇIKMAK İSTEDİĞİNİZE EMİN MİSİNİZ?",
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.black54),
         ),
         actions: [
           TextButton(
-            child: const Text("İptal", style: TextStyle(color: Colors.white54)),
+            child: Text("İPTAL", style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black38)),
             onPressed: () => Navigator.pop(context),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          Container(
+            margin: const EdgeInsets.all(8),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: const BorderSide(color: Colors.black, width: 2),
+                ),
+                elevation: 4,
+                shadowColor: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                Navigator.pop(context); // Close edit screen
+              },
+              child: Text("ÇIK", style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black)),
             ),
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Close edit screen
-            },
-            child: const Text("Çık"),
           ),
         ],
       ),

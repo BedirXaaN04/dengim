@@ -25,137 +25,111 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
-      body: Stack(
-        children: [
-          // Background Glow
-          Positioned(
-            top: -150,
-            left: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.vibrantGold.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          
-          SafeArea(
-            child: Consumer<SubscriptionProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.primary));
-                }
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Consumer<SubscriptionProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading) {
+              return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            }
 
-                return Column(
-                  children: [
-                    // Top Bar
-                    _buildHeader(context, provider),
+            return Column(
+              children: [
+                // Top Bar
+                _buildHeader(context, provider),
 
-                    // Promo Banner
-                    _buildPromoBanner(),
+                // Promo Banner
+                _buildPromoBanner(),
 
-                    Expanded(
-                      child: PageView(
-                        controller: _pageController,
-                        onPageChanged: (index) => setState(() => _currentPage = index),
-                        children: [
-                          _buildPlanCard(
-                            title: 'GOLD',
-                            color: AppColors.primary,
-                            icon: Icons.star_rounded,
-                            features: TierLimits.getFeaturesFor('gold'),
-                            products: provider.products.where((p) => p.id.contains('gold')).toList(),
-                            provider: provider,
-                          ),
-                          _buildPlanCard(
-                            title: 'PLATINUM',
-                            color: const Color(0xFFE5E4E2), // Platinum silver
-                            icon: Icons.workspace_premium_rounded,
-                            features: TierLimits.getFeaturesFor('platinum'),
-                            products: provider.products.where((p) => p.id.contains('platinum')).toList(),
-                            provider: provider,
-                          ),
-                        ],
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) => setState(() => _currentPage = index),
+                    children: [
+                      _buildPlanCard(
+                        title: 'GOLD',
+                        color: AppColors.primary,
+                        icon: Icons.star_rounded,
+                        features: TierLimits.getFeaturesFor('gold'),
+                        products: provider.products.where((p) => p.id.contains('gold')).toList(),
+                        provider: provider,
                       ),
-                    ),
+                      _buildPlanCard(
+                        title: 'PLATINUM',
+                        color: const Color(0xFFE5E4E2),
+                        icon: Icons.workspace_premium_rounded,
+                        features: TierLimits.getFeaturesFor('platinum'),
+                        products: provider.products.where((p) => p.id.contains('platinum')).toList(),
+                        provider: provider,
+                      ),
+                    ],
+                  ),
+                ),
 
-                    // Page Indicator
-                    _buildIndicator(),
+                // Page Indicator
+                _buildIndicator(),
 
-                    // İzle & Kazan butonu (Freemium için)
-                    Consumer<SubscriptionProvider>(
-                      builder: (context, sub, _) {
-                        if (sub.currentTier != 'free') return const SizedBox.shrink();
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
-                          child: GestureDetector(
-                            onTap: () => Navigator.push(
-                              context, 
-                              MaterialPageRoute(builder: (_) => const WatchAndEarnScreen()),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    const Color(0xFF6C63FF),
-                                    const Color(0xFF6C63FF).withOpacity(0.7),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.play_circle_filled_rounded, color: Colors.white, size: 20),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'REKLAM İZLE & KREDİ KAZAN',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      letterSpacing: 0.8,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                // İzle & Kazan butonu
+                Consumer<SubscriptionProvider>(
+                  builder: (context, sub, _) {
+                    if (sub.currentTier != 'free') return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder: (_) => const WatchAndEarnScreen()),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6C63FF),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.black, width: 2.5),
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                            ],
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Restore Button
-                    TextButton(
-                      onPressed: () => provider.restorePurchases(),
-                      child: Text(
-                        'SATIN ALIMLARI GERİ YÜKLE',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          color: Colors.white38,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.play_circle_filled_rounded, color: Colors.black, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'REKLAM İZLE & KREDİ KAZAN',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // Restore Button
+                TextButton(
+                  onPressed: () => provider.restorePurchases(),
+                  child: Text(
+                    'SATIN ALIMLARI GERİ YÜKLE',
+                    style: GoogleFonts.outfit(
+                      fontSize: 12,
+                      color: Colors.black.withOpacity(0.4),
+                      fontWeight: FontWeight.w900,
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                );
-              },
-            ),
-          ),
-        ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -166,43 +140,47 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.close, color: Colors.white70),
-          ),
+          _buildCircleIcon(Icons.close, onTap: () => Navigator.pop(context)),
           Row(
             children: [
               // Mevcut Plan Badge
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white10),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 2),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.wallet, color: AppColors.primary, size: 16),
+                    const Icon(Icons.wallet, color: Colors.black, size: 16),
                     const SizedBox(width: 8),
                     Text(
-                      TierLimits.getTierDisplayName(provider.currentTier),
-                      style: GoogleFonts.plusJakartaSans(
+                      TierLimits.getTierDisplayName(provider.currentTier).toUpperCase(),
+                      style: GoogleFonts.outfit(
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               // Kredi Bakiye Badge
               Consumer<CreditProvider>(
                 builder: (context, credit, _) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    gradient: AppColors.goldGradient,
-                    borderRadius: BorderRadius.circular(20),
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black, width: 2),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                    ],
                   ),
                   child: Row(
                     children: [
@@ -210,7 +188,7 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                       const SizedBox(width: 4),
                       Text(
                         '${credit.balance}',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: GoogleFonts.outfit(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
                           color: Colors.black,
@@ -227,24 +205,44 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
     );
   }
 
+  Widget _buildCircleIcon(IconData icon, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40, height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.black, width: 2),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+          ],
+        ),
+        child: Icon(icon, color: Colors.black, size: 20),
+      ),
+    );
+  }
+
   Widget _buildPromoBanner() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
-        ),
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: Center(
         child: Text(
           '🔥 İLK AY %50 İNDİRİM FIRSATI!',
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.outfit(
             color: Colors.black,
             fontWeight: FontWeight.w900,
-            fontSize: 13,
+            fontSize: 14,
           ),
         ),
       ),
@@ -260,52 +258,56 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
     required SubscriptionProvider provider,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: color.withOpacity(0.3), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.1),
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(6, 6)),
         ],
       ),
       child: Column(
         children: [
           const SizedBox(height: 32),
-          Icon(icon, color: color, size: 48),
-          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+               color: color,
+               shape: BoxShape.circle,
+               border: Border.all(color: Colors.black, width: 2),
+            ),
+            child: Icon(icon, color: Colors.black, size: 40),
+          ),
+          const SizedBox(height: 20),
           Text(
             title,
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.outfit(
               fontSize: 28,
               fontWeight: FontWeight.w900,
-              color: color,
-              letterSpacing: 2,
+              color: Colors.black,
+              letterSpacing: -1,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               itemCount: features.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.only(bottom: 12),
                   child: Row(
                     children: [
-                      Icon(Icons.check_circle_rounded, color: color, size: 20),
+                      const Icon(Icons.check_circle_outline_rounded, color: Colors.black, size: 20),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          features[index],
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                          features[index].toUpperCase(),
+                          style: GoogleFonts.outfit(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -322,14 +324,15 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
             child: products.isEmpty 
               ? Column(
                   children: [
-                    const Icon(Icons.info_outline, color: Colors.white24),
+                    const Icon(Icons.info_outline, color: Colors.black26),
                     const SizedBox(height: 8),
                     Text(
-                      'Şu anda mağaza bağlantısı kurulamıyor.\nLütfen daha sonra tekrar deneyin.',
+                      'ŞU ANDA MAĞAZA BAĞLANTISI KURULAMIYOR.',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white24,
+                      style: GoogleFonts.outfit(
+                        color: Colors.black26,
                         fontSize: 12,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ],
@@ -344,36 +347,40 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
   }
 
   Widget _buildPriceButton(ProductDetails product, Color color, SubscriptionProvider provider) {
-    String period = 'Ay';
-    if (product.id.contains('3')) period = '3 Ay';
-    if (product.id.contains('6')) period = '6 Ay';
+    String period = 'AY';
+    if (product.id.contains('3')) period = '3 AY';
+    if (product.id.contains('6')) period = '6 AY';
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () => provider.buyProduct(product),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white10),
+            color: color,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black, width: 2),
+            boxShadow: const [
+              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 period,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.outfit(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
               Text(
                 product.price,
-                style: GoogleFonts.plusJakartaSans(
-                  color: color,
+                style: GoogleFonts.outfit(
+                  color: Colors.black,
                   fontWeight: FontWeight.w900,
+                  fontSize: 16,
                 ),
               ),
             ],
@@ -389,13 +396,15 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(2, (index) {
-          return Container(
-            width: 8,
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: _currentPage == index ? 24 : 8,
             height: 8,
             margin: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _currentPage == index ? AppColors.primary : Colors.white12,
+              borderRadius: BorderRadius.circular(4),
+              color: _currentPage == index ? AppColors.primary : Colors.black.withOpacity(0.1),
+              border: Border.all(color: Colors.black, width: 1.5),
             ),
           );
         }),
