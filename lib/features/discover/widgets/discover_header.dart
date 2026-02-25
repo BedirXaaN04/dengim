@@ -91,7 +91,7 @@ class DiscoverHeader extends StatelessWidget {
             children: [
               _buildHeaderIcon(
                 Icons.graphic_eq_rounded,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SpacesScreen())),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SpacesScreen())),
               ),
               const SizedBox(width: 12),
               _buildHeaderIcon(

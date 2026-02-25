@@ -44,7 +44,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
   @override
   void initState() {
     super.initState();
-    _audioRecorder.onDurationChanged = (duration) {
+    _audioRecorder.onDurationUpdate = (duration) {
       if (mounted) setState(() => _recordingDuration = duration);
     };
   }
@@ -64,12 +64,21 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
     _messageController.clear();
     _typingService.stopTyping(widget.chatId);
     
-    _chatService.sendMessage(
-      widget.chatId,
-      text,
-      widget.otherUserId,
-      replyTo: widget.replyingTo,
-    );
+    if (widget.replyingTo != null) {
+      _chatService.sendReplyMessage(
+        widget.chatId,
+        text,
+        widget.otherUserId,
+        widget.replyingTo!.id,
+        widget.replyingTo!.content,
+      );
+    } else {
+      _chatService.sendMessage(
+        widget.chatId,
+        text,
+        widget.otherUserId,
+      );
+    }
 
     widget.onClearReply();
   }

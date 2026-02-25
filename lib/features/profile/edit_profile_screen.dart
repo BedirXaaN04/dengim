@@ -69,7 +69,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _selectedInterests = List.from(widget.profile.interests);
     _selectedRelationshipGoal = widget.profile.relationshipGoal;
 
-    _audioRecorder.onDurationChanged = (duration) {
+    _audioRecorder.onDurationUpdate = (duration) {
       if (mounted) setState(() => _recordingDuration = duration);
     };
   }
