@@ -181,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildDetailsCard(job, education, interests),
 
                       if (profile?.videoUrl != null) ...[
-                        const SizedBox(height: 199),
+                        const SizedBox(height: 40),
                         _buildSectionHeader('VİDEO PROFİL'),
                         _buildVideoPreview(profile!.videoUrl!),
                       ],
@@ -379,31 +379,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildVideoPreview(String videoUrl) {
     return GestureDetector(
       onTap: () {
-        // Play video
         _showVideoPlayer(videoUrl);
       },
       child: Container(
         height: 200,
-        width: 150,
+        width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white.withOpacity(0.05),
-          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-          image: const DecorationImage(
-            image: CachedNetworkImageProvider('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=500'),
-            fit: BoxFit.cover,
-            opacity: 0.5,
+          borderRadius: BorderRadius.circular(AppColors.neoRadius),
+          border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+          ],
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF1a1a2e),
+              Color(0xFF16213e),
+              Color(0xFF0f3460),
+            ],
           ),
         ),
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.8),
-              shape: BoxShape.circle,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 3),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                ],
+              ),
+              child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 36),
             ),
-            child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 32),
-          ),
+            const SizedBox(height: 16),
+            Text(
+              'VİDEO PROFİLİNİ İZLE',
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -423,7 +445,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (profile == null) return 0;
     
     int completed = 0;
-    int total = 8;
+    const int total = 9; // Name, photos, bio, job, education, interests, goal, country, video
     
     if (profile.name?.isNotEmpty ?? false) completed++;
     if ((profile.photoUrls?.length ?? 0) >= 3) completed++; // Has 3+ photos
@@ -433,9 +455,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if ((profile.interests?.length ?? 0) >= 3) completed++; // Has 3+ interests
     if (profile.relationshipGoal != null) completed++;
     if (profile.country?.isNotEmpty ?? false) completed++;
-    if (profile.videoUrl != null) completed++; // New: Video count
+    if (profile.videoUrl != null) completed++;
 
-    return ((completed / (total + 1)) * 100).round();
+    return ((completed / total) * 100).round();
   }
 
   String _getCompletionMessage(int percentage) {

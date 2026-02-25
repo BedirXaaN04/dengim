@@ -499,21 +499,3 @@ void showFilterBottomSheet(
     ),
   );
 }
-
-}
-
-void showFilterBottomSheet(
-  BuildContext context, {
-  required FilterSettings currentSettings,
-  required Function(FilterSettings) onApply,
-}) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    builder: (context) => FilterBottomSheet(
-      initialSettings: currentSettings,
-      onApply: onApply,
-    ),
-  );
-}

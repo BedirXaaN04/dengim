@@ -30,6 +30,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
+  final TextEditingController _educationController = TextEditingController();
   final TextEditingController _dayController = TextEditingController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
@@ -40,6 +41,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _countryController.dispose();
     _bioController.dispose();
     _jobController.dispose();
+    _educationController.dispose();
     _dayController.dispose();
     _monthController.dispose();
     _yearController.dispose();
@@ -108,6 +110,33 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     {'name': 'Yemek', 'icon': Icons.restaurant},
     {'name': 'Sanat', 'icon': Icons.theater_comedy},
     {'name': 'Deniz', 'icon': Icons.sailing},
+    {'name': 'Sinema', 'icon': Icons.movie},
+    {'name': 'Spor', 'icon': Icons.fitness_center},
+    {'name': 'Fotoğrafçılık', 'icon': Icons.camera_alt},
+    {'name': 'Yoga', 'icon': Icons.self_improvement},
+    {'name': 'Okuma', 'icon': Icons.menu_book},
+    {'name': 'Oyun', 'icon': Icons.sports_esports},
+    {'name': 'Dans', 'icon': Icons.nightlife},
+    {'name': 'Doğa', 'icon': Icons.park},
+    {'name': 'Kahve', 'icon': Icons.coffee},
+    {'name': 'Teknoloji', 'icon': Icons.computer},
+    {'name': 'Moda', 'icon': Icons.checkroom},
+    {'name': 'Hayvanlar', 'icon': Icons.pets},
+    {'name': 'Bisiklet', 'icon': Icons.directions_bike},
+    {'name': 'Koşu', 'icon': Icons.directions_run},
+    {'name': 'Yüzme', 'icon': Icons.pool},
+    {'name': 'Kitap', 'icon': Icons.auto_stories},
+    {'name': 'Dil Öğrenme', 'icon': Icons.translate},
+    {'name': 'Girişimcilik', 'icon': Icons.rocket_launch},
+    {'name': 'Podcast', 'icon': Icons.podcasts},
+    {'name': 'Meditasyon', 'icon': Icons.spa},
+    {'name': 'Futbol', 'icon': Icons.sports_soccer},
+    {'name': 'Basketbol', 'icon': Icons.sports_basketball},
+    {'name': 'Araba', 'icon': Icons.directions_car},
+    {'name': 'Kripto', 'icon': Icons.currency_bitcoin},
+    {'name': 'Astronomi', 'icon': Icons.auto_awesome},
+    {'name': 'Yazılım', 'icon': Icons.code},
+    {'name': 'Gönüllülük', 'icon': Icons.volunteer_activism},
   ];
 
   bool _isLoading = false;
@@ -152,7 +181,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://api.dicebear.com/7.x/initials/png?seed=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}'],
         bio: _bioController.text.trim(),
         job: _jobController.text.trim(),
-        education: '',
+        education: _educationController.text.trim(),
       );
 
       await userProvider.loadCurrentUser();
@@ -383,6 +412,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
              placeholder: 'FİNANS DİREKTÖRÜ',
            ),
            _buildModernInput(
+             controller: _educationController,
+             label: 'EĞİTİM',
+             placeholder: 'İSTANBUL ÜNİVERSİTESİ',
+           ),
+           _buildModernInput(
              controller: _bioController,
              label: 'HAKKINDA',
              placeholder: 'KENDİNDEN BAHSET...',
@@ -421,11 +455,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
            _buildSectionHeader('CİNSİYET'),
            Padding(
              padding: const EdgeInsets.symmetric(horizontal: 24),
-             child: Row(
+             child: Column(
                children: [
-                 _buildGenderChip('Erkek', Icons.male),
-                 const SizedBox(width: 12),
-                 _buildGenderChip('Kadın', Icons.female),
+                 Row(
+                   children: [
+                     _buildGenderChip('Erkek', Icons.male),
+                     const SizedBox(width: 12),
+                     _buildGenderChip('Kadın', Icons.female),
+                   ],
+                 ),
+                 const SizedBox(height: 12),
+                 _buildGenderChip('Belirtmek İstemiyorum', Icons.person_outline),
                ],
              ),
            ),
@@ -443,7 +483,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           _buildStepTitle('İLGİ ALANLARI', 'Sana uygun kişileri bulalım.'),
+           _buildStepTitle('İLGİ ALANLARI', 'En fazla 8 ilgi alanı seçebilirsin.'),
            _buildInterestsGrid(),
            const SizedBox(height: 40),
            Padding(
@@ -564,6 +604,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   Widget _buildCountryDropdown() {
+    final countries = [
+      'Türkiye 🇹🇷', 'Almanya 🇩🇪', 'Fransa 🇫🇷', 'İngiltere 🇬🇧', 'ABD 🇺🇸',
+      'Hollanda 🇳🇱', 'Avusturya 🇦🇹', 'Belçika 🇧🇪', 'İsviçre 🇨🇭', 'İsveç 🇸🇪',
+      'Norveç 🇳🇴', 'Danimarka 🇩🇰', 'İtalya 🇮🇹', 'İspanya 🇪🇸', 'Portekiz 🇵🇹',
+      'Kanada 🇨🇦', 'Avustralya 🇦🇺', 'Japonya 🇯🇵', 'Güney Kore 🇰🇷', 'Brezilya 🇧🇷',
+      'Rusya 🇷🇺', 'Azerbaycan 🇦🇿', 'KKTC 🇹🇷', 'Yunanistan 🇬🇷', 'Polonya 🇵🇱',
+      'Çekya 🇨🇿', 'Finlandiya 🇫🇮', 'İrlanda 🇮🇪', 'BAE 🇦🇪', 'Diğer 🌍',
+    ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: DropdownButtonFormField<String>(
@@ -575,7 +623,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.black, width: 2.5)),
         ),
         dropdownColor: Colors.white,
-        items: ['Türkiye 🇹🇷', 'Almanya 🇩🇪', 'Fransa 🇫🇷', 'İngiltere 🇬🇧', 'ABD 🇺🇸', 'Hollanda 🇳🇱', 'Diğer'].map((c) => DropdownMenuItem(value: c, child: Text(c.toUpperCase()))).toList(),
+        isExpanded: true,
+        menuMaxHeight: 400,
+        items: countries.map((c) => DropdownMenuItem(value: c, child: Text(c.toUpperCase()))).toList(),
         onChanged: (v) => setState(() => _countryController.text = v ?? ''),
       ),
     );
@@ -645,7 +695,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             onTap: () {
               setState(() {
                 if (isSelected) { _selectedInterests.remove(interest['name']); }
-                else if (_selectedInterests.length < 5) { _selectedInterests.add(interest['name']); }
+                else if (_selectedInterests.length < 8) { _selectedInterests.add(interest['name']); }
               });
             },
             child: Container(

@@ -1543,7 +1543,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    user.isOnline ? 'AKTİF' : 'ÇEVRİMDIŞI', 
+                    user.isOnline ? 'AKTİF' : _getLastSeenText(user), 
                     style: GoogleFonts.outfit(
                       fontSize: 10, 
                       fontWeight: FontWeight.w900, 
@@ -1567,15 +1567,18 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             children: List.generate(
               photoUrls.length,
               (index) => Container(
-                width: 6,
-                height: 6,
+                width: 10,
+                height: 10,
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _currentPhotoIndex == index
                     ? AppColors.primary
-                    : Colors.white,
-                  border: Border.all(color: Colors.black, width: 1.5),
+                    : Colors.white.withOpacity(0.6),
+                  border: Border.all(color: Colors.black, width: 2),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black26, offset: Offset(1, 1)),
+                  ],
                 ),
               ),
             ),
@@ -1643,7 +1646,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   ],
                   Expanded(
                     child: Text(
-                      (user.job ?? 'Kreatif Direktör').toUpperCase(),
+                      (user.job != null && user.job!.isNotEmpty ? user.job! : '').toUpperCase(),
                       style: GoogleFonts.outfit(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
@@ -1959,6 +1962,19 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ),
       ),
     );
+  }
+
+  String _getLastSeenText(dynamic user) {
+    final lastActive = user.lastActive;
+    
+    final now = DateTime.now();
+    final diff = now.difference(lastActive);
+    
+    if (diff.inMinutes < 5) return 'AZ ÖNCE';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} DK ÖNCE';
+    if (diff.inHours < 24) return '${diff.inHours} SAAT ÖNCE';
+    if (diff.inDays < 7) return '${diff.inDays} GÜN ÖNCE';
+    return 'ÇEVRİMDIŞI';
   }
 
   double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {

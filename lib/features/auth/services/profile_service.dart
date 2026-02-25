@@ -218,6 +218,8 @@ class ProfileService {
     bool? isGhostMode,
     bool? isIncognitoMode,
     String? subscriptionTier,
+    int? credits,
+    bool? hasReceivedWelcomeBonus,
   }) async {
     final uid = _currentUser?.uid;
     if (uid == null) return;
@@ -246,6 +248,8 @@ class ProfileService {
     if (isGhostMode != null) updates['isGhostMode'] = isGhostMode;
     if (isIncognitoMode != null) updates['isIncognitoMode'] = isIncognitoMode;
     if (subscriptionTier != null) updates['subscriptionTier'] = subscriptionTier;
+    if (credits != null) updates['credits'] = credits;
+    if (hasReceivedWelcomeBonus != null) updates['hasReceivedWelcomeBonus'] = hasReceivedWelcomeBonus;
 
     try {
       await _firestore.collection('users').doc(uid).update(updates);

@@ -16,6 +16,7 @@ import '../../../core/services/typing_indicator_service.dart';
 import '../../../core/widgets/online_status_indicator.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/services/feature_flag_service.dart';
+import '../../../core/services/read_receipt_service.dart';
 
 import '../models/chat_models.dart';
 import '../services/chat_service.dart';
@@ -65,6 +66,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.initState();
     _chatService.markAsRead(widget.chatId);
     
+    // Mark all messages as read (for read receipt indicators)
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      ReadReceiptService().markAllAsRead(chatId: widget.chatId, userId: uid);
+    }    
     // Listen for new messages while in this screen to clear unread count
     _conversationSubscription = FirebaseFirestore.instance
         .collection('conversations')
@@ -161,7 +167,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               leading: const Icon(Icons.delete_outline, color: Colors.red),
               title: Text(
                 'Mesajı Sil',
-                style: GoogleFonts.plusJakartaSans(color: Colors.red),
+                style: GoogleFonts.outfit(color: Colors.red, fontWeight: FontWeight.w800),
               ),
               onTap: () async {
                 Navigator.pop(context);
@@ -194,7 +200,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               leading: const Icon(Icons.flag_outlined, color: Colors.amber),
               title: Text(
                 'Kullanıcıyı Raporla',
-                style: GoogleFonts.plusJakartaSans(color: Colors.amber),
+                style: GoogleFonts.outfit(color: Colors.amber, fontWeight: FontWeight.w800),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -205,7 +211,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               leading: const Icon(Icons.block, color: Colors.orange),
               title: Text(
                 'Kullanıcıyı Engelle',
-                style: GoogleFonts.plusJakartaSans(color: Colors.orange),
+                style: GoogleFonts.outfit(color: Colors.orange, fontWeight: FontWeight.w800),
               ),
               onTap: () async {
                 Navigator.pop(context);
@@ -251,7 +257,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               leading: const Icon(Icons.delete_sweep, color: Colors.red),
               title: Text(
                 'Sohbeti Sil',
-                style: GoogleFonts.plusJakartaSans(color: Colors.red),
+                style: GoogleFonts.outfit(color: Colors.red, fontWeight: FontWeight.w800),
               ),
               onTap: () async {
                 Navigator.pop(context);

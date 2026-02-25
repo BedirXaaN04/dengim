@@ -566,5 +566,4 @@ class UserProfileDetailScreen extends StatelessWidget {
       default: return 'Bilinmiyor';
     }
   }
-  }
 }

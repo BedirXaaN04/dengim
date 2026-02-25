@@ -197,7 +197,7 @@ class _LikesScreenState extends State<LikesScreen> {
                                   ),
                                   const SizedBox(height: 24),
                                   Text(
-                                    "PROFİLİNİ GÜÇLENDİR! 💪",
+                                    "PROFİLİNİ GÜÇLENDİR 💪",
                                     style: GoogleFonts.outfit(
                                       color: Colors.black, 
                                       fontSize: 18,
@@ -206,7 +206,7 @@ class _LikesScreenState extends State<LikesScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    "DAHA FAZLA FOTOĞRAF EKLE VE\nİLGİ ÇEKİCİ BİR BİYOGRAFİ YAZ.",
+                                    "Daha fazla fotoğraf ekle ve\nilgi çekici bir biyografi yaz.",
                                     textAlign: TextAlign.center,
                                     style: GoogleFonts.outfit(
                                       color: Colors.black.withOpacity(0.5), 
@@ -508,7 +508,7 @@ class _LikesScreenState extends State<LikesScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            "KEŞFET'E GİDİP İNSANLARI BEĞENMEYE BAŞLA.\nKARŞILIKLI BEĞENİLER EŞLEŞME OLUŞTURUR!",
+            "Keşfet'e gidip insanları beğenmeye başla.\nKarşılıklı beğeniler eşleşme oluşturur!",
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
               color: Colors.black.withOpacity(0.5),
@@ -544,40 +544,64 @@ class _LockedLikeCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              CachedNetworkImage(
-                imageUrl: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400',
-                fit: BoxFit.cover,
-              ),
+              // Abstract gradient background instead of a misleading photo
               Container(
-                color: Colors.black.withOpacity(0.6),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.black, width: 2),
-                      ),
-                      child: const Icon(Icons.lock_outline_rounded, color: Colors.black, size: 28),
-                    ),
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "GÖRMEK İÇİN PREMIUM'A GEÇ",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          height: 1.2,
-                        ),
-                      ),
-                    ),
-                  ],
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFFFD166),
+                      Color(0xFFFF6B6B),
+                      Color(0xFFC084FC),
+                    ],
+                  ),
                 ),
+                child: Center(
+                  child: Icon(
+                    Icons.person_rounded,
+                    size: 60,
+                    color: Colors.white.withOpacity(0.3),
+                  ),
+                ),
+              ),
+              // Blur overlay
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.35),
+                ),
+              ),
+              // Lock icon and text
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                      ],
+                    ),
+                    child: const Icon(Icons.lock_outline_rounded, color: Colors.black, size: 28),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "GÖRMEK İÇİN\nPREMIUM'A GEÇ",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

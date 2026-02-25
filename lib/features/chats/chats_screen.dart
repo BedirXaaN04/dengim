@@ -268,7 +268,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
              ),
              const SizedBox(height: 32),
              Text(
-               "HENÜZ MESAJINIZ YOK 💬", 
+               "Henüz mesajınız yok 💬", 
                style: GoogleFonts.outfit(
                  color: Colors.black, 
                  fontSize: 20, 
@@ -277,7 +277,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
              ),
              const SizedBox(height: 12),
              Text(
-               "EŞLEŞMELERİNİZLE SOHBET ETMEYE BURADAN BAŞLAYABİLİRSİNİZ.", 
+               "Eşleşmelerinizle sohbet etmeye\nburadan başlayabilirsiniz.", 
                textAlign: TextAlign.center,
                style: GoogleFonts.outfit(
                  color: Colors.black.withOpacity(0.5), 
