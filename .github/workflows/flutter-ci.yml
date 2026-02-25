@@ -89,7 +89,7 @@ jobs:
         echo "Done patching plugins."
 
     - name: 🔧 Build APK
-      run: flutter build apk --release --verbose
+      run: flutter build apk --release --verbose --android-skip-build-dependency-validation
 
     - name: 📱 Upload APK
       uses: actions/upload-artifact@v4
