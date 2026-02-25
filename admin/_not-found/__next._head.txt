@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[97367,["/dengim/admin/_next/static/chunks/6e586ab483441b69.js","/dengim/admin/_next/static/chunks/334f6e973e8915bb.js","/dengim/admin/_next/static/chunks/a2dfb6fc5208ab9b.js"],"ViewportBoundary"]
+3:I[97367,["/dengim/admin/_next/static/chunks/6e586ab483441b69.js","/dengim/admin/_next/static/chunks/334f6e973e8915bb.js","/dengim/admin/_next/static/chunks/a2dfb6fc5208ab9b.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+0:{"buildId":"gvnBFnDzdOBNSn3-Rp3Q6","rsc":["$","$1","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"DENGIM Admin Panel"}],["$","meta","1",{"name":"description","content":"DENGIM Dating App - Admin & VIP Management Platform"}]]}]}]}],null]}],"loading":null,"isPartial":false}

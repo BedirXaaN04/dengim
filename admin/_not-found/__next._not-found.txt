@@ -1,0 +1,4 @@
+1:"$Sreact.fragment"
+2:I[39756,["/dengim/admin/_next/static/chunks/6e586ab483441b69.js","/dengim/admin/_next/static/chunks/334f6e973e8915bb.js","/dengim/admin/_next/static/chunks/a2dfb6fc5208ab9b.js"],"default"]
+3:I[37457,["/dengim/admin/_next/static/chunks/6e586ab483441b69.js","/dengim/admin/_next/static/chunks/334f6e973e8915bb.js","/dengim/admin/_next/static/chunks/a2dfb6fc5208ab9b.js"],"default"]
+0:{"buildId":"gvnBFnDzdOBNSn3-Rp3Q6","rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"loading":null,"isPartial":false}
