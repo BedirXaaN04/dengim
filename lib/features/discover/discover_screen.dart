@@ -954,15 +954,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       ),
                     );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.black, width: 2),
-                    ),
-                    child: const Icon(Icons.filter_list_rounded, color: Colors.black, size: 20),
-                  ),
                 ),
               ],
             ),
