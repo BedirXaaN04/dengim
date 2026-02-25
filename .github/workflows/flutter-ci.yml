@@ -84,6 +84,22 @@ jobs:
         find $HOME/.pub-cache -name "build.gradle" -path "*/android/*" | while read f; do
           if grep -q "ext\.kotlin_version\|rootProject\.ext\.kotlin_version" "$f" 2>/dev/null; then
             echo "  Patching Kotlin version: $f"
+            sed -i 's/rootProject\.ext\.kotlin_version/"1.9.24"/g' "$f"
+            sed -i "s/\$rootProject\.ext\.kotlin_version/\"1.9.24\"/g" "$f"
+            sed -i "s/ext\.kotlin_version = .*/ext.kotlin_version = '1.9.24'/g" "$f"
+          fi
+        done
+        
+        # Add android namespace to plugins missing it (AGP 8+ requirement)
+        find $HOME/.pub-cache -name "build.gradle" -path "*/android/*" | while read f; do
+          if grep -q "^android {" "$f" 2>/dev/null; then
+            if ! grep -q "namespace" "$f" 2>/dev/null; then
+              PKG=$(grep -r "package=" "$(dirname "$f")/../src/main/AndroidManifest.xml" 2>/dev/null | head -1 | sed 's/.*package="\([^"]*\)".*/\1/')
+              if [ -n "$PKG" ]; then
+                echo "  Adding namespace '$PKG' to: $f"
+                sed -i "s/^android {/android {\n    namespace \"$PKG\"/" "$f"
+              fi
+            fi
           fi
         done
         echo "Done patching plugins."
