@@ -213,19 +213,37 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       _LoginButton(
-                        icon: Icons.email_rounded,
+                        icon: Icons.account_circle_rounded,
                         text: 'Google ile Giriş Yap',
                         color: Colors.white,
                         textColor: Colors.black,
                         onTap: _signInWithGoogle,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                       _LoginButton(
-                        icon: Icons.cloud_outlined,
-                        text: 'Apple ile Giriş Yap',
+                        icon: Icons.alternate_email_rounded,
+                        text: 'E-Posta ile Giriş Yap',
                         color: Colors.black,
                         textColor: Colors.white,
-                        onTap: () => _showError('Apple Girişi yakında eklenecektir.'),
+                        onTap: _showEmailLoginForm,
+                      ),
+                      const SizedBox(height: 24),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          );
+                        },
+                        child: Text(
+                          "HESABIN YOK MU? KAYIT OL",
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            decoration: TextDecoration.underline,
+                            decorationThickness: 2,
+                          ),
+                        ),
                       ),
                     ],
                   ),
