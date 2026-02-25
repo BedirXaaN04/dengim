@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/providers/discovery_provider.dart';
-import '../spaces/screens/spaces_screen.dart';
+import '../../spaces/screens/spaces_screen.dart';
 import 'advanced_filters_modal.dart';
 import 'filter_bottom_sheet.dart'; 
 
