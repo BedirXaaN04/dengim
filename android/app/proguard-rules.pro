@@ -8,6 +8,9 @@
 -dontwarn androidx.window.extensions.**
 -dontwarn androidx.window.sidecar.**
 
+# Google Play Core (deferred components, splitinstall - provided by Play Store at runtime)
+-dontwarn com.google.android.play.core.**
+
 # Firebase
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
