@@ -8,6 +8,9 @@ import '../../core/utils/error_handler.dart';
 import '../auth/services/profile_service.dart';
 import '../auth/models/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
+import '../../core/services/audio_recorder_service.dart';
+import '../../core/services/cloudinary_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserProfile profile;
@@ -28,9 +31,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   
   List<String> _photoUrls = [];
   String? _videoUrl;
+  String? _profileVoiceUrl;
   List<String> _selectedInterests = [];
   bool _isSaving = false;
   bool _hasChanges = false;
+  
+  bool _isRecording = false;
+  int _recordingDuration = 0;
+  final AudioRecorderService _audioRecorder = AudioRecorderService();
 
   final List<String> _allInterests = [
     'Spor', 'Müzik', 'Sanat', 'Film', 'Okuma', 'Seyahat',
@@ -57,8 +65,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _countryController = TextEditingController(text: widget.profile.country);
     _photoUrls = List.from(widget.profile.photoUrls ?? []);
     _videoUrl = widget.profile.videoUrl;
+    _profileVoiceUrl = widget.profile.profileVoiceUrl;
     _selectedInterests = List.from(widget.profile.interests);
     _selectedRelationshipGoal = widget.profile.relationshipGoal;
+
+    _audioRecorder.onDurationChanged = (duration) {
+      if (mounted) setState(() => _recordingDuration = duration);
+    };
   }
 
   @override
@@ -69,6 +82,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _educationController.dispose();
     _ageController.dispose();
     _countryController.dispose();
+    _audioRecorder.dispose();
     super.dispose();
   }
 
@@ -117,6 +131,58 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (mounted) setState(() => _isSaving = false);
       }
     }
+  }
+
+  Future<void> _startRecording() async {
+    final started = await _audioRecorder.startRecording();
+    if (started) {
+      setState(() {
+        _isRecording = true;
+        _recordingDuration = 0;
+      });
+    } else {
+      if (mounted) ErrorHandler.showError(context, "Mikrofon erişimi gerekli");
+    }
+  }
+
+  Future<void> _stopAndSaveRecording() async {
+    if (!_isRecording) return;
+    
+    setState(() => _isSaving = true);
+    try {
+      final filePath = await _audioRecorder.stopRecording();
+      setState(() {
+        _isRecording = false;
+      });
+      if (filePath != null) {
+        final file = File(filePath);
+        final bytes = await file.readAsBytes();
+        final url = await CloudinaryService.uploadAudioBytes(bytes);
+        if (url != null) {
+          setState(() {
+            _profileVoiceUrl = url;
+            _hasChanges = true;
+          });
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('✅ Ses kaydı başarıyla yüklendi!'), backgroundColor: Colors.green),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) ErrorHandler.showError(context, "Ses yüklenemedi: $e");
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _cancelRecording() async {
+    await _audioRecorder.cancelRecording();
+    setState(() {
+      _isRecording = false;
+      _recordingDuration = 0;
+    });
   }
 
   void _removePhoto(int index) {
@@ -170,6 +236,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         country: _countryController.text.trim(),
         photoUrls: _photoUrls,
         videoUrl: _videoUrl,
+        profileVoiceUrl: _profileVoiceUrl,
         interests: _selectedInterests,
         relationshipGoal: _selectedRelationshipGoal,
       );
@@ -269,6 +336,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildSectionHeader("VİDEO PROFİL (OPSİYONEL)"),
             const SizedBox(height: 12),
             _buildVideoPicker(),
+            
+            const SizedBox(height: 24),
+            
+            // Voice Section
+            _buildSectionHeader("SES PROFİLİ (OPSİYONEL - MAX 30SN)"),
+            const SizedBox(height: 12),
+            _buildVoicePicker(),
             
             const SizedBox(height: 32),
             
@@ -526,6 +600,134 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ],
               ),
       ),
+    );
+  }
+
+  Widget _buildVoicePicker() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
+      ),
+      child: _profileVoiceUrl != null
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.mic, color: AppColors.primary, size: 28),
+                    const SizedBox(width: 12),
+                    Text(
+                      "SES KAYDI YÜKLENDİ",
+                      style: GoogleFonts.outfit(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _profileVoiceUrl = null;
+                      _hasChanges = true;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.red,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 1.5),
+                    ),
+                    child: const Icon(Icons.close, color: Colors.black, size: 18),
+                  ),
+                ),
+              ],
+            )
+          : _isRecording
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: AppColors.red,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 1.5),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          AudioRecorderService.formatDuration(_recordingDuration),
+                          style: GoogleFonts.outfit(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: _cancelRecording,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black, width: 2),
+                            ),
+                            child: const Icon(Icons.close, color: Colors.black, size: 18),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        GestureDetector(
+                          onTap: _stopAndSaveRecording,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black, width: 2),
+                              boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
+                            ),
+                            child: const Icon(Icons.check, color: Colors.black, size: 18),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : GestureDetector(
+                  onTap: _startRecording,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.mic_none, color: Colors.black26, size: 28),
+                      const SizedBox(width: 8),
+                      Text(
+                        "SES KAYDET",
+                        style: GoogleFonts.outfit(
+                          color: Colors.black38,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
     );
   }
 

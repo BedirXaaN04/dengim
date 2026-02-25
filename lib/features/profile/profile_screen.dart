@@ -17,6 +17,7 @@ import '../../core/providers/credit_provider.dart';
 import '../../core/providers/subscription_provider.dart';
 import '../payment/premium_offer_screen.dart';
 import '../ads/screens/watch_and_earn_screen.dart';
+import 'widgets/voice_profile_player.dart';
 
 
 class ProfileScreen extends StatefulWidget {
@@ -62,6 +63,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final job = profile?.job ?? 'Belirtilmedi';
         final education = profile?.education ?? 'Belirtilmedi';
         final interests = profile?.interests.join(', ') ?? 'Belirtilmedi';
+        final zodiac = profile?.zodiacSign ?? '';
+        final relGoalId = profile?.relationshipGoal ?? '';
+        String relGoal = 'Belirtilmedi';
+        if (relGoalId == 'serious') relGoal = 'Ciddi İlişki 💍';
+        if (relGoalId == 'casual') relGoal = 'Eğlence 🥂';
+        if (relGoalId == 'chat') relGoal = 'Sohbet ☕';
+        if (relGoalId == 'unsure') relGoal = 'Belirsiz 🤷‍♂️';
 
 
         return Scaffold(
@@ -178,7 +186,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       const SizedBox(height: 40),
                       _buildSectionHeader('DETAYLAR'),
-                      _buildDetailsCard(job, education, interests),
+                      _buildDetailsCard(job, education, interests, zodiac, relGoal),
+
+                      if (profile?.profileVoiceUrl != null) ...[
+                        const SizedBox(height: 40),
+                        _buildSectionHeader('SES PROFİLİ'),
+                        VoiceProfilePlayer(audioUrl: profile!.profileVoiceUrl!),
+                      ],
 
                       if (profile?.videoUrl != null) ...[
                         const SizedBox(height: 40),
@@ -300,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDetailsCard(String job, String education, String interests) {
+  Widget _buildDetailsCard(String job, String education, String interests, String zodiac, String relGoal) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -315,6 +329,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           _buildDetailRow('MESLEK', job),
           _buildDetailRow('EĞİTİM', education),
+          if (zodiac.isNotEmpty) _buildDetailRow('BURÇ', zodiac),
+          if (relGoal != 'Belirtilmedi') _buildDetailRow('İLİŞKİ HEDEFİ', relGoal),
           _buildDetailRow('İLGİ ALANLARI', interests, isLast: true),
         ],
       ),
@@ -809,7 +825,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ],
-        ),
       ),
     );
   }

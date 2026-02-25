@@ -213,6 +213,7 @@ class ProfileService {
     String? relationshipGoal,
     List<String>? photoUrls,
     String? videoUrl,
+    String? profileVoiceUrl,
     bool? isPremium,
     bool? isVerified,
     bool? isGhostMode,
@@ -243,6 +244,7 @@ class ProfileService {
     if (relationshipGoal != null) updates['relationshipGoal'] = relationshipGoal;
     if (photoUrls != null) updates['photoUrls'] = photoUrls;
     if (videoUrl != null) updates['videoUrl'] = videoUrl;
+    if (profileVoiceUrl != null) updates['profileVoiceUrl'] = profileVoiceUrl;
     if (isPremium != null) updates['isPremium'] = isPremium;
     if (isVerified != null) updates['isVerified'] = isVerified;
     if (isGhostMode != null) updates['isGhostMode'] = isGhostMode;

@@ -20,6 +20,7 @@ class UserProfile {
   final String? relationshipGoal; // New field
   final List<String>? photoUrls;
   final String? videoUrl; // ← YENİ: Video profil URL
+  final String? profileVoiceUrl; // YENİ: Sesli profil URL
   
   // Özellikler
   final bool isPremium;
@@ -61,6 +62,7 @@ class UserProfile {
     this.relationshipGoal,
     this.photoUrls,
     this.videoUrl, // ← YENİ
+    this.profileVoiceUrl, // YENİ
     this.isPremium = false,
     this.subscriptionTier = 'free',
     this.credits = 0,
@@ -93,6 +95,26 @@ class UserProfile {
       calculatedAge--;
     }
     return calculatedAge;
+  }
+
+  String get zodiacSign {
+    if (birthDate == null) return '';
+    int day = birthDate!.day;
+    int month = birthDate!.month;
+
+    if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return '♈ Koç';
+    if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return '♉ Boğa';
+    if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return '♊ İkizler';
+    if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return '♋ Yengeç';
+    if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return '♌ Aslan';
+    if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return '♍ Başak';
+    if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return '♎ Terazi';
+    if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) return '♏ Akrep';
+    if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) return '♐ Yay';
+    if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) return '♑ Oğlak';
+    if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return '♒ Kova';
+    if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return '♓ Balık';
+    return '';
   }
 
   bool get isBoosted {
@@ -128,6 +150,7 @@ class UserProfile {
       'relationshipGoal': relationshipGoal,
       'photoUrls': photoUrls,
       'videoUrl': videoUrl,
+      'profileVoiceUrl': profileVoiceUrl,
       'isPremium': isPremium,
       'subscriptionTier': subscriptionTier,
       'credits': credits,
@@ -182,6 +205,7 @@ class UserProfile {
       relationshipGoal: map['relationshipGoal'],
       photoUrls: map['photoUrls'] != null ? List<String>.from(map['photoUrls']) : null,
       videoUrl: map['videoUrl'],
+      profileVoiceUrl: map['profileVoiceUrl'],
       isPremium: map['isPremium'] ?? false,
       subscriptionTier: map['subscriptionTier'] ?? 'free',
       credits: map['credits']?.toInt() ?? 0,

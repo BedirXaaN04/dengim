@@ -1,17 +1,12 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/log_service.dart';
-import '../../../core/services/audio_recorder_service.dart';
-import '../../../core/services/cloudinary_service.dart';
 import '../../../core/services/typing_indicator_service.dart';
 import '../../../core/widgets/online_status_indicator.dart';
 import '../../../core/providers/user_provider.dart';
@@ -21,6 +16,8 @@ import '../../../core/services/read_receipt_service.dart';
 import '../models/chat_models.dart';
 import '../services/chat_service.dart';
 import '../widgets/chat_widgets.dart';
+import '../widgets/chat_list_item_data.dart';
+import '../widgets/chat_input_widget.dart';
 import '../../auth/services/report_service.dart';
 import '../../payment/premium_offer_screen.dart';
 import 'call_screen.dart';
@@ -45,15 +42,9 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final ChatService _chatService = ChatService();
-  final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final AudioRecorderService _audioRecorder = AudioRecorderService();
   final TypingIndicatorService _typingService = TypingIndicatorService();
-  bool _isUploading = false;
-  bool _isRecording = false;
-  int _recordingDuration = 0;
   
-  // Yanıt verme için
   ChatMessage? _replyingTo;
   
   // Tepki emojileri
@@ -86,70 +77,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         }
       }
     });
-
-    // Ses kaydı callback'leri
-    _audioRecorder.onDurationUpdate = (duration) {
-      if (mounted) setState(() => _recordingDuration = duration);
-    };
   }
 
   @override
   void dispose() {
     _conversationSubscription?.cancel();
-    _messageController.dispose();
     _scrollController.dispose();
-    _audioRecorder.dispose();
-    _typingService.stopTyping(widget.chatId);
     super.dispose();
-  }
-
-  void _sendMessage() {
-    final content = _messageController.text.trim();
-    if (content.isEmpty) return;
-
-    // Yanıtlı mesaj mı?
-    if (_replyingTo != null) {
-      _chatService.sendReplyMessage(
-        widget.chatId,
-        content,
-        widget.otherUserId,
-        _replyingTo!.id,
-        _replyingTo!.content,
-      );
-      setState(() => _replyingTo = null);
-    } else {
-      _chatService.sendMessage(
-        widget.chatId,
-        content,
-        widget.otherUserId,
-      );
-    }
-    _messageController.clear();
-  }
-
-  Future<void> _pickAndSendImage() async {
-    final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-
-    if (image != null) {
-      setState(() => _isUploading = true);
-      try {
-        ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(content: Text('Fotoğraf gönderiliyor...'), duration: Duration(seconds: 1)),
-        );
-        
-        await _chatService.sendImage(widget.chatId, image, widget.otherUserId);
-        
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Fotoğraf gönderilemedi.')),
-          );
-        }
-      } finally {
-        if (mounted) setState(() => _isUploading = false);
-      }
-    }
   }
 
   void _showMessageOptions(ChatMessage message) {
@@ -443,48 +377,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     final message = messages[index];
                     final isMe = message.isMe(currentUser.uid);
 
-                    // Swipe ile yanıt verme veya silme
-                    return Slidable(
-                      key: Key(message.id),
-                      // Sağa swipe: Yanıt ver
-                      startActionPane: ActionPane(
-                        motion: const BehindMotion(),
-                        extentRatio: 0.25,
-                        children: [
-                          SlidableAction(
-                            onPressed: (_) => _setReply(message),
-                            backgroundColor: AppColors.primary.withOpacity(0.8),
-                            foregroundColor: Colors.black,
-                            icon: Icons.reply_rounded,
-                            label: 'Yanıtla',
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ],
-                      ),
-                      // Sola swipe: Sil (sadece kendi mesajlarım)
-                      endActionPane: isMe ? ActionPane(
-                        motion: const DrawerMotion(),
-                        extentRatio: 0.25,
-                        children: [
-                          SlidableAction(
-                            onPressed: (_) => _deleteMessage(message),
-                            backgroundColor: Colors.red.shade800,
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete_rounded,
-                            label: 'Sil',
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ],
-                      ) : null,
-                      child: GestureDetector(
-                        // Double-tap: Hızlı ❤️ tepki (Instagram DM tarzı)
-                        onDoubleTap: () => _quickReact(message, '❤️'),
-                        // Long-press: Tepki seçici aç
-                        onLongPress: () => _showReactionPicker(message),
-                        child: ChatBubble(
-                          message: message,
-                        ),
-                      ),
+                    return ChatListItemData(
+                      message: message,
+                      isMe: isMe,
+                      onReply: _setReply,
+                      onDelete: _deleteMessage,
+                      onQuickReact: _quickReact,
+                      onLongPress: _showReactionPicker,
                     );
                   },
                 );
@@ -502,11 +401,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           // Yanıt önizlemesi
           if (_replyingTo != null) _buildReplyPreview(),
           
-          // Ses kaydı yapılırken gösterilen UI
-          if (_isRecording)
-            _buildRecordingUI()
-          else
-            _buildInputBar(),
+          ChatInputWidget(
+            chatId: widget.chatId,
+            otherUserId: widget.otherUserId,
+            replyingTo: _replyingTo,
+            onClearReply: () => setState(() => _replyingTo = null),
+          ),
         ],
       ),
     );
@@ -719,255 +619,6 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     }
   }
 
-  /// Normal input bar (metin, fotoğraf, mikrofon)
-  Widget _buildInputBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Colors.black, width: 4),
-        ),
-      ),
-      child: Row(
-        children: [
-          // Fotoğraf butonu
-          IconButton(
-            icon: _isUploading 
-                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
-                : const Icon(Icons.image, color: AppColors.primary),
-            onPressed: _isUploading ? null : _pickAndSendImage,
-          ),
-          
-          // Mikrofon butonu
-          IconButton(
-            icon: const Icon(Icons.mic, color: AppColors.primary),
-            onPressed: _startRecording,
-          ),
-          
-          Expanded(
-            child: TextField(
-              controller: _messageController,
-              style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
-              onChanged: (text) {
-                if (text.isNotEmpty) {
-                  _typingService.startTyping(widget.chatId);
-                } else {
-                  _typingService.stopTyping(widget.chatId);
-                }
-              },
-              decoration: InputDecoration(
-                hintText: 'MESAJ YAZ...',
-                hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.w900, fontSize: 12),
-                filled: true,
-                fillColor: AppColors.scaffold,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Colors.black, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Colors.black, width: 2),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-              ),
-              maxLines: null,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => _sendMessage(),
-            ),
-          ),
-          const SizedBox(width: 12),
-          
-          // Gönder butonu
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
-              boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.send_rounded, color: Colors.black),
-              onPressed: _sendMessage,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  /// Ses kaydı yapılırken gösterilen UI
-  Widget _buildRecordingUI() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Colors.black, width: 4),
-        ),
-      ),
-      child: Row(
-        children: [
-          // İptal butonu
-          IconButton(
-            icon: const Icon(Icons.close_rounded, color: AppColors.red),
-            onPressed: _cancelRecording,
-          ),
-          
-          const SizedBox(width: 8),
-          
-          // Kayıt göstergesi
-          Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: AppColors.red,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 1.5),
-            ),
-          ),
-          
-          const SizedBox(width: 12),
-          
-          // Süre
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'SES KAYDEDİLİYOR...',
-                  style: GoogleFonts.outfit(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  AudioRecorderService.formatDuration(_recordingDuration),
-                  style: GoogleFonts.outfit(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Gönder butonu
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
-              boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.send_rounded, color: Colors.black),
-              onPressed: _stopAndSendRecording,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Ses kaydını başlat
-  Future<void> _startRecording() async {
-    final userProvider = context.read<UserProvider>();
-    final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
-    
-    if (!FeatureFlagService().isVoiceMessageEnabled(userTier)) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
-      return;
-    }
-
-    final started = await _audioRecorder.startRecording();
-    if (started) {
-      setState(() {
-        _isRecording = true;
-        _recordingDuration = 0;
-      });
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Mikrofon erişimi için izin vermeniz gerekiyor'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
-    }
-  }
-
-  /// Ses kaydını durdur ve gönder
-  Future<void> _stopAndSendRecording() async {
-    if (!_isRecording) return;
-    
-    setState(() => _isUploading = true);
-    
-    try {
-      final filePath = await _audioRecorder.stopRecording();
-      final duration = _recordingDuration;
-      
-      setState(() {
-        _isRecording = false;
-        _recordingDuration = 0;
-      });
-      
-      if (filePath == null) {
-        throw Exception('Ses kaydı alınamadı');
-      }
-      
-      // Dosyayı yükle
-      final file = File(filePath);
-      final bytes = await file.readAsBytes();
-      final audioUrl = await CloudinaryService.uploadAudioBytes(bytes);
-      
-      if (audioUrl != null) {
-        // Mesaj olarak gönder
-        await _chatService.sendVoiceMessage(
-          widget.chatId, 
-          audioUrl, 
-          widget.otherUserId,
-          durationSeconds: duration,
-        );
-        
-        // Geçici dosyayı sil
-        if (await file.exists()) {
-          await file.delete();
-        }
-      } else {
-        throw Exception('Ses yüklenemedi');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Ses mesajı gönderilemedi'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isUploading = false);
-      }
-    }
-  }
-
-  /// Ses kaydını iptal et
-  Future<void> _cancelRecording() async {
-    await _audioRecorder.cancelRecording();
-    setState(() {
-      _isRecording = false;
-      _recordingDuration = 0;
-    });
-  }
 }
 

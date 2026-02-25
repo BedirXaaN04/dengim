@@ -8,6 +8,7 @@ import '../auth/models/user_profile.dart';
 import '../auth/services/discovery_service.dart';
 import '../profile/services/report_block_service.dart';
 import '../profile/widgets/video_player_modal.dart';
+import '../profile/widgets/voice_profile_player.dart';
 
 class UserProfileDetailScreen extends StatefulWidget {
   final String? userId;
@@ -200,6 +201,14 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
                         ),
                         const SizedBox(height: 32),
 
+                        // Voice Profile Section
+                        if (profile.profileVoiceUrl != null) ...[
+                          _buildSectionTitle("SES PROFİLİ"),
+                          const SizedBox(height: 12),
+                          VoiceProfilePlayer(audioUrl: profile.profileVoiceUrl!),
+                          const SizedBox(height: 32),
+                        ],
+
                         // Video Profile Button
                         if (profile.videoUrl != null) ...[
                           _buildNeoActionButton(
@@ -337,6 +346,7 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
       runSpacing: 12,
       children: [
         if (profile.gender != null) _buildInfoChip(Icons.person_outline, profile.gender!),
+        if (profile.zodiacSign.isNotEmpty) _buildInfoChip(Icons.stars, profile.zodiacSign),
         if (profile.relationshipGoal != null) _buildInfoChip(Icons.search_rounded, _getGoalLabel(profile.relationshipGoal)),
         _buildInfoChip(Icons.location_on_outlined, "YAKINLARDA"),
       ],
