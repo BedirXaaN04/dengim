@@ -45,11 +45,15 @@ class _VerificationScreenState extends State<VerificationScreen> {
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
-            backgroundColor: AppColors.surface,
-            title: const Text('Başvuru Alındı ✅', style: TextStyle(color: Colors.white)),
-            content: const Text(
-              'Profil doğrulama isteğin bize ulaştı. Editörlerimiz inceleyip onaylayacak.',
-              style: TextStyle(color: Colors.white70),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+              side: const BorderSide(color: Colors.black, width: 4),
+            ),
+            title: Text('BAŞVURU ALINDI ✅', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
+            content: Text(
+              'PROFİL DOĞRULAMA İSTEĞİN BİZE ULAŞTI. EDİTÖRLERİMİZ İNCELEYİP ONAYLAYACAK.',
+              style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
             ),
             actions: [
               TextButton(
@@ -57,7 +61,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   Navigator.pop(context); // Dialog
                   Navigator.pop(context); // Screen
                 },
-                child: const Text('Tamam'),
+                child: Text('TAMAM', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
               ),
             ],
           ),
@@ -77,16 +81,21 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        leading: const BackButton(color: Colors.white),
+        centerTitle: true,
+        shape: const Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           "PROFİLİ DOĞRULA",
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2.0,
-            color: Colors.white,
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+            color: Colors.black,
           ),
         ),
       ),
@@ -97,29 +106,32 @@ class _VerificationScreenState extends State<VerificationScreen> {
             const Spacer(),
             // Icon & Info
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary,
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.black, width: 4),
+                boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
               ),
-              child: const Icon(Icons.verified_user_rounded, size: 60, color: AppColors.primary),
+              child: const Icon(Icons.verified_user_rounded, size: 60, color: Colors.black),
             ),
             const SizedBox(height: 32),
             Text(
-              "Mavi Tik Al ☑️",
-              style: GoogleFonts.plusJakartaSans(
+              "MAVİ TİK AL ☑️",
+              style: GoogleFonts.outfit(
                 fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              "Sahte profillerden biz de sıkıldık. Gerçek bir kişi olduğunu kanıtlamak için anlık bir selfie çek.",
+              "SAHTE PROFİLLERDEN BİZ DE SIKILDIK. GERÇEK BİR KİŞİ OLDUĞUNU KANITLAMAK İÇİN ANLIK BİR SELFİE ÇEK.",
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.outfit(
                 fontSize: 14,
-                color: Colors.white54,
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
                 height: 1.5,
               ),
             ),
@@ -131,8 +143,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 height: 300,
                 width: 300,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primary),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.black, width: 4),
+                  boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
                   image: DecorationImage(
                     image: FileImage(_selfieImage!),
                     fit: BoxFit.cover,
@@ -140,21 +154,28 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 ),
               )
             else
-              Container(
-                height: 300,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white10),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.camera_alt_outlined, size: 48, color: Colors.white24),
-                    const SizedBox(height: 16),
-                    Text("Selfie Çek", style: TextStyle(color: Colors.white24)),
-                  ],
+              GestureDetector(
+                onTap: _takeSelfie,
+                child: Container(
+                  height: 300,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.black, width: 4),
+                    boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.camera_alt_outlined, size: 64, color: Colors.black),
+                      const SizedBox(height: 16),
+                      Text(
+                        "SELFİE ÇEKMEK İÇİN DOKUN", 
+                        style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)
+                      ),
+                    ],
+                  ),
                 ),
               ),
               
@@ -164,15 +185,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
             if (_selfieImage == null)
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: 64,
                 child: ElevatedButton.icon(
                   onPressed: _takeSelfie,
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text("KAMERAYI AÇ"),
+                  icon: const Icon(Icons.camera_alt, color: Colors.black),
+                  label: Text("KAMERAYI AÇ", style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 16)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: const BorderSide(color: Colors.black, width: 3),
+                    ),
+                    elevation: 0,
                   ),
                 ),
               )
@@ -181,32 +206,36 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 children: [
                   Expanded(
                     child: SizedBox(
-                      height: 56,
+                      height: 64,
                       child: OutlinedButton(
                         onPressed: _isUploading ? null : _takeSelfie,
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white24),
+                          foregroundColor: Colors.black,
+                          side: const BorderSide(color: Colors.black, width: 3),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
-                        child: const Text("TEKRAR ÇEK"),
+                        child: Text("TEKRAR ÇEK", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: SizedBox(
-                      height: 56,
+                      height: 64,
                       child: ElevatedButton(
                         onPressed: _isUploading ? null : _submitVerification,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: const BorderSide(color: Colors.black, width: 3),
+                          ),
+                          elevation: 0,
                         ),
                         child: _isUploading 
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("GÖNDER"),
+                          ? const CircularProgressIndicator(color: Colors.black)
+                          : Text("GÖNDER", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
                       ),
                     ),
                   ),

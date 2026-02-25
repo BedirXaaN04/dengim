@@ -36,9 +36,23 @@ class UserProvider extends ChangeNotifier {
                 isVerified: true,
                 subscriptionTier: 'platinum'
               );
-              // Profile stream will automatically update the UI on the next tick
             } catch (e) {
               LogService.e("Failed to auto-upgrade master account", e);
+            }
+          }
+
+          // WELCOME BONUS PATCH FOR ALL USERS
+          if (!profile.hasReceivedWelcomeBonus) {
+            LogService.i("Granting welcome bonus to ${profile.email}...");
+            try {
+              await _profileService.updateProfile(
+                isPremium: true,
+                subscriptionTier: 'gold',
+                credits: 1000,
+                hasReceivedWelcomeBonus: true,
+              );
+            } catch (e) {
+               LogService.e("Failed to grant welcome bonus", e);
             }
           }
 

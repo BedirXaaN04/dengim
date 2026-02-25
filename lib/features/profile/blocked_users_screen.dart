@@ -55,27 +55,31 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.black, width: 4),
+        ),
         title: Text(
-          '${user.name} Engelini Kaldır?',
-          style: GoogleFonts.plusJakartaSans(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+          'ENGELİ KALDIR?',
+          style: GoogleFonts.outfit(
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
           ),
         ),
         content: Text(
-          'Bu kullanıcının engelini kaldırdığınızda tekrar birbirinizi görebilir ve mesajlaşabilirsiniz.',
-          style: GoogleFonts.plusJakartaSans(
-            color: Colors.white.withOpacity(0.7),
+          '${user.name} İSİMLİ KULLANICININ ENGELİNİ KALDIRMAK İSTEDİĞİNİZE EMİN MİSİNİZ?',
+          style: GoogleFonts.outfit(
+            color: Colors.black,
+            fontWeight: FontWeight.w700,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              'İptal',
-              style: TextStyle(color: Colors.white.withOpacity(0.5)),
+              'İPTAL',
+              style: GoogleFonts.outfit(color: AppColors.textSecondary, fontWeight: FontWeight.w900),
             ),
           ),
           ElevatedButton(
@@ -83,9 +87,13 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 3),
+              ),
+              elevation: 0,
             ),
-            child: const Text('Engeli Kaldır'),
+            child: Text('EVET, KALDIR', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -97,7 +105,12 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         setState(() {
           _blockedUsers.removeWhere((u) => u.uid == user.uid);
         });
-        ErrorHandler.showSuccess(context, '${user.name} engeli kaldırıldı');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.black,
+            content: Text('${user.name.toUpperCase()} ENGELİ KALDIRILDI', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
+          ),
+        );
       }
     }
   }
@@ -107,20 +120,21 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        shape: const Border(bottom: BorderSide(color: Colors.black, width: 4)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'ENGELLENEN KULLANICILAR',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-            color: Colors.white,
+          'ENGELLENENLER',
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+            color: Colors.black,
           ),
         ),
       ),
@@ -130,29 +144,74 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const ListLoadingShimmer(itemCount: 5, itemHeight: 72);
+      return const Center(child: CircularProgressIndicator(color: Colors.black));
     }
 
     if (_error != null) {
-      return ErrorStateWidget(
-        message: _error,
-        onRetry: _loadBlockedUsers,
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('BİR HATA OLUŞTU', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _loadBlockedUsers,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(color: Colors.black, width: 2),
+                ),
+                elevation: 0,
+              ),
+              child: Text('TEKRAR DENE', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
+            ),
+          ],
+        ),
       );
     }
 
     if (_blockedUsers.isEmpty) {
-      return const EmptyStateWidget(
-        icon: Icons.block,
-        title: 'Engellenen kullanıcı yok',
-        subtitle: 'Engellediğiniz kullanıcılar burada görünecek.',
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                ),
+                child: const Icon(Icons.block, size: 48, color: Colors.black),
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'ENGELLENEN KİMSE YOK',
+                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'ENGELLEDİĞİNİZ KULLANICILAR BURADA LİSTELENİR.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(color: AppColors.textSecondary, fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
     return RefreshIndicator(
       onRefresh: _loadBlockedUsers,
-      color: AppColors.primary,
+      color: Colors.black,
+      backgroundColor: AppColors.primary,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         itemCount: _blockedUsers.length,
         itemBuilder: (context, index) => _buildUserTile(_blockedUsers[index]),
       ),
@@ -162,15 +221,16 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
   Widget _buildUserTile(UserProfile user) {
     final photoUrl = user.photoUrls?.isNotEmpty == true
         ? user.photoUrls!.first
-        : 'https://via.placeholder.com/100';
+        : 'https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
       ),
       child: Row(
         children: [
@@ -180,17 +240,14 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
             height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.red.withOpacity(0.3), width: 2),
+              border: Border.all(color: Colors.black, width: 2),
             ),
             child: ClipOval(
               child: CachedNetworkImage(
                 imageUrl: photoUrl,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => Container(color: AppColors.surface),
-                errorWidget: (_, __, ___) => Container(
-                  color: AppColors.surface,
-                  child: const Icon(Icons.person, color: Colors.white54),
-                ),
+                placeholder: (_, __) => Container(color: AppColors.scaffold),
+                errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.black),
               ),
             ),
           ),
@@ -203,23 +260,24 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${user.name}, ${user.age}',
-                  style: GoogleFonts.plusJakartaSans(
+                  '${user.name}, ${user.age}'.toUpperCase(),
+                  style: GoogleFonts.outfit(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.block, size: 14, color: Colors.red.withOpacity(0.6)),
+                    const Icon(Icons.block, size: 14, color: AppColors.red),
                     const SizedBox(width: 4),
                     Text(
-                      'Engellendi',
-                      style: GoogleFonts.plusJakartaSans(
+                      'ENGELLENDİ',
+                      style: GoogleFonts.outfit(
                         fontSize: 12,
-                        color: Colors.red.withOpacity(0.6),
+                        color: AppColors.red,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ],
@@ -229,14 +287,22 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
           ),
           
           // Unblock Button
-          TextButton(
-            onPressed: () => _unblockUser(user),
-            child: Text(
-              'Engeli Kaldır',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+          GestureDetector(
+            onTap: () => _unblockUser(user),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
                 color: AppColors.primary,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: Text(
+                'KALDIR',
+                style: GoogleFonts.outfit(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),

@@ -56,8 +56,10 @@ class ProfileService {
       'job': job,
       'education': education,
       'photoUrls': photoUrls,
-      'isPremium': false,
-      'credits': 0,
+      'isPremium': true,
+      'subscriptionTier': 'gold',
+      'credits': 1000,
+      'hasReceivedWelcomeBonus': true,
       'createdAt': FieldValue.serverTimestamp(),
       'lastActive': FieldValue.serverTimestamp(),
       'isOnline': true,
@@ -113,7 +115,7 @@ class ProfileService {
       throw Exception("Upload returned null");
     } catch (e) {
       LogService.e("Upload failed (XFile), reverting to placeholder. UserId: $userId", e);
-      return 'https://ui-avatars.com/api/?name=${userId.substring(0, 1)}&background=EAEAEA&color=000&size=500';
+      return 'https://api.dicebear.com/7.x/initials/png?seed=${userId}';
     }
   }
 
@@ -137,7 +139,7 @@ class ProfileService {
       throw Exception("Byte upload returned null");
     } catch (e) {
       LogService.e("Upload failed (Bytes), reverting to placeholder. UserId: $userId", e);
-      return 'https://ui-avatars.com/api/?name=${userId.substring(0, 1)}&background=EAEAEA&color=000&size=500';
+      return 'https://api.dicebear.com/7.x/initials/png?seed=${userId}';
     }
   }
 

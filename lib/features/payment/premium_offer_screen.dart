@@ -324,13 +324,13 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
             child: products.isEmpty 
               ? Column(
                   children: [
-                    const Icon(Icons.info_outline, color: Colors.black26),
+                    const Icon(Icons.info_outline, color: Colors.black38),
                     const SizedBox(height: 8),
                     Text(
                       'ŞU ANDA MAĞAZA BAĞLANTISI KURULAMIYOR.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.outfit(
-                        color: Colors.black26,
+                        color: Colors.black38,
                         fontSize: 12,
                         fontWeight: FontWeight.w900,
                       ),

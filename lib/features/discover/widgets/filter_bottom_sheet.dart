@@ -102,30 +102,35 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
       decoration: const BoxDecoration(
-        color: AppColors.scaffold,
+        color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        border: Border(top: BorderSide(color: Colors.black, width: 4)),
       ),
       child: Stack(
         children: [
           Column(
             children: [
-              // TopAppBar
-              Padding(
+              // Header
+              Container(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.black, width: 2.5)),
+                ),
                 child: Row(
                   children: [
-                    GestureDetector(
+                    _buildNeoCircleButton(
+                      icon: Icons.close,
                       onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close, color: Colors.white, size: 28),
                     ),
                     Expanded(
                       child: Center(
                         child: Text(
-                          'Filtreler',
-                          style: GoogleFonts.plusJakartaSans(
+                          'FİLTRELER',
+                          style: GoogleFonts.outfit(
                             fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ),
@@ -137,11 +142,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         });
                       },
                       child: Text(
-                        'Sıfırla',
-                        style: GoogleFonts.plusJakartaSans(
+                        'SIFIRLA',
+                        style: GoogleFonts.outfit(
                           fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.secondary,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.red,
                         ),
                       ),
                     ),
@@ -155,121 +160,82 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 24),
-                      // Section: Gender Selection
-                      Text(
-                        'Kimi Görmek İstersin?',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      const SizedBox(height: 32),
+                      _buildSectionHeader('KİMİ GÖRMEK İSTERSİN?'),
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          _buildGenderChip('Erkek', 'male'),
+                          _buildGenderChip('ERKEK', 'male'),
                           const SizedBox(width: 12),
-                          _buildGenderChip('Kadın', 'female'),
+                          _buildGenderChip('KADIN', 'female'),
                           const SizedBox(width: 12),
-                          _buildGenderChip('Diğer', 'other'),
+                          _buildGenderChip('HEPSİ', 'all'),
                         ],
                       ),
 
                       const SizedBox(height: 40),
-                      // Section: Age Range
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Yaş Aralığı',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                          _buildSectionHeader('YAŞ ARALIĞI'),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 2),
                             ),
-                          ),
-                          Text(
-                            '${_settings.ageRange.start.toInt()} - ${_settings.ageRange.end.toInt()}',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.secondary,
+                            child: Text(
+                              '${_settings.ageRange.start.toInt()} - ${_settings.ageRange.end.toInt()}',
+                              style: GoogleFonts.outfit(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       _buildRangeSlider(),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('18', style: _labelStyle()),
-                          Text('99', style: _labelStyle()),
-                        ],
-                      ),
 
-                      const SizedBox(height: 48),
-                      // Section: Distance
+                      const SizedBox(height: 40),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Mesafe',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          Text(
-                            '${_settings.distance.toInt()} km',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
+                          _buildSectionHeader('MESAFE'),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
                               color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 2),
+                            ),
+                            child: Text(
+                              '${_settings.distance.toInt()} KM',
+                              style: GoogleFonts.outfit(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       _buildDistanceSlider(),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('1 KM', style: _labelStyle()),
-                          Text('100 KM+', style: _labelStyle()),
-                        ],
-                      ),
 
-                      const SizedBox(height: 48),
-                      // Section: Location
-                      Text(
-                        'Konum',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      const SizedBox(height: 40),
+                      _buildSectionHeader('KONUM'),
                       const SizedBox(height: 16),
                       _buildLocationPicker(),
-                      const SizedBox(height: 48),
-                      // Section: Interests
-                      Text(
-                        'İlgi Alanları',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+
+                      const SizedBox(height: 40),
+                      _buildSectionHeader('İLGİ ALANLARI'),
                       const SizedBox(height: 16),
                       _buildInterestsSection(),
 
-                      const SizedBox(height: 100), // Padding for button
+                      const SizedBox(height: 120), // Extra space for button
                     ],
                   ),
                 ),
@@ -279,52 +245,33 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
           // Footer Apply Button
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    AppColors.scaffold,
-                    AppColors.scaffold.withOpacity(0.95),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-              child: SizedBox(
+            bottom: 30,
+            left: 20,
+            right: 20,
+            child: GestureDetector(
+              onTap: () {
+                widget.onApply(_settings);
+                Navigator.pop(context);
+              },
+              child: Container(
                 width: double.infinity,
                 height: 64,
-                child: ElevatedButton(
-                  onPressed: () {
-                    widget.onApply(_settings);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondary, // Gold in the mock
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(6, 6)),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    'FİLTRELERİ UYGULA',
+                    style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
                     ),
-                    elevation: 10,
-                    shadowColor: AppColors.secondary.withOpacity(0.2),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Filtreleri Uygula',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.check_circle_outline, weight: 700),
-                    ],
                   ),
                 ),
               ),
@@ -335,28 +282,59 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
+  Widget _buildSectionHeader(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.outfit(
+        fontSize: 14,
+        fontWeight: FontWeight.w900,
+        color: Colors.black.withOpacity(0.4),
+        letterSpacing: 2.0,
+      ),
+    );
+  }
+
+  Widget _buildNeoCircleButton({required IconData icon, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black, width: 2.5),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+          ],
+        ),
+        child: Icon(icon, color: Colors.black, size: 22),
+      ),
+    );
+  }
+
   Widget _buildGenderChip(String label, String value) {
     final isSelected = _settings.gender == value;
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _settings.gender = value),
         child: Container(
-          height: 48,
+          height: 52,
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary.withOpacity(0.2) : Colors.white.withAlpha(20),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: isSelected ? AppColors.primary : Colors.transparent,
-              width: 2,
-            ),
+            color: isSelected ? AppColors.primary : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black, width: 2.5),
+            boxShadow: [
+              BoxShadow(color: Colors.black, offset: isSelected ? const Offset(1, 1) : const Offset(4, 4)),
+            ],
           ),
           child: Center(
             child: Text(
               label,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 15,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? AppColors.primary : Colors.white60,
+              style: GoogleFonts.outfit(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
               ),
             ),
           ),
@@ -368,14 +346,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget _buildRangeSlider() {
     return SliderTheme(
       data: SliderThemeData(
-        activeTrackColor: AppColors.primary,
-        inactiveTrackColor: Colors.white.withAlpha(20),
+        activeTrackColor: Colors.black,
+        inactiveTrackColor: Colors.black12,
         thumbColor: Colors.white,
-        overlayColor: AppColors.primary.withOpacity(0.2),
-        trackHeight: 8,
+        overlayColor: Colors.black12,
+        trackHeight: 12,
         rangeThumbShape: const RoundRangeSliderThumbShape(
-          enabledThumbRadius: 12,
-          elevation: 4,
+          enabledThumbRadius: 16,
+          elevation: 0,
         ),
       ),
       child: RangeSlider(
@@ -390,14 +368,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget _buildDistanceSlider() {
     return SliderTheme(
       data: SliderThemeData(
-        activeTrackColor: AppColors.primary,
-        inactiveTrackColor: Colors.white.withAlpha(20),
+        activeTrackColor: Colors.black,
+        inactiveTrackColor: Colors.black12,
         thumbColor: Colors.white,
-        overlayColor: AppColors.primary.withOpacity(0.2),
-        trackHeight: 8,
+        overlayColor: Colors.black12,
+        trackHeight: 12,
         thumbShape: const RoundSliderThumbShape(
-          enabledThumbRadius: 12,
-          elevation: 4,
+          enabledThumbRadius: 16,
+          elevation: 0,
         ),
       ),
       child: Slider(
@@ -413,19 +391,23 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(10),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withAlpha(15)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary,
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.black, width: 2),
             ),
-            child: const Icon(Icons.location_on, color: AppColors.primary),
+            child: const Icon(Icons.location_on, color: Colors.black),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -433,31 +415,25 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _settings.location,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  _settings.location.toUpperCase(),
+                  style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                    fontSize: 16,
                   ),
                 ),
-                const Text(
-                  'Şu anki konumum',
-                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                Text(
+                  'YAKINIMDAKİLERİ ARA',
+                  style: GoogleFonts.outfit(color: Colors.black54, fontSize: 10, fontWeight: FontWeight.w800),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: Colors.white24),
+          const Icon(Icons.chevron_right, color: Colors.black),
         ],
       ),
     );
   }
-
-  TextStyle _labelStyle() => GoogleFonts.plusJakartaSans(
-    fontSize: 12,
-    fontWeight: FontWeight.bold,
-    color: Colors.white30,
-    letterSpacing: 1.2,
-  );
 
   final List<String> _interestOptions = const [
     'Müzik', 'Spor', 'Sanat', 'Gezi', 'Teknoloji', 
@@ -467,8 +443,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   Widget _buildInterestsSection() {
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: 10,
+      runSpacing: 10,
       children: _interestOptions.map((interest) {
         final isSelected = _settings.interests.contains(interest);
         return GestureDetector(
@@ -486,15 +462,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.1)),
+              color: isSelected ? AppColors.primary : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black, width: 2),
+              boxShadow: [
+                BoxShadow(color: Colors.black, offset: isSelected ? const Offset(1, 1) : const Offset(3, 3)),
+              ],
             ),
             child: Text(
-              interest,
-              style: GoogleFonts.plusJakartaSans(
-                color: isSelected ? Colors.black : Colors.white,
-                fontWeight: FontWeight.bold,
+              interest.toUpperCase(),
+              style: GoogleFonts.outfit(
+                color: Colors.black,
+                fontWeight: FontWeight.w900,
                 fontSize: 12,
               ),
             ),
@@ -503,6 +482,23 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       }).toList(),
     );
   }
+}
+
+void showFilterBottomSheet(
+  BuildContext context, {
+  required FilterSettings currentSettings,
+  required Function(FilterSettings) onApply,
+}) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (context) => FilterBottomSheet(
+      initialSettings: currentSettings,
+      onApply: onApply,
+    ),
+  );
+}
 
 }
 

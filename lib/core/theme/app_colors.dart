@@ -36,6 +36,14 @@ class AppColors {
   static const Color error = Color(0xFFFF3366);
   static const Color warning = Color(0xFFFFD500);
   
+  // Neo Styling Tokens
+  static const double neoBorderWidth = 3.0;
+  static const double neoBorderWidthSmall = 2.5;
+  static const double neoBorderWidthLarge = 4.0;
+  static const double neoRadius = 16.0;
+  static const double neoRadiusSmall = 12.0;
+  static const double neoRadiusLarge = 24.0;
+
   // Neo Shadows
   static const BoxShadow neoShadow = BoxShadow(
     color: Colors.black,

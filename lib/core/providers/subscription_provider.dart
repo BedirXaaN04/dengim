@@ -36,8 +36,17 @@ class SubscriptionProvider with ChangeNotifier {
   }
 
   void updateTier(String tier) {
-    _currentTier = tier;
-    notifyListeners();
+    if (_currentTier != tier) {
+      _currentTier = tier;
+      LogService.i("Subscription Tier updated: $tier");
+      notifyListeners();
+    }
+  }
+
+  void updateTierFromProfile(String? tier) {
+    if (tier != null) {
+      updateTier(tier);
+    }
   }
 
   Future<void> buyProduct(ProductDetails product) async {

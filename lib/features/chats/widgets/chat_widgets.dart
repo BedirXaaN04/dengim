@@ -96,9 +96,9 @@ class ChatListItem extends StatelessWidget {
                        Text(
                          _formatTime(chat.lastMessageTime),
                          style: GoogleFonts.outfit(
-                           fontSize: 11,
-                           color: Colors.black.withOpacity(0.5),
-                           fontWeight: FontWeight.w700,
+                           fontSize: 12,
+                           color: Colors.black.withOpacity(0.7),
+                           fontWeight: FontWeight.w800,
                          ),
                        ),
                      ],
@@ -371,9 +371,9 @@ class _ChatBubbleState extends State<ChatBubble> {
                         Text(
                           _formatTime(widget.message.timestamp),
                           style: GoogleFonts.outfit(
-                            fontSize: 10,
-                            color: Colors.black.withOpacity(0.5),
-                            fontWeight: FontWeight.w700,
+                            fontSize: 11,
+                            color: Colors.black.withOpacity(0.7),
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                         if (isMe) ...[

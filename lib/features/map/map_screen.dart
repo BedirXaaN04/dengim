@@ -237,15 +237,16 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.dengim.app',
                     tileBuilder: (context, tileWidget, tile) {
+                      if (!provider.isDarkMode) return tileWidget;
                       return ColorFiltered(
                         colorFilter: const ColorFilter.matrix(<double>[
-                          0.2126, 0.7152, 0.0722, 0, -20,
-                          0.2126, 0.7152, 0.0722, 0, -20,
-                          0.2126, 0.7152, 0.0722, 0, -10,
-                          0, 0, 0, 1, 0,
+                          -1.0, 0.0, 0.0, 0.0, 255.0,
+                          0.0, -1.0, 0.0, 0.0, 255.0,
+                          0.0, 0.0, -1.0, 0.0, 255.0,
+                          0.0, 0.0, 0.0, 1.0, 0.0,
                         ]),
                         child: ColorFiltered(
-                          colorFilter: ColorFilter.mode(const Color(0xFF0F172A).withOpacity(0.6), BlendMode.srcOver),
+                          colorFilter: ColorFilter.mode(const Color(0xFF0F172A).withOpacity(0.6), BlendMode.multiply),
                           child: tileWidget,
                         ),
                       );
@@ -511,6 +512,16 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   Widget _buildZoomControls() {
     return Column(
       children: [
+        Consumer<MapProvider>(
+          builder: (context, provider, _) => _buildControlButton(
+            icon: provider.isDarkMode ? Icons.wb_sunny_rounded : Icons.nightlight_round, 
+            onTap: () {
+              HapticFeedback.lightImpact();
+              provider.toggleMapTheme();
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
         _buildControlButton(icon: Icons.gps_fixed_rounded, onTap: _centerOnLocation),
         const SizedBox(height: 12),
         _buildControlButton(icon: Icons.add_rounded, onTap: () => _mapController.move(_mapController.camera.center, _mapController.camera.zoom + 1)),

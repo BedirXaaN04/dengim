@@ -140,10 +140,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(width: 12),
                           if (profile?.isVerified == true)
-                            const Icon(Icons.verified, color: AppColors.primary, size: 24),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Icon(Icons.verified, color: AppColors.primary, size: 28),
+                            ),
                           if (profile?.isPremium == true) ...[
                             const SizedBox(width: 8),
-                            _buildPremiumBadge(profile?.subscriptionTier ?? 'gold'),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: _buildPremiumBadge(profile?.subscriptionTier ?? 'gold'),
+                            ),
                           ],
                         ],
                       ),
@@ -276,8 +282,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 2.5),
+        borderRadius: BorderRadius.circular(AppColors.neoRadius),
+        border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
         boxShadow: const [
           BoxShadow(color: Colors.black, offset: Offset(4, 4)),
         ],
@@ -299,8 +305,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 2.5),
+        borderRadius: BorderRadius.circular(AppColors.neoRadius),
+        border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
         boxShadow: const [
           BoxShadow(color: Colors.black, offset: Offset(4, 4)),
         ],
@@ -345,8 +351,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         height: 56,
         decoration: BoxDecoration(
           color: color ?? Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: borderColor ?? Colors.black, width: 2.5),
+          borderRadius: BorderRadius.circular(AppColors.neoRadiusSmall),
+          border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
           boxShadow: const [
             BoxShadow(color: Colors.black, offset: Offset(4, 4)),
           ],
@@ -606,7 +612,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.black, width: 2),
         boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+          BoxShadow(color: Colors.black, offset: Offset(3, 3)),
         ],
       ),
       child: Row(

@@ -393,7 +393,7 @@ class _LikesScreenState extends State<LikesScreen> {
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 3)),
+        border: Border(bottom: BorderSide(color: Colors.black, width: 4)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -418,16 +418,17 @@ class _LikesScreenState extends State<LikesScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 40, height: 40,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
           color: color ?? Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black, width: 2.5),
           boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
           ],
         ),
-        child: Icon(icon, color: Colors.black, size: 20),
+        child: Icon(icon, color: Colors.black, size: 22),
       ),
     );
   }

@@ -42,6 +42,9 @@ import 'core/widgets/maintenance_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Fix for Google Fonts loading issues on some platforms
+  GoogleFonts.config.allowRuntimeFetching = true;
+  
   // Global error handling
   ErrorHandler.initialize();
   
@@ -103,7 +106,15 @@ void main() async {
         ChangeNotifierProvider(create: (_) => StoryProvider()),
         ChangeNotifierProvider(create: (_) => SystemConfigProvider()),
         ChangeNotifierProvider(create: (_) => SpaceProvider()),
-        ChangeNotifierProvider(create: (_) => SubscriptionProvider()..init()),
+        ChangeNotifierProxyProvider<UserProvider, SubscriptionProvider>(
+          create: (_) => SubscriptionProvider()..init(),
+          update: (_, userProvider, subProvider) {
+            if (subProvider != null) {
+              subProvider.updateTierFromProfile(userProvider.currentUser?.subscriptionTier);
+            }
+            return subProvider ?? SubscriptionProvider();
+          },
+        ),
         ChangeNotifierProvider(create: (_) => CreditProvider()),
       ],
       child: const DengimApp(),

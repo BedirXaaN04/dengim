@@ -54,8 +54,9 @@ class DiscoveryService {
       }
 
       // 2. Fetch users with basic filters
-      Query baseQuery = _firestore.collection('users');
-      Query activeQuery = baseQuery.where('isIncognitoMode', isEqualTo: false);
+      Query activeQuery = _firestore.collection('users');
+      // Relax server-side: removed isIncognitoMode = false filter because existing 
+      // users might miss this field.
       
       // Gender Filter
       if (gender != null && gender != 'all' && gender != 'other') {
@@ -101,12 +102,16 @@ class DiscoveryService {
           .where((profile) => profile != null)
           .cast<UserProfile>()
           .where((profile) {
+            // Incognito filter (Client-side to handle missing fields)
+            if (profile.isIncognitoMode) return false;
+
             if (!profile.isComplete) return false;
+            
             if (profile.name.toLowerCase().contains('test') || 
                 profile.email.toLowerCase().contains('test')) {
               return false;
             }
-            // Age filter
+            // Age filter - only if we have enough results
             if (snapshot.docs.length > 5) {
               if (minAge != null && profile.age < minAge) return false;
               if (maxAge != null && profile.age > maxAge) return false;

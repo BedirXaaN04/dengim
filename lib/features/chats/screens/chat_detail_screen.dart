@@ -212,21 +212,25 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 final confirm = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    backgroundColor: AppColors.surface,
-                    title: Text('Kullanıcıyı Engelle?', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: const BorderSide(color: Colors.black, width: 4),
+                    ),
+                    title: Text('KULLANICIYI ENGELLE?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
                     content: Text(
-                      '${widget.otherUserName} engellendi mi, size mesaj gönderemeyecek.',
-                      style: GoogleFonts.plusJakartaSans(color: Colors.white70),
+                      '${widget.otherUserName} ENGELLENSİN Mİ? SİZE MESAJ GÖNDEREMEYECEK.',
+                      style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text('İptal'),
+                        child: Text('İPTAL', style: GoogleFonts.outfit(color: AppColors.textSecondary, fontWeight: FontWeight.w900)),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        style: TextButton.styleFrom(foregroundColor: Colors.red),
-                        child: const Text('Engelle'),
+                        style: TextButton.styleFrom(foregroundColor: AppColors.red),
+                        child: Text('ENGELLE', style: GoogleFonts.outfit(color: AppColors.red, fontWeight: FontWeight.w900)),
                       ),
                     ],
                   ),
@@ -254,21 +258,25 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 final confirm = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    backgroundColor: AppColors.surface,
-                    title: Text('Sohbeti Sil?', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: const BorderSide(color: Colors.black, width: 4),
+                    ),
+                    title: Text('SOHBETİ SİL?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
                     content: Text(
-                      'Bu sohbet silinecek. Bu işlem geri alınamaz.',
-                      style: GoogleFonts.plusJakartaSans(color: Colors.white70),
+                      'BU SOHBET SİLİNECEK. BU İŞLEM GERİ ALINAMAZ.',
+                      style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text('İptal'),
+                        child: Text('İPTAL', style: GoogleFonts.outfit(color: AppColors.textSecondary, fontWeight: FontWeight.w900)),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        style: TextButton.styleFrom(foregroundColor: Colors.red),
-                        child: const Text('Sil'),
+                        style: TextButton.styleFrom(foregroundColor: AppColors.red),
+                        child: Text('SİL', style: GoogleFonts.outfit(color: AppColors.red, fontWeight: FontWeight.w900)),
                       ),
                     ],
                   ),
@@ -296,10 +304,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: false,
+        shape: const Border(bottom: BorderSide(color: Colors.black, width: 4)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -319,18 +329,20 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    widget.otherUserName,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                    widget.otherUserName.toUpperCase(),
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
+                      letterSpacing: -0.5,
                     ),
                   ),
                   LastSeenText(
                     userId: widget.otherUserId,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: GoogleFonts.outfit(
                       fontSize: 11,
-                      color: Colors.white54,
+                      color: Colors.black.withOpacity(0.5),
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
@@ -340,7 +352,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.call, color: Colors.white),
+            icon: const Icon(Icons.call, color: Colors.black, size: 22),
             onPressed: () {
               final userProvider = context.read<UserProvider>();
               final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
@@ -364,7 +376,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.videocam, color: Colors.white),
+            icon: const Icon(Icons.videocam, color: Colors.black, size: 24),
             onPressed: () {
               final userProvider = context.read<UserProvider>();
               final userTier = userProvider.currentUser?.subscriptionTier ?? 'free';
@@ -388,7 +400,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
+            icon: const Icon(Icons.more_vert, color: Colors.black, size: 24),
             onPressed: _showChatOptions,
           ),
         ],
@@ -406,8 +418,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(
                     child: Text(
-                      'Henüz mesaj yok',
-                      style: GoogleFonts.plusJakartaSans(color: Colors.white54),
+                      'HENÜZ MESAJ YOK',
+                      style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.w900, fontSize: 12),
                     ),
                   );
                 }
@@ -498,11 +510,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Widget _buildReplyPreview() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+      decoration: const BoxDecoration(
+        color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.1)),
-          left: BorderSide(color: AppColors.primary, width: 4),
+          top: BorderSide(color: Colors.black, width: 2),
+          left: BorderSide(color: AppColors.primary, width: 6),
         ),
       ),
       child: Row(
@@ -513,11 +525,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Yanıt veriliyor',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
+                  'YANIT VERİLİYOR',
+                  style: GoogleFonts.outfit(
+                    fontSize: 10,
                     color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -525,9 +537,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   _replyingTo!.content.length > 50 
                       ? '${_replyingTo!.content.substring(0, 50)}...'
                       : _replyingTo!.content,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: GoogleFonts.outfit(
                     fontSize: 13,
-                    color: Colors.white70,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -536,7 +549,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.white54, size: 20),
+            icon: const Icon(Icons.close, color: Colors.black, size: 20),
             onPressed: () => setState(() => _replyingTo = null),
           ),
         ],
@@ -573,12 +586,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         height: 100,
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          boxShadow: [
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 20,
+              color: Colors.black,
+              offset: Offset(4, 4),
             ),
           ],
         ),
@@ -610,8 +624,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text('Rapor Nedeni', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.black, width: 4),
+        ),
+        title: Text('RAPOR NEDENİ', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -622,7 +640,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               if (reason == ReportReason.other) return const SizedBox.shrink(); 
               
               return ListTile(
-                title: Text(reason.displayName, style: GoogleFonts.plusJakartaSans(color: Colors.white70)),
+                title: Text(reason.displayName, style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w800)),
                 onTap: () {
                   Navigator.pop(context);
                   _submitReport(reason);
@@ -698,11 +716,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   /// Normal input bar (metin, fotoğraf, mikrofon)
   Widget _buildInputBar() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      decoration: const BoxDecoration(
+        color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.1)),
+          top: BorderSide(color: Colors.black, width: 4),
         ),
       ),
       child: Row(
@@ -724,7 +742,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           Expanded(
             child: TextField(
               controller: _messageController,
-              style: GoogleFonts.plusJakartaSans(color: Colors.white),
+              style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
               onChanged: (text) {
                 if (text.isNotEmpty) {
                   _typingService.startTyping(widget.chatId);
@@ -733,13 +751,17 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                 }
               },
               decoration: InputDecoration(
-                hintText: 'Mesaj yaz...',
-                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white38),
+                hintText: 'MESAJ YAZ...',
+                hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.w900, fontSize: 12),
                 filled: true,
                 fillColor: AppColors.scaffold,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.black, width: 2),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -756,11 +778,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           // Gönder butonu
           Container(
             decoration: BoxDecoration(
-              gradient: AppColors.goldGradient,
+              color: AppColors.primary,
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.black, width: 2),
+              boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
             ),
             child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.black),
+              icon: const Icon(Icons.send_rounded, color: Colors.black),
               onPressed: _sendMessage,
             ),
           ),
@@ -772,18 +796,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   /// Ses kaydı yapılırken gösterilen UI
   Widget _buildRecordingUI() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.red.shade900.withOpacity(0.3),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+      decoration: const BoxDecoration(
+        color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.red.withOpacity(0.3)),
+          top: BorderSide(color: Colors.black, width: 4),
         ),
       ),
       child: Row(
         children: [
           // İptal butonu
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.red),
+            icon: const Icon(Icons.close_rounded, color: AppColors.red),
             onPressed: _cancelRecording,
           ),
           
@@ -794,15 +818,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             width: 12,
             height: 12,
             decoration: BoxDecoration(
-              color: Colors.red,
+              color: AppColors.red,
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.red.withOpacity(0.5),
-                  blurRadius: 8,
-                  spreadRadius: 2,
-                ),
-              ],
+              border: Border.all(color: Colors.black, width: 1.5),
             ),
           ),
           
@@ -815,19 +833,20 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Ses kaydediliyor...',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white,
+                  'SES KAYDEDİLİYOR...',
+                  style: GoogleFonts.outfit(
+                    color: Colors.black,
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   AudioRecorderService.formatDuration(_recordingDuration),
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white70,
+                  style: GoogleFonts.outfit(
+                    color: AppColors.textSecondary,
                     fontSize: 12,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -837,11 +856,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           // Gönder butonu
           Container(
             decoration: BoxDecoration(
-              gradient: AppColors.goldGradient,
+              color: AppColors.primary,
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.black, width: 2),
+              boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
             ),
             child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.black),
+              icon: const Icon(Icons.send_rounded, color: Colors.black),
               onPressed: _stopAndSendRecording,
             ),
           ),

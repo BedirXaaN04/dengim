@@ -6,6 +6,7 @@ import '../../features/discover/models/story_model.dart';
 import '../../features/discover/services/story_service.dart';
 import '../utils/log_service.dart';
 import '../../features/auth/services/discovery_service.dart';
+import '../services/feature_flag_service.dart';
 
 class StoryProvider extends ChangeNotifier {
   final StoryService _storyService = StoryService();
@@ -21,11 +22,18 @@ class StoryProvider extends ChangeNotifier {
   List<String> get matchIds => _matchIds;
   bool get isUploading => _isUploading;
 
+  bool get isStoriesEnabled => FeatureFlagService().isStoryEnabled();
+
   StoryProvider() {
     _initStories();
   }
 
   void _initStories() {
+    if (!isStoriesEnabled) {
+      LogService.i("Stories are disabled by feature flag.");
+      return;
+    }
+    
     // 1. Listen to Matches
     _matchSubscription = _discoveryService.getMatchedUserIdsStream().listen((ids) {
       _matchIds = ids;

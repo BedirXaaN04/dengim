@@ -32,6 +32,7 @@ class FeatureFlagService {
         "platinum_read_receipts_enabled": true,
         
         "show_ads": true,
+        "stories_enabled": false,
       });
 
       await _remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -70,5 +71,9 @@ class FeatureFlagService {
   bool shouldShowAds(String tier) {
     if (tier == 'platinum' || tier == 'gold') return false;
     return _remoteConfig.getBool("show_ads");
+  }
+
+  bool isStoryEnabled() {
+    return _remoteConfig.getBool("stories_enabled");
   }
 }

@@ -41,6 +41,7 @@ class UserProfile {
   final DateTime? boostUntil;
   final bool isGhostMode;
   final bool isIncognitoMode;
+  final bool hasReceivedWelcomeBonus;
 
   // Zamanlar
   final DateTime createdAt;
@@ -79,6 +80,7 @@ class UserProfile {
     this.boostUntil,
     this.isGhostMode = false,
     this.isIncognitoMode = false,
+    this.hasReceivedWelcomeBonus = false,
   });
 
   // Calculated age from birthDate
@@ -144,6 +146,7 @@ class UserProfile {
       'boostUntil': boostUntil != null ? Timestamp.fromDate(boostUntil!) : null,
       'isGhostMode': isGhostMode,
       'isIncognitoMode': isIncognitoMode,
+      'hasReceivedWelcomeBonus': hasReceivedWelcomeBonus,
     };
   }
 
@@ -204,6 +207,7 @@ class UserProfile {
           : null,
       isGhostMode: map['isGhostMode'] ?? false,
       isIncognitoMode: map['isIncognitoMode'] ?? false,
+      hasReceivedWelcomeBonus: map['hasReceivedWelcomeBonus'] ?? false,
     );
   }
 }

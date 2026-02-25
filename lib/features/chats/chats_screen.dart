@@ -158,8 +158,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Colors.black, width: 4)),
+      ),
       child: Column(
         children: [
           Row(
@@ -326,14 +330,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 44, height: 44,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
-           color: Colors.white,
-           borderRadius: BorderRadius.circular(10),
-           border: Border.all(color: Colors.black, width: 2),
-           boxShadow: const [
-             BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-           ],
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black, width: 2.5),
+          boxShadow: const [
+            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+          ],
         ),
         child: Icon(icon, color: Colors.black, size: 22),
       ),

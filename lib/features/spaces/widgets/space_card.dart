@@ -150,7 +150,7 @@ class SpaceCard extends StatelessWidget {
               ),
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: speakers[index].avatarUrl ?? 'https://ui-avatars.com/api/?name=${speakers[index].name}',
+                  imageUrl: speakers[index].avatarUrl ?? 'https://api.dicebear.com/7.x/initials/png?seed=${speakers[index].name}',
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(color: Colors.black12),
                   errorWidget: (context, url, error) => const Icon(Icons.person, size: 18, color: Colors.black),

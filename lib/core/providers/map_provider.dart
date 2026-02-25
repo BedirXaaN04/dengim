@@ -17,6 +17,14 @@ class MapProvider extends ChangeNotifier {
   LatLng _currentLocation = const LatLng(41.0082, 28.9784); // Default Istanbul
   bool _isLoading = false;
 
+  bool _isDarkMode = false;
+  bool get isDarkMode => _isDarkMode;
+
+  void toggleMapTheme() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+  }
+
   List<NearbyUser> get nearbyUsers => _nearbyUsers;
   LatLng get currentLocation => _currentLocation;
   bool get isLoading => _isLoading;
