@@ -12,6 +12,7 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -29,6 +30,7 @@ android {
         targetSdk = 35  // Match compileSdk
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -55,5 +57,8 @@ dependencies {
     // AndroidX Window libraries (required by some plugins to avoid R8 missing class errors)
     implementation("androidx.window:window:1.2.0")
     implementation("androidx.window:window-java:1.2.0")
+
+    // Core library desugaring (required by flutter_local_notifications)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
