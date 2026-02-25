@@ -32,20 +32,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        shape: const Border(bottom: BorderSide(color: Colors.black, width: 3)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           "AYARLAR",
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2.0,
-            color: Colors.white,
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+            color: Colors.black,
           ),
         ),
       ),
@@ -66,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _buildSettingItem(
                   context, 
-                  "Hesap Doğrulama (Mavi Tik)", 
+                  "Hesap Doğrulama", 
                   Icons.verified_user_outlined,
                   onTap: () => Navigator.push(
                     context,
@@ -103,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 
                 const SizedBox(height: 32),
-                _buildSectionHeader("GİZLİLİK MODLARI (PREMIUM)"),
+                _buildSectionHeader("PREMIUM MODLAR"),
                 Consumer<UserProvider>(
                   builder: (context, provider, _) {
                     final user = provider.currentUser;
@@ -118,7 +119,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           user?.isGhostMode ?? false,
                           (value) async {
                             if (!isPremium) {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
                               return;
                             }
                             await ProfileService().updateProfile(isGhostMode: value);
@@ -126,22 +127,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         _buildSwitchItem(
                           context,
-                          "Gizli Mod (Incognito)",
+                          "Gizli Mod",
                           Icons.security_outlined,
                           user?.isIncognitoMode ?? false,
                           (value) async {
                             if (!isPremium) {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
                               return;
                             }
                             await ProfileService().updateProfile(isIncognitoMode: value);
                           },
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                           child: Text(
                             "Hayalet Modu: Çevrimiçi durumunuzu gizler. Gizli Mod: Sadece beğendiğiniz kişiler sizi görebilir.",
-                            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.white24),
+                            style: GoogleFonts.outfit(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
                           ),
                         ),
                       ],
@@ -160,7 +161,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() => _notificationsEnabled = value);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(value ? 'Bildirimler açıldı' : 'Bildirimler kapatıldı'),
+                        backgroundColor: Colors.black,
+                        content: Text(value ? 'BİLDİRİMLER AÇILDI' : 'BİLDİRİMLER KAPATILDI', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
                         duration: const Duration(seconds: 2),
                       ),
                     );
@@ -204,79 +206,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 GestureDetector(
                   onTap: _logout,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                      border: Border.all(color: Colors.black, width: 3),
+                      boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
                     ),
                     child: Center(
                       child: Text(
                         "ÇIKIŞ YAP",
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white70,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                          fontSize: 14,
+                        style: GoogleFonts.outfit(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
                         ),
                       ),
                     ),
                   ),
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 
                 // Delete Account Button
                 GestureDetector(
                   onTap: () => _showDeleteConfirmation(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.error.withOpacity(0.2)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "HESABIMI SİL",
-                        style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.error,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                          fontSize: 14,
-                        ),
+                  child: Center(
+                    child: Text(
+                      "HESABIMI KALICI OLARAK SİL",
+                      style: GoogleFonts.outfit(
+                        color: AppColors.red,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
                  Center(
                   child: Text(
-                    "v1.0.0 (Build 100)",
-                    style: GoogleFonts.plusJakartaSans(color: Colors.white24, fontSize: 12),
+                    "v1.0.0 (B100)",
+                    style: GoogleFonts.outfit(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
               ],
             ),
           ),
           
-          // Loading overlay
           if (_isDeleting)
             Container(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withOpacity(0.8),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(color: AppColors.error),
-                    const SizedBox(height: 16),
+                    const CircularProgressIndicator(color: AppColors.primary, strokeWidth: 5),
+                    const SizedBox(height: 24),
                     Text(
-                      'Hesap siliniyor...',
-                      style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                      'HESAP SİLİNİYOR...',
+                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900),
                     ),
                   ],
                 ),
@@ -289,14 +281,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16, left: 4),
       child: Text(
         title,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primary,
-          letterSpacing: 1.5,
+        style: GoogleFonts.outfit(
+          fontSize: 14,
+          fontWeight: FontWeight.w900,
+          color: Colors.black,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -311,33 +303,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.03),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.white70, size: 20),
+            Icon(icon, color: Colors.black, size: 24),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
+                style: GoogleFonts.outfit(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w800),
               ),
             ),
             if (trailing != null)
               Flexible(
                 child: Text(
                   trailing,
-                  style: GoogleFonts.plusJakartaSans(color: Colors.white30, fontSize: 12),
+                  style: GoogleFonts.outfit(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),
               )
             else
-              const Icon(Icons.arrow_forward_ios, color: Colors.white24, size: 14),
+              const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 16),
           ],
         ),
       ),
@@ -352,27 +345,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ValueChanged<bool> onChanged,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white70, size: 20),
+          Icon(icon, color: Colors.black, size: 24),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               title,
-              style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
+              style: GoogleFonts.outfit(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w800),
             ),
           ),
-          Switch.adaptive(
-            value: value,
-            onChanged: onChanged,
-            activeColor: AppColors.primary,
+          Theme(
+            data: Theme.of(context).copyWith(
+              switchTheme: SwitchThemeData(
+                thumbColor: MaterialStateProperty.all(value ? Colors.black : Colors.grey[300]),
+                trackColor: MaterialStateProperty.all(value ? AppColors.primary : Colors.grey[200]),
+              ),
+            ),
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+            ),
           ),
         ],
       ),
@@ -383,13 +384,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1F2937),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title, style: const TextStyle(color: Colors.white)),
-        content: Text(message, style: TextStyle(color: Colors.white.withOpacity(0.7))),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.black, width: 4),
+        ),
+        title: Text(title.toUpperCase(), style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
+        content: Text(message, style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w600)),
         actions: [
           TextButton(
-            child: const Text("Tamam", style: TextStyle(color: AppColors.primary)),
+            child: Text("TAMAM", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -401,23 +405,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1F2937),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Şifre Sıfırla", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.black, width: 4),
+        ),
+        title: Text("ŞİFRE SIFIRLA", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: Text(
-          "E-posta adresinize şifre sıfırlama bağlantısı gönderilsin mi?\n\n$_userEmail",
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
+          "E-POSTA ADRESİNİZE ŞİFRE SIFIRLAMA BAĞLANTISI GÖNDERİLSİN Mİ?\n\n$_userEmail",
+          style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
         ),
         actions: [
           TextButton(
-            child: const Text("İptal", style: TextStyle(color: Colors.white54)),
+            child: Text("İPTAL", style: GoogleFonts.outfit(color: AppColors.textSecondary, fontWeight: FontWeight.w900)),
             onPressed: () => Navigator.pop(context),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              minimumSize: const Size(120, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 3),
+              ),
+              elevation: 0,
             ),
             onPressed: () async {
               Navigator.pop(context);
@@ -425,7 +437,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 await AuthService().resetPassword(_userEmail);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Şifre sıfırlama e-postası gönderildi!')),
+                    SnackBar(
+                      backgroundColor: Colors.black,
+                      content: Text('ŞİFRE SIFIRLAMA E-POSTASI GÖNDERİLDİ!', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
+                    ),
                   );
                 }
               } catch (e) {
@@ -434,7 +449,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 }
               }
             },
-            child: const Text("Gönder"),
+            child: Text("GÖNDER", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -475,45 +490,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1F2937),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.black, width: 4),
+        ),
         title: Row(
           children: [
-            Icon(Icons.warning_rounded, color: AppColors.error, size: 28),
+            const Icon(Icons.warning_rounded, color: AppColors.red, size: 28),
             const SizedBox(width: 12),
-            const Text("Hesabını Sil?", style: TextStyle(color: Colors.white)),
+            Text("HESABINI SİL?", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Bu işlem geri alınamaz!\n",
-              style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
+            Text(
+              "BU İŞLEM GERİ ALINAMAZ!\n",
+              style: GoogleFonts.outfit(color: AppColors.red, fontWeight: FontWeight.w900),
             ),
             Text(
-              "• Profilin kalıcı olarak silinecek\n• Tüm eşleşmelerin kaybolacak\n• Mesaj geçmişin silinecek\n• Tüm veriler kaldırılacak",
-              style: TextStyle(color: Colors.white.withOpacity(0.7), height: 1.6),
+              "• PROFİLİN KALICI OLARAK SİLİNECEK\n• TÜM EŞLEŞMELERİN KAYBOLACAK\n• MESAJ GEÇMİŞİN SİLİNECEK",
+              style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700, height: 1.6),
             ),
           ],
         ),
         actions: [
           TextButton(
-            child: const Text("İptal", style: TextStyle(color: Colors.white54)),
+            child: Text("İPTAL", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
             onPressed: () => Navigator.pop(context),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: AppColors.red,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              minimumSize: const Size(120, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.black, width: 3),
+              ),
+              elevation: 0,
             ),
             onPressed: () async {
-              Navigator.pop(context); // Dialog kapa
+              Navigator.pop(context);
               await _deleteAccount();
             },
-            child: const Text("Evet, Sil"),
+            child: Text("EVET, SİL", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -527,9 +550,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await AuthService().deleteAccount();
       
       if (mounted) {
-        // Provider'ı temizle
         context.read<UserProvider>().clearUser();
-        
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (c) => const LoginScreen()),
           (route) => false,
@@ -563,22 +584,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.6,
         decoration: const BoxDecoration(
-          color: AppColors.scaffold,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border(top: BorderSide(color: Colors.black, width: 4)),
         ),
         child: Column(
           children: [
             const SizedBox(height: 12),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
+            Container(width: 60, height: 6, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(3))),
             const SizedBox(height: 24),
             Text(
-              "Dengim Pasaport",
-              style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              "DENGİM PASAPORT",
+              style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.black),
             ),
             const SizedBox(height: 8),
             Text(
-              "İstediğin şehre ışınlan ve oradaki kişilerle eşleş!",
-              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.white54),
+              "İSTEDİĞİN ŞEHRE IŞINLAN VE EŞLEŞ!",
+              style: GoogleFonts.outfit(fontSize: 13, color: AppColors.textSecondary, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 24),
             Expanded(
@@ -606,22 +628,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildCityItem(String name, IconData icon, {bool isSelected = false}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white.withOpacity(0.03),
+        color: isSelected ? AppColors.primary : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isSelected ? AppColors.primary : Colors.white10),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: isSelected ? null : const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
       ),
       child: ListTile(
-        leading: Icon(icon, color: isSelected ? AppColors.primary : Colors.white54),
-        title: Text(name, style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
-        trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.primary) : null,
+        leading: Icon(icon, color: Colors.black, size: 28),
+        title: Text(name.toUpperCase(), style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 16)),
+        trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.black) : null,
         onTap: () {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$name bölgesine ışınlanılıyor...'))
+            SnackBar(
+              backgroundColor: Colors.black,
+              content: Text('$name BÖLGESİNE IŞINLANILIYOR...', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
+            )
           );
-          // Gerçek uygulamada koordinat güncellenir
         },
       ),
     );

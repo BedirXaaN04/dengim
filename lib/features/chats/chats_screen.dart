@@ -51,21 +51,25 @@ class _ChatsScreenState extends State<ChatsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text('Sohbeti Sil?', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.black, width: 4),
+        ),
+        title: Text('SOHBETİ SİL?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: Text(
-          '${chat.otherUserName} ile olan sohbetiniz silinecek. Bu işlem geri alınamaz.',
-          style: GoogleFonts.plusJakartaSans(color: Colors.white70),
+          '${chat.otherUserName} İLE OLAN SOHBETİNİZ SİLİNECEK. BU İŞLEM GERİ ALINAMAZ.',
+          style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal'),
+            child: Text('İPTAL', style: GoogleFonts.outfit(color: AppColors.textSecondary, fontWeight: FontWeight.w900)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Sil'),
+            style: TextButton.styleFrom(foregroundColor: AppColors.red),
+            child: Text('SİL', style: GoogleFonts.outfit(color: AppColors.red, fontWeight: FontWeight.w900)),
           ),
         ],
       ),

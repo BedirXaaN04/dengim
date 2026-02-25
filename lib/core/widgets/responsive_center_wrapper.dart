@@ -13,21 +13,21 @@ class ResponsiveCenterWrapper extends StatelessWidget {
     // Sadece Web veya Desktop ise uygula
     if (kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS)) {
       return Container(
-        color: const Color(0xFF0F1115), // Arka plan (Scaffold rengiyle uyumlu koyu)
+        color: const Color(0xFF121212), // Deep black background for web outer space
         alignment: Alignment.center,
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 480), // Maksimum mobil genişliği
-          decoration: BoxDecoration(
+          constraints: const BoxConstraints(maxWidth: 480), // Mobile width on web
+          decoration: const BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                blurRadius: 20,
-                spreadRadius: 5,
+                color: Colors.black,
+                offset: Offset(8, 8),
+                blurRadius: 0,
               ),
             ],
           ),
           child: ClipRRect(
-            // Web'de scroll bar'ın taşmasını engellemek için clip
+            borderRadius: BorderRadius.circular(24),
             child: child,
           ),
         ),
