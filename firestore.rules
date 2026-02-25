@@ -100,5 +100,24 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
+
+    // Reports & Moderation
+    match /reports/{reportId} {
+      allow create: if isAuthenticated();
+    }
+    
+    match /message_reports/{reportId} {
+      allow create: if isAuthenticated();
+    }
+    
+    match /story_reports/{reportId} {
+      allow create: if isAuthenticated();
+    }
+
+    // Verification Requests
+    match /verification_requests/{requestId} {
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
   }
 }

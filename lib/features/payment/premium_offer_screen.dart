@@ -10,6 +10,7 @@ import '../../core/providers/user_provider.dart';
 import '../../core/constants/tier_limits.dart';
 import '../../core/utils/log_service.dart';
 import '../ads/screens/watch_and_earn_screen.dart';
+import '../auth/services/profile_service.dart';
 
 class PremiumOfferScreen extends StatefulWidget {
   const PremiumOfferScreen({super.key});
@@ -318,30 +319,78 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
             ),
           ),
           
-          // Pricing Options
+          // Demo Pricing Options
           Padding(
             padding: const EdgeInsets.all(24),
-            child: products.isEmpty 
-              ? Column(
-                  children: [
-                    const Icon(Icons.info_outline, color: Colors.black38),
-                    const SizedBox(height: 8),
-                    Text(
-                      'ŞU ANDA MAĞAZA BAĞLANTISI KURULAMIYOR.',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.outfit(
-                        color: Colors.black38,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
-                )
-              : Column(
-                  children: products.map((p) => _buildPriceButton(p, color, provider)).toList(),
-                ),
+            child: Column(
+              children: [
+                _buildDemoPriceButton('1 AY (DEMO)', '₺0.00', color, provider, title.toLowerCase()),
+                _buildDemoPriceButton('6 AY (DEMO)', '₺0.00', color, provider, title.toLowerCase()),
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDemoPriceButton(String period, String price, Color color, SubscriptionProvider provider, String tier) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () async {
+          // Demo Upgrade Process
+          provider.updateTier(tier);
+          
+          try {
+            await ProfileService().updateProfile(
+              isPremium: true,
+              subscriptionTier: tier,
+            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('DEMO KABUL EDİLDİ: ${tier.toUpperCase()} AKTİF!', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900)),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.pop(context); // Close the premium modal
+            }
+          } catch (e) {
+            LogService.e('Demo purchase error', e);
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.black, width: 2),
+            boxShadow: const [
+              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                period,
+                style: GoogleFonts.outfit(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Text(
+                price,
+                style: GoogleFonts.outfit(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

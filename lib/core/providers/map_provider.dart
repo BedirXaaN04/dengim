@@ -5,7 +5,6 @@ import '../../features/auth/services/discovery_service.dart';
 import '../../features/auth/services/profile_service.dart';
 import '../../features/map/models/nearby_user.dart';
 import '../utils/log_service.dart';
-import '../utils/demo_profile_service.dart';
 
 class MapProvider extends ChangeNotifier {
   final DiscoveryService _discoveryService = DiscoveryService();

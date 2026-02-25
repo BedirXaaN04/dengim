@@ -9,8 +9,7 @@ import '../../../core/providers/subscription_provider.dart';
 import '../../../core/services/credit_service.dart';
 import '../services/ad_service.dart';
 
-/// İzle & Kazan Ekranı
-/// Kullanıcılar reklam izleyerek kredi kazanabilir
+/// İzle & Kazan Ekranı - Neo-Brutalist Design
 class WatchAndEarnScreen extends StatefulWidget {
   const WatchAndEarnScreen({super.key});
 
@@ -32,7 +31,7 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
     
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
@@ -46,7 +45,14 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
   void _watchAd() {
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Reklamlar sadece mobilde gösterilir.')),
+        SnackBar(
+          content: Text(
+            'REKLAMLAR SADECE MOBİLDE GÖSTERİLİR.',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: Colors.black),
+          ),
+          backgroundColor: AppColors.primary,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
       return;
     }
@@ -56,10 +62,11 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Günlük reklam limitine ulaştın! Yarın tekrar gel. 🎬',
-            style: GoogleFonts.plusJakartaSans(),
+            'GÜNLÜK REKLAM LİMİTİNE ULAŞTIN! YARIN TEKRAR GEL. 🎬',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: Colors.white),
           ),
-          backgroundColor: Colors.orange.shade800,
+          backgroundColor: Colors.black,
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
@@ -79,7 +86,10 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
             _showRewardDialog();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Ödül verilemedi. Tekrar dene.')),
+              SnackBar(
+                content: Text('ÖDÜL VERİLEMEDİ. TEKRAR DENE.', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: Colors.white)),
+                backgroundColor: AppColors.error,
+              ),
             );
           }
         }
@@ -93,9 +103,10 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Reklam yüklenemedi. Biraz sonra tekrar dene.',
-              style: GoogleFonts.plusJakartaSans(),
+              'REKLAM YÜKLENEMEDİ. BİRAZ SONRA TEKRAR DENE.',
+              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w800),
             ),
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -111,14 +122,13 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
         child: Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1A1A),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: AppColors.primary.withOpacity(0.3)),
-            boxShadow: [
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.black, width: 4),
+            boxShadow: const [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.2),
-                blurRadius: 30,
-                spreadRadius: 5,
+                color: Colors.black,
+                offset: Offset(8, 8),
               ),
             ],
           ),
@@ -126,61 +136,82 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: AppColors.goldGradient,
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
+                  border: Border.all(color: Colors.black, width: 4),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                  ],
                 ),
                 child: const Icon(Icons.monetization_on_rounded, 
                     color: Colors.black, size: 48),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               Text(
                 'KREDİ KAZANDIN! 🎉',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 22,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                  fontSize: 24,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
-                  letterSpacing: 1.5,
+                  color: Colors.black,
+                  letterSpacing: -1,
                 ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                '+${CreditService.rewardWatchAd} Kredi',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.green,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                  ],
+                ),
+                child: Text(
+                  '+${CreditService.rewardWatchAd} KREDİ',
+                  style: GoogleFonts.outfit(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
               Text(
                 'Kredilerini super like, boost ve daha fazlası için kullanabilirsin!',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  color: Colors.white54,
-                  height: 1.5,
+                style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 28),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+              const SizedBox(height: 32),
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  width: double.infinity,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 4),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                    ],
                   ),
-                  child: Text(
-                    'HARIKA!',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.0,
+                  child: Center(
+                    child: Text(
+                      'HARİKA!',
+                      style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20,
+                        color: Colors.black,
+                        letterSpacing: 1.0,
+                      ),
                     ),
                   ),
                 ),
@@ -195,132 +226,98 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffold,
-      body: Stack(
-        children: [
-          // Background Glow
-          Positioned(
-            top: -100,
-            right: -80,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.primary.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+        ),
+        title: Text(
+          'İZLE & KAZAN',
+          style: GoogleFonts.outfit(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+            letterSpacing: -1,
           ),
-          Positioned(
-            bottom: -120,
-            left: -100,
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF6C63FF).withOpacity(0.08),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          SafeArea(
-            child: Consumer<CreditProvider>(
-              builder: (context, creditProvider, _) {
-                return Column(
-                  children: [
-                    _buildAppBar(creditProvider),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            // Kredi Bakiye Kartı
-                            _buildBalanceCard(creditProvider),
-                            const SizedBox(height: 24),
-
-                            // İzle & Kazan Butonu
-                            _buildWatchButton(creditProvider),
-                            const SizedBox(height: 24),
-
-                            // Günlük Giriş Ödülü
-                            _buildDailyRewardCard(creditProvider),
-                            const SizedBox(height: 24),
-
-                            // Kredi Harcama Seçenekleri
-                            _buildSpendingSection(),
-                            const SizedBox(height: 24),
-
-                            // Kazanım Yolları
-                            _buildEarningWays(),
-                            const SizedBox(height: 40),
-                          ],
-                        ),
-                      ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4),
+          child: Container(color: Colors.black, height: 4),
+        ),
+        actions: [
+          Consumer<CreditProvider>(
+            builder: (context, creditProvider, _) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                      ],
                     ),
-                  ],
-                );
-              },
-            ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.monetization_on_rounded, 
+                            color: Colors.black, size: 16),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${creditProvider.balance}',
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
-    );
-  }
+      body: SafeArea(
+        child: Consumer<CreditProvider>(
+          builder: (context, creditProvider, _) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  // Kredi Bakiye Kartı
+                  _buildBalanceCard(creditProvider),
+                  const SizedBox(height: 32),
 
-  Widget _buildAppBar(CreditProvider creditProvider) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white70),
-          ),
-          Expanded(
-            child: Text(
-              'İzle & Kazan',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
+                  // İzle & Kazan Butonu
+                  _buildWatchButton(creditProvider),
+                  const SizedBox(height: 32),
+
+                  // Günlük Giriş Ödülü
+                  _buildDailyRewardCard(creditProvider),
+                  const SizedBox(height: 32),
+
+                  // Kredi Harcama Seçenekleri
+                  _buildSpendingSection(),
+                  const SizedBox(height: 32),
+
+                  // Kazanım Yolları
+                  _buildEarningWays(),
+                  const SizedBox(height: 40),
+                ],
               ),
-            ),
-          ),
-          // Bakiye badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: AppColors.goldGradient,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.monetization_on_rounded, 
-                    color: Colors.black, size: 18),
-                const SizedBox(width: 6),
-                Text(
-                  '${creditProvider.balance}',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -328,23 +325,15 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
   Widget _buildBalanceCard(CreditProvider creditProvider) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF1E1E1E),
-            const Color(0xFF252525),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-        boxShadow: [
+        color: AppColors.secondary,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.black, width: 4),
+        boxShadow: const [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.08),
-            blurRadius: 20,
-            spreadRadius: 2,
+            color: Colors.black,
+            offset: Offset(6, 6),
           ),
         ],
       ),
@@ -352,51 +341,56 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
         children: [
           Text(
             'KREDİ BAKİYEN',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white38,
+            style: GoogleFonts.outfit(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
               letterSpacing: 2.0,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               const Icon(Icons.monetization_on_rounded,
-                  color: AppColors.primary, size: 36),
+                  color: Colors.black, size: 48),
               const SizedBox(width: 12),
               Text(
                 '${creditProvider.balance}',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 48,
+                style: GoogleFonts.outfit(
+                  fontSize: 64,
                   fontWeight: FontWeight.w900,
-                  color: Colors.white,
+                  color: Colors.black,
+                  height: 1.0,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.black, width: 3),
+              boxShadow: const [
+                BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+              ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.local_fire_department, 
-                    color: creditProvider.streak > 0 ? Colors.orange : Colors.white24, 
-                    size: 18),
-                const SizedBox(width: 6),
+                    color: creditProvider.streak > 0 ? Colors.orange : Colors.grey, 
+                    size: 24),
+                const SizedBox(width: 8),
                 Text(
-                  '${creditProvider.streak} gün streak 🔥',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-                    color: Colors.white54,
-                    fontWeight: FontWeight.w600,
+                  '${creditProvider.streak} GÜN STREAK 🔥',
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
               ],
@@ -416,80 +410,77 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
         onTap: canWatch && !_isAdLoading ? _watchAd : null,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            gradient: canWatch 
-                ? LinearGradient(
-                    colors: [
-                      AppColors.primary,
-                      AppColors.primary.withOpacity(0.8),
-                    ],
-                  )
-                : null,
-            color: canWatch ? null : const Color(0xFF2A2A2A),
+            color: canWatch ? AppColors.primary : Colors.grey.shade400,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: canWatch ? [
+            border: Border.all(color: Colors.black, width: 4),
+            boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: Colors.black,
+                offset: const Offset(6, 6),
               ),
-            ] : null,
+            ],
           ),
           child: Column(
             children: [
               _isAdLoading
                   ? const SizedBox(
-                      width: 48, height: 48,
+                      width: 56, height: 56,
                       child: CircularProgressIndicator(
-                        color: Colors.black, strokeWidth: 3),
+                        color: Colors.black, strokeWidth: 5),
                     )
                   : Icon(
                       canWatch ? Icons.play_circle_filled_rounded : Icons.lock_clock,
-                      size: 48,
-                      color: canWatch ? Colors.black : Colors.white24,
+                      size: 64,
+                      color: Colors.black,
                     ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
-                canWatch ? 'REKLAM İZLE' : 'BUGÜNLÜK LİMİTE ULAŞTIN',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 18,
+                canWatch ? 'REKLAM İZLE' : 'LİMİT DOLDU',
+                style: GoogleFonts.outfit(
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
-                  color: canWatch ? Colors.black : Colors.white38,
-                  letterSpacing: 1.0,
+                  color: Colors.black,
+                  letterSpacing: -1,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 canWatch 
-                    ? '+${CreditService.rewardWatchAd} Kredi Kazan!'
-                    : 'Yarın tekrar gel!',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 14,
-                  color: canWatch ? Colors.black54 : Colors.white24,
+                    ? '+${CreditService.rewardWatchAd} KREDİ KAZAN!'
+                    : 'YARIN TEKRAR GEL!',
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 24),
+              // İlerleme çubuğu
+              Container(
+                height: 16,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: creditProvider.todayAdWatches / CreditService.maxDailyAdWatches,
+                    backgroundColor: Colors.transparent,
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.black),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
-              // İlerleme çubuğu
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: LinearProgressIndicator(
-                  value: creditProvider.todayAdWatches / CreditService.maxDailyAdWatches,
-                  backgroundColor: canWatch 
-                      ? Colors.black.withOpacity(0.15) 
-                      : Colors.white.withOpacity(0.05),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    canWatch ? Colors.black.withOpacity(0.4) : AppColors.primary.withOpacity(0.3),
-                  ),
-                  minHeight: 8,
-                ),
-              ),
-              const SizedBox(height: 8),
               Text(
-                '${creditProvider.todayAdWatches}/${CreditService.maxDailyAdWatches} reklam izlendi',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12,
-                  color: canWatch ? Colors.black54 : Colors.white24,
+                '${creditProvider.todayAdWatches}/${CreditService.maxDailyAdWatches} REKLAM İZLENDİ',
+                style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black87,
                 ),
               ),
             ],
@@ -509,62 +500,70 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                '🎁 Günlük giriş ödülün alındı! +${CreditService.rewardDailyLogin} Kredi',
-                style: GoogleFonts.plusJakartaSans(),
+                '🎁 GÜNLÜK ÖDÜLÜN ALINDI! +${CreditService.rewardDailyLogin} KREDİ',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: Colors.black),
               ),
-              backgroundColor: Colors.green.shade800,
+              backgroundColor: AppColors.green,
+              behavior: SnackBarBehavior.floating,
             ),
           );
         }
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: claimed ? Colors.grey.shade300 : AppColors.green,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: claimed ? Colors.green.withOpacity(0.3) : const Color(0xFF6C63FF).withOpacity(0.3),
-          ),
+          border: Border.all(color: Colors.black, width: 4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black,
+              offset: claimed ? const Offset(2, 2) : const Offset(6, 6),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: claimed 
-                    ? Colors.green.withOpacity(0.15) 
-                    : const Color(0xFF6C63FF).withOpacity(0.15),
-                borderRadius: BorderRadius.circular(14),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.black, width: 3),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                ],
               ),
               child: Icon(
                 claimed ? Icons.check_circle_rounded : Icons.calendar_today_rounded,
-                color: claimed ? Colors.green : const Color(0xFF6C63FF),
-                size: 28,
+                color: Colors.black,
+                size: 32,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'GÜNLÜK GİRİŞ ÖDÜLÜ',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                    'GÜNLÜK GİRİŞ',
+                    style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
                       letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     claimed 
-                        ? '✅ Bugünkü ödül alındı!'
-                        : '+${CreditService.rewardDailyLogin} Kredi • Tıkla ve al!',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      color: claimed ? Colors.green.shade300 : Colors.white54,
+                        ? 'BUGÜNLÜK ALINDI ✅'
+                        : '+${CreditService.rewardDailyLogin} KREDİ • TIKLA AL',
+                    style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black87,
                     ),
                   ),
                 ],
@@ -572,17 +571,21 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
             ),
             if (!claimed)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6C63FF),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                  ],
                 ),
                 child: Text(
                   'AL',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -598,48 +601,48 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
       children: [
         Text(
           'KREDİ HARCA',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
+          style: GoogleFonts.outfit(
+            fontSize: 20,
             fontWeight: FontWeight.w900,
-            color: Colors.white38,
-            letterSpacing: 1.5,
+            color: Colors.black,
+            letterSpacing: 1.0,
           ),
         ),
         const SizedBox(height: 16),
         _buildSpendItem(
           icon: Icons.star_rounded,
-          title: 'Super Like',
-          subtitle: 'Dikkatini hemen çek!',
+          title: 'SUPER LİKE',
+          subtitle: 'DİKKATİNİ HEMEN ÇEK!',
           cost: CreditService.costSuperLike,
-          color: const Color(0xFF00BFFF),
+          color: AppColors.blue,
         ),
         _buildSpendItem(
           icon: Icons.rocket_launch_rounded,
-          title: 'Boost',
-          subtitle: '30 dakika herkesin önünde görün!',
+          title: 'BOOST',
+          subtitle: '30 DAKİKA ÖNE ÇIK!',
           cost: CreditService.costBoost,
-          color: const Color(0xFFFF6B6B),
+          color: AppColors.primary,
         ),
         _buildSpendItem(
           icon: Icons.visibility_rounded,
-          title: 'Beğenenleri Gör',
-          subtitle: 'Seni kimlerin beğendiğini öğren!',
+          title: 'BEĞENENLERİ GÖR',
+          subtitle: 'KİMLERİN BEĞENDİĞİNİ ÖĞREN!',
           cost: CreditService.costSeeWhoLikedYou,
-          color: const Color(0xFFFFD700),
+          color: AppColors.green,
         ),
         _buildSpendItem(
           icon: Icons.replay_rounded,
-          title: 'Geri Al',
-          subtitle: 'Son kaydırmayı geri al!',
+          title: 'GERİ AL',
+          subtitle: 'SON KAYDIRMAYI GERİ AL!',
           cost: CreditService.costUndoSwipe,
-          color: const Color(0xFF9B59B6),
+          color: AppColors.secondary,
         ),
         _buildSpendItem(
           icon: Icons.swipe_rounded,
-          title: '+10 Ekstra Beğenme',
-          subtitle: 'Daha fazla beğen, daha fazla eşleş!',
+          title: '+10 EKSTRA BEĞENME',
+          subtitle: 'DAHA FAZLA EŞLEŞ!',
           cost: CreditService.costExtraSwipes10,
-          color: Colors.teal,
+          color: AppColors.red,
         ),
       ],
     );
@@ -653,66 +656,74 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
     required Color color,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
+              color: color,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.black, width: 3),
             ),
-            child: Icon(icon, color: color, size: 24),
+            child: Icon(icon, color: Colors.black, size: 28),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    color: Colors.white38,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black54,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white10),
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.black, width: 3),
+              boxShadow: const [
+                BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+              ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.monetization_on_rounded, 
-                    color: AppColors.primary, size: 16),
-                const SizedBox(width: 4),
+                    color: Colors.black, size: 18),
+                const SizedBox(width: 6),
                 Text(
                   '$cost',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -729,64 +740,83 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
       children: [
         Text(
           'KREDİ KAZANMA YOLLARI',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
+          style: GoogleFonts.outfit(
+            fontSize: 20,
             fontWeight: FontWeight.w900,
-            color: Colors.white38,
-            letterSpacing: 1.5,
+            color: Colors.black,
+            letterSpacing: 1.0,
           ),
         ),
         const SizedBox(height: 16),
-        _buildEarnItem('🎬', 'Reklam İzle', '+${CreditService.rewardWatchAd} / reklam', 'Günde ${CreditService.maxDailyAdWatches} kez'),
-        _buildEarnItem('📅', 'Günlük Giriş', '+${CreditService.rewardDailyLogin} / gün', 'Her gün gir, streak kazan'),
-        _buildEarnItem('🔥', '7 Gün Streak', '+${CreditService.rewardStreakBonus} bonus', 'Arka arkaya 7 gün boyunca'),
-        _buildEarnItem('📸', 'Profil Tamamla', '+${CreditService.rewardProfileComplete}', 'Bio + 3 fotoğraf ekle'),
-        _buildEarnItem('💕', 'İlk Eşleşme', '+${CreditService.rewardFirstMatch}', 'Tek seferlik ödül'),
-        _buildEarnItem('👥', 'Arkadaş Davet', '+${CreditService.rewardInviteFriend}', 'Her davet başına'),
+        _buildEarnItem('🎬', 'REKLAM İZLE', '+${CreditService.rewardWatchAd}', 'GÜNDE ${CreditService.maxDailyAdWatches} KEZ'),
+        _buildEarnItem('📅', 'GÜNLÜK GİRİŞ', '+${CreditService.rewardDailyLogin}', 'HER GÜN GİR, STREAK KAZAN'),
+        _buildEarnItem('🔥', '7 GÜN STREAK', '+${CreditService.rewardStreakBonus}', 'ARKA ARKAYA 7 GÜN BOYUNCA'),
+        _buildEarnItem('📸', 'PROFİL TAMAMLA', '+${CreditService.rewardProfileComplete}', 'BİO + 3 FOTOĞRAF EKLE'),
+        _buildEarnItem('💕', 'İLK EŞLEŞME', '+${CreditService.rewardFirstMatch}', 'TEK SEFERLİK ÖDÜL'),
+        _buildEarnItem('👥', 'ARKADAŞ DAVET', '+${CreditService.rewardInviteFriend}', 'HER DAVET BAŞINA'),
       ],
     );
   }
 
   Widget _buildEarnItem(String emoji, String title, String reward, String description) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(14),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 28)),
-          const SizedBox(width: 14),
+          Text(emoji, style: const TextStyle(fontSize: 32)),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.green,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.black, width: 2),
+                      ),
+                      child: Text(
+                        reward,
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 6),
                 Text(
                   description,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
-                    color: Colors.white38,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black54,
                   ),
                 ),
               ],
-            ),
-          ),
-          Text(
-            reward,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: AppColors.primary,
             ),
           ),
         ],

@@ -82,21 +82,22 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.scaffold,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: Border.all(color: Colors.black, width: 4),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Handle
           Container(
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            width: 40,
-            height: 4,
+            margin: const EdgeInsets.symmetric(vertical: 16),
+            width: 60,
+            height: 6,
             decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(2),
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(3),
             ),
           ),
 
@@ -107,21 +108,34 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'GELİŞMİŞ FİLTRELER',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
+                  'FİLTRELER',
+                  style: GoogleFonts.outfit(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                    letterSpacing: -1,
                   ),
                 ),
-                TextButton(
-                  onPressed: _resetFilters,
-                  child: Text(
-                    'Sıfırla',
-                    style: GoogleFonts.plusJakartaSans(
+                GestureDetector(
+                  onTap: _resetFilters,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
                       color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [
+                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
+                      ],
+                    ),
+                    child: Text(
+                      'SIFIRLA',
+                      style: GoogleFonts.outfit(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        letterSpacing: 1,
+                      ),
                     ),
                   ),
                 ),
@@ -129,7 +143,8 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
             ),
           ),
 
-          const Divider(color: Colors.white10, height: 1),
+          const SizedBox(height: 16),
+          const Divider(color: Colors.black, height: 1, thickness: 4),
 
           // Content
           Expanded(
@@ -145,28 +160,25 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildAgeChip(_ageRange.start.round().toString()),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Container(
-                            height: 2,
-                            color: AppColors.primary.withOpacity(0.3),
-                          ),
-                        ),
-                      ),
                       _buildAgeChip(_ageRange.end.round().toString()),
                     ],
                   ),
-                  RangeSlider(
-                    values: _ageRange,
-                    min: 18,
-                    max: 80,
-                    divisions: 62,
-                    activeColor: AppColors.primary,
-                    inactiveColor: Colors.white10,
-                    onChanged: (RangeValues values) {
-                      setState(() => _ageRange = values);
-                    },
+                  SliderTheme(
+                    data: SliderThemeData(
+                      thumbColor: Colors.black,
+                      activeTrackColor: AppColors.primary,
+                      inactiveTrackColor: Colors.grey.shade300,
+                      trackHeight: 8,
+                    ),
+                    child: RangeSlider(
+                      values: _ageRange,
+                      min: 18,
+                      max: 80,
+                      divisions: 62,
+                      onChanged: (RangeValues values) {
+                        setState(() => _ageRange = values);
+                      },
+                    ),
                   ),
 
                   const SizedBox(height: 32),
@@ -178,32 +190,31 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${_distance.round()} km',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.primary,
+                        '${_distance.round()} KM',
+                        style: GoogleFonts.outfit(
+                          color: Colors.black,
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Maksimum uzaklık',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white54,
-                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ],
                   ),
-                  Slider(
-                    value: _distance,
-                    min: 1,
-                    max: 500,
-                    divisions: 99,
-                    activeColor: AppColors.primary,
-                    inactiveColor: Colors.white10,
-                    onChanged: (value) {
-                      setState(() => _distance = value);
-                    },
+                  SliderTheme(
+                    data: SliderThemeData(
+                      thumbColor: Colors.black,
+                      activeTrackColor: AppColors.primary,
+                      inactiveTrackColor: Colors.grey.shade300,
+                      trackHeight: 8,
+                    ),
+                    child: Slider(
+                      value: _distance,
+                      min: 1,
+                      max: 500,
+                      divisions: 99,
+                      onChanged: (value) {
+                        setState(() => _distance = value);
+                      },
+                    ),
                   ),
 
                   const SizedBox(height: 32),
@@ -213,11 +224,11 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _buildGenderChip('all', 'Tümü', Icons.people),
+                      _buildGenderChip('all', 'TÜMÜ', Icons.people),
                       const SizedBox(width: 12),
-                      _buildGenderChip('male', 'Erkek', Icons.male),
+                      _buildGenderChip('male', 'ERKEK', Icons.male),
                       const SizedBox(width: 12),
-                      _buildGenderChip('female', 'Kadın', Icons.female),
+                      _buildGenderChip('female', 'KADIN', Icons.female),
                     ],
                   ),
 
@@ -227,14 +238,14 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                   _buildSectionHeader('İLİŞKİ HEDEFİ'),
                   const SizedBox(height: 16),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: 12,
+                    runSpacing: 12,
                     children: _relationshipGoals.map((goal) {
                       final isSelected = _relationshipGoal == goal['id'];
                       return GestureDetector(
                         onTap: () {
                           if (!widget.isPremium) {
-                             Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
+                             Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
                              return;
                           }
                           setState(() {
@@ -245,42 +256,38 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
-                            vertical: 10,
+                            vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? AppColors.primary.withOpacity(0.2)
-                                : Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.white10,
-                            ),
+                            color: isSelected ? AppColors.primary : Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.black, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: isSelected ? Colors.black : Colors.black,
+                                offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
+                              ),
+                            ],
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 goal['emoji']!,
-                                style: const TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 18),
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 8),
                               Text(
-                                goal['label']!,
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : Colors.white70,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                  fontSize: 13,
+                                goal['label']!.toUpperCase(),
+                                style: GoogleFonts.outfit(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 14,
                                 ),
                               ),
                               if (!widget.isPremium && goal['id'] != 'all') ...[
-                                const SizedBox(width: 4),
-                                const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 12),
+                                const SizedBox(width: 6),
+                                const Icon(Icons.lock_rounded, color: Colors.black, size: 14),
                               ],
                             ],
                           ),
@@ -296,8 +303,8 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                       'İLGİ ALANLARI (${_selectedInterests.length})'),
                   const SizedBox(height: 16),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: 10,
+                    runSpacing: 10,
                     children: _allInterests.map((interest) {
                       final isSelected = _selectedInterests.contains(interest);
                       return GestureDetector(
@@ -312,30 +319,26 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
+                            horizontal: 16,
+                            vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? AppColors.primary.withOpacity(0.2)
-                                : Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.white10,
-                            ),
+                            color: isSelected ? AppColors.blue : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.black, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
+                              ),
+                            ],
                           ),
                           child: Text(
-                            interest,
-                            style: GoogleFonts.plusJakartaSans(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.white70,
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              fontSize: 12,
+                            interest.toUpperCase(),
+                            style: GoogleFonts.outfit(
+                              color: isSelected ? Colors.white : Colors.black,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 13,
                             ),
                           ),
                         ),
@@ -349,21 +352,21 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                   _buildSectionHeader('HIZLI FİLTRELER'),
                   const SizedBox(height: 16),
                   _buildToggleOption(
-                    'Sadece Doğrulanmış Profiller',
-                    Icons.verified,
+                    'SADECE DOĞRULANMIŞ',
+                    Icons.verified_rounded,
                     _verifiedOnly,
                     (value) => setState(() => _verifiedOnly = value),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _buildToggleOption(
-                    'Fotoğrafı Olanlar',
-                    Icons.photo_camera,
+                    'FOTOĞRAFI OLANLAR',
+                    Icons.photo_camera_rounded,
                     _hasPhotoOnly,
                     (value) => setState(() => _hasPhotoOnly = value),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _buildToggleOption(
-                    'Sadece Çevrimiçi',
+                    'SADECE ÇEVRİMİÇİ',
                     Icons.circle,
                     _onlineOnly,
                     (value) => setState(() => _onlineOnly = value),
@@ -379,35 +382,33 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
           // Apply Button
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.scaffold,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 20,
-                  offset: const Offset(0, -4),
-                ),
-              ],
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(top: BorderSide(color: Colors.black, width: 4)),
             ),
             child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _applyFilters,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+              child: GestureDetector(
+                onTap: _applyFilters,
+                child: Container(
+                  width: double.infinity,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.black, width: 4),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+                    ],
                   ),
-                  child: Text(
-                    'FİLTRELERİ UYGULA',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      letterSpacing: 1,
+                  child: Center(
+                    child: Text(
+                      'FİLTRELERİ UYGULA',
+                      style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20,
+                        letterSpacing: 1,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
@@ -422,10 +423,10 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: GoogleFonts.plusJakartaSans(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: AppColors.primary,
+      style: GoogleFonts.outfit(
+        fontSize: 16,
+        fontWeight: FontWeight.w900,
+        color: Colors.black,
         letterSpacing: 1.5,
       ),
     );
@@ -433,18 +434,21 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
 
   Widget _buildAgeChip(String age) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: Text(
         age,
-        style: GoogleFonts.plusJakartaSans(
-          color: AppColors.primary,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
+        style: GoogleFonts.outfit(
+          color: Colors.black,
+          fontWeight: FontWeight.w900,
+          fontSize: 20,
         ),
       ),
     );
@@ -456,31 +460,32 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
       child: GestureDetector(
         onTap: () => setState(() => _gender = value),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.primary.withOpacity(0.2)
-                : Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? AppColors.primary : Colors.white10,
-            ),
+            color: isSelected ? AppColors.primary : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.black, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black, 
+                offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
+              ),
+            ],
           ),
           child: Column(
             children: [
               Icon(
                 icon,
-                color: isSelected ? AppColors.primary : Colors.white54,
-                size: 24,
+                color: Colors.black,
+                size: 32,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               Text(
                 label,
-                style: GoogleFonts.plusJakartaSans(
-                  color: isSelected ? AppColors.primary : Colors.white70,
-                  fontWeight:
-                      isSelected ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 12,
+                style: GoogleFonts.outfit(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -498,29 +503,33 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
     bool isPremiumOnly = false,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white10),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: const [
+          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+        ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: value ? AppColors.primary : Colors.white54, size: 20),
-          const SizedBox(width: 12),
+          Icon(icon, color: Colors.black, size: 28),
+          const SizedBox(width: 16),
           Expanded(
             child: Row(
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white,
-                    fontSize: 14,
+                  style: GoogleFonts.outfit(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 if (isPremiumOnly && !widget.isPremium) ...[
                   const SizedBox(width: 8),
-                  const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 14),
+                  const Icon(Icons.lock_rounded, color: Colors.black, size: 18),
                 ],
               ],
             ),
@@ -529,13 +538,15 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
             value: value,
             onChanged: (val) {
               if (isPremiumOnly && !widget.isPremium) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => PremiumOfferScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
                 return;
               }
               onChanged(val);
             },
-            activeColor: AppColors.primary,
-            activeTrackColor: AppColors.primary.withOpacity(0.5),
+            activeColor: Colors.black,
+            activeTrackColor: AppColors.primary,
+            inactiveThumbColor: Colors.grey.shade600,
+            inactiveTrackColor: Colors.grey.shade300,
           ),
         ],
       ),
