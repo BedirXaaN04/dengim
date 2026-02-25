@@ -1357,8 +1357,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
   void _onCardTap(UserProfile user) {
     HapticFeedback.lightImpact();
-    // Visit track et
-    DiscoveryService().trackVisit(user.uid);
     
     // Profil detay sayfasını aç
     Navigator.push(

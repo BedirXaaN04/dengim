@@ -5,10 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/services/safety_service.dart';
 import '../auth/models/user_profile.dart';
+import '../auth/services/discovery_service.dart';
 import '../profile/services/report_block_service.dart';
 import '../profile/widgets/video_player_modal.dart';
 
-class UserProfileDetailScreen extends StatelessWidget {
+class UserProfileDetailScreen extends StatefulWidget {
   final String? userId;
   final UserProfile? user;
 
@@ -16,15 +17,30 @@ class UserProfileDetailScreen extends StatelessWidget {
       : assert(userId != null || user != null, 'Either userId or user must be provided');
 
   @override
+  State<UserProfileDetailScreen> createState() => _UserProfileDetailScreenState();
+}
+
+class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
+  
+  @override
+  void initState() {
+    super.initState();
+    final targetId = widget.userId ?? widget.user?.uid;
+    if (targetId != null) {
+      DiscoveryService().trackVisit(targetId);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (user != null) {
-      return _buildProfileUI(context, user!);
+    if (widget.user != null) {
+      return _buildProfileUI(context, widget.user!);
     }
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
+        future: FirebaseFirestore.instance.collection('users').doc(widget.userId).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator(color: AppColors.primary));

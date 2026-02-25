@@ -8,6 +8,7 @@ import '../auth/models/user_profile.dart';
 import '../auth/services/discovery_service.dart';
 import '../../../core/providers/user_provider.dart';
 import '../payment/premium_offer_screen.dart';
+import '../discover/user_profile_detail_screen.dart'; // Added for navigation
 
 class VisitorsScreen extends StatefulWidget {
   const VisitorsScreen({super.key});
@@ -44,23 +45,32 @@ class _VisitorsScreenState extends State<VisitorsScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffold,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 24),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Profil Ziyaretçileri",
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          "ZİYARETÇİLER",
+          style: GoogleFonts.outfit(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+            letterSpacing: -1,
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: Container(
+            color: Colors.black,
+            height: 4.0,
           ),
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 4))
           : _visitors.isEmpty
               ? _buildEmptyState()
               : GridView.builder(
@@ -68,8 +78,8 @@ class _VisitorsScreenState extends State<VisitorsScreen> {
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 0.75,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
                   ),
                   itemCount: _visitors.length,
                   itemBuilder: (context, index) {
@@ -88,23 +98,39 @@ class _VisitorsScreenState extends State<VisitorsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: AppColors.primary,
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.black, width: 4),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black,
+                  offset: Offset(4, 4),
+                  blurRadius: 0,
+                ),
+              ],
             ),
-            child: const Icon(Icons.visibility_off_rounded, size: 40, color: Colors.white24),
+            child: const Icon(Icons.visibility_off_rounded, size: 48, color: Colors.black),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 32),
           Text(
-            "Henüz ziyaretçi yok",
-            style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            "HENÜZ ZİYARETÇİ YOK",
+            style: GoogleFonts.outfit(
+              color: Colors.black, 
+              fontSize: 22, 
+              fontWeight: FontWeight.w900,
+              letterSpacing: -1,
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            "Profilini öne çıkararak daha fazla\ngörünürlük elde edebilirsin!",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(color: Colors.white38, fontSize: 13),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              "Profilini öne çıkararak daha fazla görünürlük elde edebilirsin!",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -125,31 +151,47 @@ class _VisitorCard extends StatelessWidget {
         if (!isPremium) {
           Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumOfferScreen()));
         } else {
-          // Profil detayını aç
+          Navigator.push(context, MaterialPageRoute(builder: (_) => UserProfileDetailScreen(user: user)));
         }
       },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white10),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black, width: 3),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black,
+              offset: Offset(4, 4),
+              blurRadius: 0,
+            ),
+          ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(13), // 16 - 3 border
           child: Stack(
             fit: StackFit.expand,
             children: [
               CachedNetworkImage(
                 imageUrl: user.imageUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(color: AppColors.surface),
+                placeholder: (context, url) => Container(color: Colors.black12),
               ),
               if (!isPremium)
                 BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                   child: Container(
-                    color: Colors.black.withOpacity(0.4),
-                    child: const Center(
-                      child: Icon(Icons.lock_rounded, color: Colors.white70, size: 30),
+                    color: Colors.black.withOpacity(0.5),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: const Icon(Icons.lock_rounded, color: Colors.black, size: 28),
+                      ),
                     ),
                   ),
                 ),
@@ -158,30 +200,33 @@ class _VisitorCard extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                      colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
                     ),
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isPremium ? user.name : "Gizli Profil",
-                        style: GoogleFonts.plusJakartaSans(
+                        isPremium ? user.name : "Gizli Ziyaretçi",
+                        style: GoogleFonts.outfit(
                           color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
                         ),
                       ),
                       if (isPremium)
                         Text(
                           "${user.age} • ${user.location ?? user.country}",
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white70,
-                            fontSize: 10,
+                          style: GoogleFonts.outfit(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                     ],
