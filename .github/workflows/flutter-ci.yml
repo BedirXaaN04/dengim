@@ -84,9 +84,9 @@ jobs:
         find $HOME/.pub-cache -name "build.gradle" -path "*/android/*" | while read f; do
           if grep -q "ext\.kotlin_version\|rootProject\.ext\.kotlin_version" "$f" 2>/dev/null; then
             echo "  Patching Kotlin version: $f"
-            sed -i 's/rootProject\.ext\.kotlin_version/"1.9.24"/g' "$f"
-            sed -i "s/\$rootProject\.ext\.kotlin_version/\"1.9.24\"/g" "$f"
-            sed -i "s/ext\.kotlin_version = .*/ext.kotlin_version = '1.9.24'/g" "$f"
+            sed -i 's/rootProject\.ext\.kotlin_version/"2.0.21"/g' "$f"
+            sed -i "s/\$rootProject\.ext\.kotlin_version/\"2.0.21\"/g" "$f"
+            sed -i "s/ext\.kotlin_version = .*/ext.kotlin_version = '2.0.21'/g" "$f"
           fi
         done
         
