@@ -27,6 +27,8 @@ import '../payment/premium_offer_screen.dart';
 import 'user_profile_detail_screen.dart';
 import '../spaces/screens/spaces_screen.dart';
 import 'widgets/advanced_filters_modal.dart';
+import 'widgets/discover_header.dart';
+import 'widgets/swipe_action_buttons.dart';
 import '../ads/widgets/dengim_banner_ad.dart';
 import '../ads/screens/watch_and_earn_screen.dart';
 import '../../core/providers/credit_provider.dart';
@@ -552,7 +554,19 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
-                          _buildTopBar(),
+                          DiscoverHeader(
+                            showSearchBar: _showSearchBar,
+                            onSearchToggle: () {
+                              HapticFeedback.lightImpact();
+                              setState(() => _showSearchBar = !_showSearchBar);
+                            },
+                            filterSettings: _filterSettings,
+                            onFiltersApplied: (settings) {
+                              setState(() {
+                                _filterSettings = settings;
+                              });
+                            },
+                          ),
                           _buildSearchBar(), // 🔍 Arama barı
                           if (!_showSearchBar && storyProvider.isStoriesEnabled) _buildStoriesTray(storyProvider.activeStories),
                           if (!_showSearchBar) _buildTopPicks(provider.activeUsers),
@@ -589,7 +603,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                     ),
                                 ),
                           ),
-                          _buildActionButtons(),
+                          SwipeActionButtons(
+                            onUndo: _onUndo,
+                            onDislike: _onDislike,
+                            onLike: _onLike,
+                            onSuperLike: _onSuperLike,
+                            onBoost: _onBoost,
+                          ),
                           const DengimBannerAd(),
                           const SizedBox(height: 100), 
                         ],
@@ -826,142 +846,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Widget _buildTopBar() {
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(bottom: BorderSide(color: Colors.black, width: 4)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Left: User Profile Avatar
-            Consumer<UserProvider>(
-              builder: (context, userProvider, _) {
-                final user = userProvider.currentUser;
-                return GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Profilini görmek için alt menüden Profil sekmesine git!'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.black, width: 2),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: user?.imageUrl != null
-                          ? CachedNetworkImage(
-                              imageUrl: user!.imageUrl,
-                              fit: BoxFit.cover,
-                              placeholder: (_, __) => Container(color: AppColors.scaffold),
-                              errorWidget: (_, __, ___) => const Icon(Icons.person, color: Colors.black, size: 20),
-                            )
-                          : const Icon(Icons.person, color: Colors.black, size: 20),
-                    ),
-                  ),
-                );
-              },
-            ),
-            
-            // Middle: DENGIM
-            Text(
-              'DENGİM',
-              style: GoogleFonts.outfit(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -1.0,
-                color: Colors.black,
-              ),
-            ),
-            
-            // Right: Icons
-            Row(
-              children: [
-                _buildHeaderIcon(
-                  Icons.graphic_eq_rounded,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SpacesScreen())),
-                ),
-                const SizedBox(width: 12),
-                _buildHeaderIcon(
-                  _showSearchBar ? Icons.close : Icons.search_rounded,
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    setState(() => _showSearchBar = !_showSearchBar);
-                  },
-                ),
-                const SizedBox(width: 12),
-                _buildHeaderIcon(
-                  Icons.tune_rounded,
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.85,
-                        child: AdvancedFiltersModal(
-                          isPremium: context.read<UserProvider>().currentUser?.isPremium ?? false,
-                          currentFilters: _filterSettings.toMap(),
-                          onApplyFilters: (filters) {
-                            final List<String> interests = filters['interests'] != null 
-                                ? List<String>.from(filters['interests']) 
-                                : [];
-                            setState(() {
-                              _filterSettings = FilterSettings(
-                                gender: filters['gender'] ?? 'all',
-                                ageRange: RangeValues(
-                                  (filters['minAge'] ?? 18).toDouble(),
-                                  (filters['maxAge'] ?? 50).toDouble(),
-                                ),
-                                distance: (filters['maxDistance'] ?? 100).toDouble(),
-                                interests: interests,
-                                verifiedOnly: filters['verifiedOnly'] ?? false,
-                                hasPhotoOnly: filters['hasPhotoOnly'] ?? true,
-                                onlineOnly: filters['onlineOnly'] ?? false,
-                                relationshipGoal: filters['relationshipGoal'],
-                              );
-                            });
-                            context.read<DiscoveryProvider>().loadDiscoveryUsers(
-                              gender: filters['gender'] ?? 'all',
-                              minAge: filters['minAge'] ?? 18,
-                              maxAge: filters['maxAge'] ?? 50,
-                              interests: interests.isNotEmpty ? interests : null,
-                              maxDistance: filters['maxDistance'],
-                              verifiedOnly: filters['verifiedOnly'] ?? false,
-                              hasPhotoOnly: filters['hasPhotoOnly'] ?? true,
-                              onlineOnly: filters['onlineOnly'] ?? false,
-                              relationshipGoal: filters['relationshipGoal'],
-                              forceRefresh: true,
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   /// Instagram benzeri arama barı
   Widget _buildSearchBar() {
@@ -1365,86 +1250,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildCircleButton(
-            onTap: _onUndo,
-            size: 48,
-            icon: Icons.undo_rounded,
-            color: Colors.black,
-            bgColor: AppColors.secondary,
-          ),
-          const SizedBox(width: 16),
-          _buildCircleButton(
-            onTap: _onDislike,
-            size: 64,
-            icon: Icons.close_rounded,
-            color: Colors.black,
-            bgColor: Colors.white,
-          ),
-          const SizedBox(width: 16),
-          _buildCircleButton(
-            onTap: _onLike,
-            size: 80,
-            icon: Icons.favorite_rounded,
-            iconSize: 36,
-            color: AppColors.red,
-            bgColor: AppColors.primary,
-          ),
-          const SizedBox(width: 16),
-          _buildCircleButton(
-            onTap: _onSuperLike,
-            size: 64,
-            icon: Icons.star_rounded,
-            color: Colors.black,
-            bgColor: AppColors.blue,
-          ),
-          const SizedBox(width: 16),
-          _buildCircleButton(
-            onTap: _onBoost,
-            size: 48,
-            icon: Icons.bolt_rounded,
-            color: Colors.black,
-            bgColor: AppColors.green,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCircleButton({
-    required VoidCallback onTap,
-    required double size,
-    required IconData icon,
-    required Color color,
-    required Color bgColor,
-    double? iconSize,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: bgColor,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
-        ),
-        child: Icon(
-          icon,
-          color: color,
-          size: iconSize ?? (size * 0.45),
-        ),
-      ),
-    );
-  }
 
   Widget _buildSwipeLabel(String text, Color color, double opacity) {
     return Transform.rotate(
@@ -1983,25 +1788,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       case 'unsure': return '🤷‍♂️ Belirsiz';
       default: return '';
     }
-  }
-
-  Widget _buildHeaderIcon(IconData icon, {required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 2.5),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-          ],
-        ),
-        child: Icon(icon, color: Colors.black, size: 22),
-      ),
-    );
   }
 }
 
