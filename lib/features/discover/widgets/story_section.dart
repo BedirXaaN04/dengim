@@ -74,7 +74,7 @@ class StorySection extends StatelessWidget {
                             child: CircleAvatar(
                               radius: 28,
                               backgroundColor: AppColors.scaffold,
-                              backgroundImage: NetworkImage(myStories!.userAvatar),
+                              backgroundImage: NetworkImage(myStories.userAvatar),
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -116,7 +116,7 @@ class StorySection extends StatelessWidget {
                           'SİZ', 
                           style: GoogleFonts.outfit(
                             fontSize: 10, 
-                            color: Colors.black.withOpacity(0.5), 
+                            color: Colors.black.withValues(alpha: 0.5), 
                             fontWeight: FontWeight.w900
                           )
                         ),

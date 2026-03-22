@@ -1,8 +1,6 @@
 // Stub file for web - AdService
 // google_mobile_ads is not supported on web
 
-import 'package:flutter/foundation.dart';
-import '../../../core/services/config_service.dart';
 import '../../../core/utils/log_service.dart';
 
 class AdService {

@@ -23,6 +23,10 @@ export interface User {
     reportCount: number;
     matchCount: number;
     messageCount: number;
+    followersCount: number;
+    followingCount: number;
+    followers?: string[];
+    following?: string[];
     lastActive: Date;
     createdAt: Date;
     updatedAt: Date;

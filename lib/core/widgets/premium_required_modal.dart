@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_colors.dart';
 import '../providers/credit_provider.dart';
-import '../providers/subscription_provider.dart';
-import '../constants/tier_limits.dart';
 import '../../features/payment/premium_offer_screen.dart';
 import '../../features/ads/screens/watch_and_earn_screen.dart';
 
@@ -95,7 +93,7 @@ class PremiumRequiredModal extends StatelessWidget {
             'BU ÖZELLİĞİ KULLANMAK İÇİN ${requiredTier.toUpperCase()} ÜYELİĞİNE SAHİP OLMALISIN.',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               fontSize: 14,
               fontWeight: FontWeight.w800,
               height: 1.3,
@@ -225,10 +223,10 @@ class PremiumRequiredModal extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: const BorderSide(color: Colors.black, width: 2.5),
+                  side: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                 ),
               ).copyWith(
-                overlayColor: WidgetStateProperty.all(Colors.black.withOpacity(0.1)),
+                overlayColor: WidgetStateProperty.all(Colors.black.withValues(alpha: 0.1)),
               ),
               child: Text(
                 'HEMEN YÜKSELT',
@@ -241,7 +239,7 @@ class PremiumRequiredModal extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'DAHA SONRA',
-              style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w900),
+              style: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.4), fontWeight: FontWeight.w900),
             ),
           ),
         ],

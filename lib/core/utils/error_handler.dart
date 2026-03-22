@@ -178,7 +178,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
             const SizedBox(height: 8),
             Text(
               'Lütfen tekrar deneyin.',
-              style: TextStyle(color: Colors.white.withOpacity(0.6)),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(

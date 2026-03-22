@@ -1,4 +1,4 @@
-import 'dart:ui'; // ImageFilter için gerekli
+// ImageFilter için gerekli
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
@@ -94,8 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4.0),
-          child: Container(color: Colors.black, height: 4.0),
+          preferredSize: const Size.fromHeight(1.0),
+          child: Container(color: Colors.black.withValues(alpha: 0.1), height: 1.0),
         ),
       ),
       body: SafeArea(
@@ -111,14 +111,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: Colors.black,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 4),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                    ],
+                    boxShadow: [AppColors.neoShadow],
                   ),
-                  child: const Icon(Icons.person_add_rounded, color: Colors.black, size: 48),
+                  child: const Icon(Icons.person_add_rounded, color: Colors.white, size: 48),
                 ),
               ),
               const SizedBox(height: 32),
@@ -177,21 +174,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 64,
                   decoration: BoxDecoration(
                     color: _isLoading ? Colors.grey.shade400 : AppColors.primary,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.black, width: 4),
-                    boxShadow: _isLoading ? [] : const [
-                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                    ],
+                    borderRadius: BorderRadius.circular(AppColors.neoRadius),
+                    boxShadow: _isLoading ? [] : [AppColors.neoShadowSmall],
                   ),
                   child: Center(
                     child: _isLoading 
-                        ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 3)) 
+                        ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)) 
                         : Text(
                             'KAYIT OL',
                             style: GoogleFonts.outfit(
                               fontSize: 20,
                               fontWeight: FontWeight.w900,
-                              color: Colors.black,
+                              color: Colors.white,
                               letterSpacing: 1,
                             ),
                           ),
@@ -216,7 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Text(
                       'GİRİŞ YAP',
                       style: GoogleFonts.outfit(
-                        color: AppColors.blue, // Using a stark color instead of generic primary
+                        color: AppColors.primary, // Sleek black highlighting instead of bright blue
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         decoration: TextDecoration.underline,
@@ -243,11 +237,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        borderRadius: BorderRadius.circular(AppColors.neoRadius),
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: TextField(
         controller: controller,

@@ -65,7 +65,7 @@ class _VisitorsScreenState extends State<VisitorsScreen> {
           preferredSize: const Size.fromHeight(4.0),
           child: Container(
             color: Colors.black,
-            height: 4.0,
+            height: AppColors.neoBorderWidth,
           ),
         ),
       ),
@@ -102,16 +102,10 @@ class _VisitorsScreenState extends State<VisitorsScreen> {
             decoration: BoxDecoration(
               color: AppColors.primary,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 4),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black,
-                  offset: Offset(4, 4),
-                  blurRadius: 0,
-                ),
-              ],
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: [AppColors.neoShadowSmall],
             ),
-            child: const Icon(Icons.visibility_off_rounded, size: 48, color: Colors.black),
+            child: const Icon(Icons.visibility_off_rounded, size: 48, color: Colors.white),
           ),
           const SizedBox(height: 32),
           Text(
@@ -158,14 +152,8 @@ class _VisitorCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(4, 4),
-              blurRadius: 0,
-            ),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(13), // 16 - 3 border
@@ -181,16 +169,16 @@ class _VisitorCard extends StatelessWidget {
                 BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                   child: Container(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     child: Center(
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: AppColors.primary,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 2),
+                          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                         ),
-                        child: const Icon(Icons.lock_rounded, color: Colors.black, size: 28),
+                        child: const Icon(Icons.lock_rounded, color: Colors.white, size: 28),
                       ),
                     ),
                   ),
@@ -205,7 +193,7 @@ class _VisitorCard extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
+                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.9)],
                     ),
                   ),
                   child: Column(
@@ -224,7 +212,7 @@ class _VisitorCard extends StatelessWidget {
                         Text(
                           "${user.age} • ${user.location ?? user.country}",
                           style: GoogleFonts.outfit(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),

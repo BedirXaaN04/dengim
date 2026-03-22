@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb; // YENİ
+import 'dart:typed_data';
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
 import '../utils/log_service.dart';
@@ -34,10 +36,16 @@ class AudioRecorderService {
         return false;
       }
 
-      // Kayıt dosya yolunu oluştur
-      final directory = await getTemporaryDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      _currentRecordingPath = '${directory.path}/voice_message_$timestamp.m4a';
+      
+      if (kIsWeb) {
+         // Web uses blob URLs implicitly or we don't pass a path for default web behaviour
+         _currentRecordingPath = ''; 
+      } else {
+        // Kayıt dosya yolunu oluştur (Mobil)
+        final directory = await getTemporaryDirectory();
+        _currentRecordingPath = '${directory.path}/voice_message_$timestamp.m4a';
+      }
 
       // Kayıt konfigürasyonu
       const config = RecordConfig(
@@ -46,7 +54,11 @@ class AudioRecorderService {
         sampleRate: 44100,
       );
 
-      await _recorder.start(config, path: _currentRecordingPath!);
+      if (kIsWeb) {
+         await _recorder.start(config, path: '');
+      } else {
+         await _recorder.start(config, path: _currentRecordingPath!);
+      }
       
       _isRecording = true;
       _recordingDurationSeconds = 0;
@@ -108,8 +120,8 @@ class AudioRecorderService {
 
       await _recorder.stop();
       
-      // Dosyayı sil
-      if (_currentRecordingPath != null) {
+      // Dosyayı sil (Sadece Mobil)
+      if (!kIsWeb && _currentRecordingPath != null && _currentRecordingPath!.isNotEmpty) {
         final file = File(_currentRecordingPath!);
         if (await file.exists()) {
           await file.delete();
@@ -125,19 +137,35 @@ class AudioRecorderService {
   /// Ses dosyasını Cloudinary'ye yükle ve URL döndür
   Future<String?> uploadRecording(String filePath) async {
     try {
-      final file = File(filePath);
-      if (!await file.exists()) {
-        LogService.w("Ses dosyası bulunamadı: $filePath");
+      Uint8List bytes;
+      
+      if (kIsWeb) {
+        // Web'de blob URL'den HTTP veya fetch ile byte'a çevrilmesi gerekir, 
+        // Ancak genellikle UI tarafında (örn: EditProfile) XFile üzerinden işlem yapılır.
+        // Bu yüzden bu metod web'de kullanılacaksa filePath URL'ine istek atılarak çözülebilir.
+        // İhtiyaç olursa burayı zenginleştireceğiz.
+        LogService.w("uploadRecording called directly on web. Handled at UI layer usually.");
         return null;
+      } else {
+        final file = File(filePath);
+        if (!await file.exists()) {
+          LogService.w("Ses dosyası bulunamadı: $filePath");
+          return null;
+        }
+        bytes = await file.readAsBytes();
+        
+        // Yükleme başarılıysa geçici dosyayı silmek için CloudinaryService sonrası siliyoruz
       }
 
       // Cloudinary'ye yükle (ses dosyası için)
-      final bytes = await file.readAsBytes();
       final url = await CloudinaryService.uploadAudioBytes(bytes);
       
-      // Yükleme başarılıysa geçici dosyayı sil
-      if (url != null) {
-        await file.delete();
+      // Yükleme başarılıysa geçici dosyayı sil (Sadece mobil)
+      if (url != null && !kIsWeb) {
+        final file = File(filePath);
+        if (await file.exists()) {
+           await file.delete();
+        }
       }
       
       return url;

@@ -152,7 +152,7 @@ class _CallScreenState extends State<CallScreen> {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.black, AppColors.primary.withOpacity(0.2), Colors.black],
+          colors: [Colors.black, AppColors.primary.withValues(alpha: 0.2), Colors.black],
         ),
       ),
       child: Center(
@@ -270,7 +270,7 @@ class _CallScreenState extends State<CallScreen> {
         width: 56,
         height: 56,
         decoration: BoxDecoration(
-          color: isActive ? Colors.white : Colors.white.withOpacity(0.2),
+          color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.2),
           shape: BoxShape.circle,
         ),
         child: Icon(

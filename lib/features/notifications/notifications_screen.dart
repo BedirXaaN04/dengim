@@ -121,10 +121,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 2.5),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                ],
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                boxShadow: [AppColors.neoShadowSmall],
               ),
               child: const Icon(Icons.arrow_back, color: Colors.black, size: 18),
             ),
@@ -136,7 +134,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             color: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: Colors.black, width: 2),
+              side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
             ),
             onSelected: (value) {
               if (value == 'mark_all') {
@@ -193,10 +191,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.black, width: 3),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                      ],
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                      boxShadow: [AppColors.neoShadowSmall],
                     ),
                     child: const Icon(Icons.notifications_off_outlined, size: 48, color: Colors.black),
                   ),
@@ -206,7 +202,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   Text(
                     "EŞLEŞMELER, BEĞENİLER VE DUYURULAR\nBURADA GÖRÜNECEK.",
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.5), fontSize: 12, fontWeight: FontWeight.w800, height: 1.5),
+                    style: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.5), fontSize: 12, fontWeight: FontWeight.w800, height: 1.5),
                   ),
                 ],
               ),
@@ -229,9 +225,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 background: Container(
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: AppColors.red,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.black, width: 2),
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                   ),
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(right: 20),
@@ -246,10 +242,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.black, width: isRead ? 1.5 : 2.5),
-                    boxShadow: isRead ? [] : const [
-                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-                    ],
+                    border: Border.all(color: Colors.black, width: isRead ? AppColors.neoBorderWidthPixels : AppColors.neoBorderWidthSmallPixels),
+                    boxShadow: isRead ? [] : [AppColors.neoShadowSmall],
                   ),
                   child: InkWell(
                     onTap: () {
@@ -266,7 +260,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           decoration: BoxDecoration(
                             color: _getIconBgColor(type),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 2),
+                            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                           ),
                           child: Center(child: _getIconForType(type)),
                         ),
@@ -286,7 +280,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 data['body'] ?? '',
-                                style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontSize: 12, fontWeight: FontWeight.w600),
+                                style: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -296,7 +290,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   children: [
                                     Text(
                                       _formatTime(timestamp.toDate()),
-                                      style: GoogleFonts.outfit(fontSize: 10, color: Colors.black.withOpacity(0.4), fontWeight: FontWeight.w700),
+                                      style: GoogleFonts.outfit(fontSize: 10, color: Colors.black.withValues(alpha: 0.4), fontWeight: FontWeight.w700),
                                     ),
                                     if (type == 'announcement') ...[
                                       const SizedBox(width: 8),
@@ -305,11 +299,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                         decoration: BoxDecoration(
                                           color: AppColors.primary,
                                           borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(color: Colors.black, width: 1.5),
+                                          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                                         ),
                                         child: Text(
                                           '📢 DUYURU',
-                                          style: GoogleFonts.outfit(fontSize: 9, color: Colors.black, fontWeight: FontWeight.w900),
+                                          style: GoogleFonts.outfit(fontSize: 9, color: Colors.white, fontWeight: FontWeight.w900),
                                         ),
                                       ),
                                     ],
@@ -333,19 +327,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Color _getNotifBgColor(String? type) {
     switch (type) {
-      case 'announcement': return Colors.blue.withOpacity(0.05);
-      case 'match': return AppColors.primary.withOpacity(0.08);
-      case 'like': return Colors.pink.withOpacity(0.05);
-      default: return AppColors.primary.withOpacity(0.05);
+      case 'announcement': return Colors.blue.withValues(alpha: 0.05);
+      case 'match': return AppColors.primary.withValues(alpha: 0.08);
+      case 'like': return Colors.pink.withValues(alpha: 0.05);
+      default: return AppColors.primary.withValues(alpha: 0.05);
     }
   }
 
   Color _getNotifBorderColor(String? type) {
     switch (type) {
-      case 'announcement': return Colors.blue.withOpacity(0.15);
-      case 'match': return AppColors.primary.withOpacity(0.15);
-      case 'like': return Colors.pink.withOpacity(0.1);
-      default: return AppColors.primary.withOpacity(0.1);
+      case 'announcement': return Colors.blue.withValues(alpha: 0.15);
+      case 'match': return AppColors.primary.withValues(alpha: 0.15);
+      case 'like': return Colors.pink.withValues(alpha: 0.1);
+      default: return AppColors.primary.withValues(alpha: 0.1);
     }
   }
 
@@ -356,7 +350,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case 'like': return const Color(0xFFFF6B8A);
       case 'message': return const Color(0xFF22C55E);
       case 'story_like': return const Color(0xFFEF4444);
-      default: return Colors.black.withOpacity(0.08);
+      default: return Colors.black.withValues(alpha: 0.08);
     }
   }
 
@@ -466,9 +460,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.black, width: 3)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         title: Text('TÜM BİLDİRİMLERİ SİL', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
-        content: Text('TÜM BİLDİRİMLER SİLİNECEK. BU İŞLEM GERİ ALINAMAZ.', style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.6), fontWeight: FontWeight.w700)),
+        content: Text('TÜM BİLDİRİMLER SİLİNECEK. BU İŞLEM GERİ ALINAMAZ.', style: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.6), fontWeight: FontWeight.w700)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

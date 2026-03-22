@@ -85,7 +85,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        border: Border.all(color: Colors.black, width: 4),
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -122,11 +122,9 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      border: Border.all(color: Colors.black, width: 2),
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                      ],
+                      boxShadow: [AppColors.neoShadowSmall],
                     ),
                     child: Text(
                       'SIFIRLA',
@@ -143,8 +141,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
             ),
           ),
 
-          const SizedBox(height: 16),
-          const Divider(color: Colors.black, height: 1, thickness: 4),
+          const Divider(color: Colors.black, height: 1, thickness: AppColors.neoBorderWidthSmallPixels),
 
           // Content
           Expanded(
@@ -261,12 +258,9 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                           decoration: BoxDecoration(
                             color: isSelected ? AppColors.primary : Colors.white,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.black, width: 3),
+                            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                             boxShadow: [
-                              BoxShadow(
-                                color: isSelected ? Colors.black : Colors.black,
-                                offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
-                              ),
+                              if (isSelected) AppColors.neoShadowSmall,
                             ],
                           ),
                           child: Row(
@@ -280,7 +274,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                               Text(
                                 goal['label']!.toUpperCase(),
                                 style: GoogleFonts.outfit(
-                                  color: Colors.black,
+                                  color: isSelected ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.w900,
                                   fontSize: 14,
                                 ),
@@ -325,12 +319,9 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                           decoration: BoxDecoration(
                             color: isSelected ? AppColors.blue : Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.black, width: 2),
+                            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                             boxShadow: [
-                              BoxShadow(
-                                color: Colors.black,
-                                offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
-                              ),
+                              if (isSelected) AppColors.neoShadowSmall,
                             ],
                           ),
                           child: Text(
@@ -382,9 +373,9 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
           // Apply Button
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
-              border: Border(top: BorderSide(color: Colors.black, width: 4)),
+              border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
             ),
             child: SafeArea(
               child: GestureDetector(
@@ -395,10 +386,8 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.black, width: 4),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: Center(
                     child: Text(
@@ -407,7 +396,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
                         fontWeight: FontWeight.w900,
                         fontSize: 20,
                         letterSpacing: 1,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -438,10 +427,8 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Text(
         age,
@@ -464,12 +451,9 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primary : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.black, width: 3),
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             boxShadow: [
-              BoxShadow(
-                color: Colors.black, 
-                offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
-              ),
+              if (isSelected) AppColors.neoShadowSmall,
             ],
           ),
           child: Column(
@@ -483,7 +467,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
               Text(
                 label,
                 style: GoogleFonts.outfit(
-                  color: Colors.black,
+                  color: isSelected ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w900,
                   fontSize: 14,
                 ),
@@ -507,10 +491,8 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [
@@ -543,7 +525,7 @@ class _AdvancedFiltersModalState extends State<AdvancedFiltersModal> {
               }
               onChanged(val);
             },
-            activeColor: Colors.black,
+            activeThumbColor: Colors.black,
             activeTrackColor: AppColors.primary,
             inactiveThumbColor: Colors.grey.shade600,
             inactiveTrackColor: Colors.grey.shade300,

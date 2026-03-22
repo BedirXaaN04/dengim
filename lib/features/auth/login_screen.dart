@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_theme.dart';
 import 'services/auth_service.dart';
 import 'register_screen.dart';
 import '../create_profile/create_profile_screen.dart';
@@ -76,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Colors.black, width: 2),
+          side: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
       ),
     );
@@ -97,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: BoxDecoration(
           color: AppColors.scaffold,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          border: const Border(top: BorderSide(color: Colors.black, width: 4)),
+          border: const Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         ),
         child: _EmailLoginForm(
           authService: _authService,
@@ -110,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.blue, // Neo Blue
+      backgroundColor: AppColors.scaffold, // Changed to pure/premium white background
       body: Stack(
         children: [
           // Dotted Background
@@ -135,19 +133,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(32),
-                          border: Border.all(color: Colors.black, width: 4),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black,
-                              offset: Offset(8, 8),
-                              blurRadius: 0,
-                            ),
-                          ],
+                          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                          boxShadow: [AppColors.neoShadowLarge],
                         ),
                         child: const Center(
                           child: Icon(
                             Icons.local_fire_department_rounded, 
-                            color: AppColors.primary, 
+                            color: Colors.black, 
                             size: 70,
                           ),
                         ),
@@ -157,22 +149,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black, width: 4),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black,
-                              offset: Offset(6, 6),
-                              blurRadius: 0,
-                            ),
-                          ],
+                          color: Colors.black, // Sleek black badge
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [AppColors.neoShadow],
                         ),
                         child: Text(
                           'DENGİM',
                           style: GoogleFonts.outfit(
                             fontSize: 48,
                             fontWeight: FontWeight.w900,
-                            color: Colors.black,
+                            color: Colors.white, // White text
                             letterSpacing: -2,
                           ),
                         ),
@@ -182,15 +168,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border: Border.all(color: Colors.black, width: 2),
+                          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black,
-                              offset: Offset(3, 3),
-                              blurRadius: 0,
-                            ),
-                          ],
+                          boxShadow: [AppColors.neoShadowSmall],
                         ),
                         child: Text(
                           'RUH EŞİNİ BUL.',
@@ -257,8 +237,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.4),
-                      border: Border.all(color: Colors.black, width: 2),
+                      color: Colors.white.withValues(alpha: 0.6),
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -302,15 +282,11 @@ class _LoginButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(4, 4),
-            blurRadius: 0,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(AppColors.neoRadius),
+        border: color == Colors.white 
+            ? Border.all(color: Color(0xFFEEEEEE), width: 1.0) 
+            : null, // No border needed if background is solid black
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Material(
         color: Colors.transparent,
@@ -401,9 +377,9 @@ class _EmailLoginFormState extends State<_EmailLoginForm> {
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: AppColors.red.withOpacity(0.1),
+              color: AppColors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 2),
+              border: Border.all(color: AppColors.red.withValues(alpha: 0.3), width: 1.0),
             ),
             child: Text(_error!, style: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w900)),
           ),
@@ -428,16 +404,15 @@ class _EmailLoginFormState extends State<_EmailLoginForm> {
           onPressed: _isLoading ? null : _login,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
-            foregroundColor: Colors.black,
+            foregroundColor: Colors.white, // White text on black button
             minimumSize: const Size(double.infinity, 64),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: const BorderSide(color: Colors.black, width: 3),
+              borderRadius: BorderRadius.circular(AppColors.neoRadius),
             ),
             elevation: 0,
           ),
           child: _isLoading 
-            ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 4)) 
+            ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)) 
             : Text('GİRİŞ YAP', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 20)),
         ),
         const SizedBox(height: 32),
@@ -450,7 +425,7 @@ class DottedPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black.withOpacity(0.1)
+      ..color = Colors.black.withValues(alpha: 0.1)
       ..strokeWidth = 2;
 
     const double gap = 24;

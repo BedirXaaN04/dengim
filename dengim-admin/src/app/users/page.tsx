@@ -256,18 +256,26 @@ export default function UsersPage() {
                                 )}
 
                                 {/* Stats Grid */}
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                                        <p className="text-[10px] font-bold text-white/30 uppercase mb-1 tracking-wider">Eşleşme</p>
-                                        <p className="text-xl font-bold text-white">{editingUser.matchCount || 0}</p>
+                                <div className="grid grid-cols-5 gap-3">
+                                    <div className="bg-white/5 rounded-2xl p-3 border border-white/5 text-center flex flex-col justify-center">
+                                        <p className="text-[9px] font-bold text-white/30 uppercase tracking-wider mb-1 line-clamp-1">Eşleşme</p>
+                                        <p className="text-lg font-bold text-white leading-none">{editingUser.matchCount || 0}</p>
                                     </div>
-                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                                        <p className="text-[10px] font-bold text-white/30 uppercase mb-1 tracking-wider">Mesaj</p>
-                                        <p className="text-xl font-bold text-white">{editingUser.messageCount || 0}</p>
+                                    <div className="bg-white/5 rounded-2xl p-3 border border-white/5 text-center flex flex-col justify-center">
+                                        <p className="text-[9px] font-bold text-white/30 uppercase tracking-wider mb-1 line-clamp-1">Mesaj</p>
+                                        <p className="text-lg font-bold text-white leading-none">{editingUser.messageCount || 0}</p>
                                     </div>
-                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
-                                        <p className="text-[10px] font-bold text-white/30 uppercase mb-1 tracking-wider">Rapor</p>
-                                        <p className="text-xl font-bold text-rose-500">{editingUser.reportCount || 0}</p>
+                                    <div className="bg-white/5 rounded-2xl p-3 border border-primary/20 bg-primary/5 text-center flex flex-col justify-center">
+                                        <p className="text-[9px] font-bold text-primary/60 uppercase tracking-wider mb-1 line-clamp-1">Takipçi</p>
+                                        <p className="text-lg font-bold text-white leading-none">{editingUser.followersCount || 0}</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-2xl p-3 border border-white/5 text-center flex flex-col justify-center">
+                                        <p className="text-[9px] font-bold text-white/30 uppercase tracking-wider mb-1 line-clamp-1">Takip</p>
+                                        <p className="text-lg font-bold text-white leading-none">{editingUser.followingCount || 0}</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-2xl p-3 border border-rose-500/20 bg-rose-500/5 text-center flex flex-col justify-center">
+                                        <p className="text-[9px] font-bold text-rose-500/60 uppercase tracking-wider mb-1 line-clamp-1">Rapor</p>
+                                        <p className="text-lg font-bold text-rose-500 leading-none">{editingUser.reportCount || 0}</p>
                                     </div>
                                 </div>
 
@@ -371,9 +379,15 @@ function UserCard({ user, selected, onSelect, onAction, onEdit, onView }: {
                                 <span className="material-symbols-outlined text-blue-400 text-[18px]">verified</span>
                             )}
                         </h4>
-                        <p className="text-white/40 text-xs font-medium">
-                            ID: {user.id.substring(0, 8)}... | {user.location?.city || 'Bilinmiyor'}
-                        </p>
+                        <div className="flex flex-col gap-0.5 mt-0.5">
+                            <p className="text-white/40 text-[11px] font-medium">
+                                ID: {user.id.substring(0, 8)}... | {user.location?.city || 'Bilinmiyor'}
+                            </p>
+                            <p className="text-white/30 text-[10px] flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[12px]">calendar_today</span>
+                                Kayıt: {formatRelativeTime(user.createdAt)}
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/utils/log_service.dart';
 import '../models/user_profile.dart';
+import '../../../core/services/notification_service.dart';
 
 class DiscoveryService {
   static final DiscoveryService _instance = DiscoveryService._internal();
@@ -153,7 +154,7 @@ class DiscoveryService {
             }
 
             // Relationship goal filter
-            if (relationshipGoal != null && relationshipGoal != 'all' && relationshipGoal!.isNotEmpty) {
+            if (relationshipGoal != null && relationshipGoal != 'all' && relationshipGoal.isNotEmpty) {
               if (profile.relationshipGoal != null && profile.relationshipGoal!.isNotEmpty) {
                 if (profile.relationshipGoal != relationshipGoal) return false;
               }
@@ -401,6 +402,18 @@ class DiscoveryService {
         'createdAt': FieldValue.serverTimestamp(),
         'isRead': false,
       });
+      
+      // REAL PUSH NOTIFICATION VIA NEXT.JS
+      await NotificationService().sendPushNotification(
+        targetUid: targetUid,
+        title: title,
+        body: body,
+        data: {
+          'type': type,
+          'senderId': _currentUser?.uid,
+          'clickAction': 'FLUTTER_NOTIFICATION_CLICK'
+        }
+      );
     } catch (e) {
       LogService.e("Notification delivery failed", e);
     }

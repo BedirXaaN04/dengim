@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -124,13 +123,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.black, width: 4),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black,
-                offset: Offset(8, 8),
-              ),
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowSmall],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -140,13 +134,11 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black, width: 4),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: const Icon(Icons.monetization_on_rounded, 
-                    color: Colors.black, size: 48),
+                    color: Colors.white, size: 48),
               ),
               const SizedBox(height: 32),
               Text(
@@ -165,10 +157,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                 decoration: BoxDecoration(
                   color: AppColors.green,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black, width: 3),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Text(
                   '+${CreditService.rewardWatchAd} KREDİ',
@@ -198,10 +188,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.black, width: 4),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: Center(
                     child: Text(
@@ -209,7 +197,7 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                       style: GoogleFonts.outfit(
                         fontWeight: FontWeight.w900,
                         fontSize: 20,
-                        color: Colors.black,
+                        color: Colors.white,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -259,23 +247,21 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.black, width: 2),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                      ],
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                      boxShadow: [AppColors.neoShadowSmall],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.monetization_on_rounded, 
-                            color: Colors.black, size: 16),
+                            color: Colors.white, size: 16),
                         const SizedBox(width: 6),
                         Text(
                           '${creditProvider.balance}',
                           style: GoogleFonts.outfit(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -329,13 +315,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
       decoration: BoxDecoration(
         color: AppColors.secondary,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.black, width: 4),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(6, 6),
-          ),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Column(
         children: [
@@ -373,10 +354,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.black, width: 3),
-              boxShadow: const [
-                BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-              ],
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: [AppColors.neoShadowSmall],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -414,13 +393,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
           decoration: BoxDecoration(
             color: canWatch ? AppColors.primary : Colors.grey.shade400,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.black, width: 4),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black,
-                offset: const Offset(6, 6),
-              ),
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowSmall],
           ),
           child: Column(
             children: [
@@ -428,12 +402,12 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                   ? const SizedBox(
                       width: 56, height: 56,
                       child: CircularProgressIndicator(
-                        color: Colors.black, strokeWidth: 5),
+                        color: Colors.white, strokeWidth: 5),
                     )
                   : Icon(
                       canWatch ? Icons.play_circle_filled_rounded : Icons.lock_clock,
                       size: 64,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
               const SizedBox(height: 16),
               Text(
@@ -441,7 +415,7 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                 style: GoogleFonts.outfit(
                   fontSize: 28,
                   fontWeight: FontWeight.w900,
-                  color: Colors.black,
+                  color: Colors.white,
                   letterSpacing: -1,
                 ),
               ),
@@ -452,7 +426,7 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                     : 'YARIN TEKRAR GEL!',
                 style: GoogleFonts.outfit(
                   fontSize: 16,
-                  color: Colors.black87,
+                  color: Colors.white70,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -515,12 +489,9 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
         decoration: BoxDecoration(
           color: claimed ? Colors.grey.shade300 : AppColors.green,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black, width: 4),
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black,
-              offset: claimed ? const Offset(2, 2) : const Offset(6, 6),
-            ),
+            if (!claimed) AppColors.neoShadowSmall,
           ],
         ),
         child: Row(
@@ -530,10 +501,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.black, width: 3),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                ],
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                boxShadow: [AppColors.neoShadowSmall],
               ),
               child: Icon(
                 claimed ? Icons.check_circle_rounded : Icons.calendar_today_rounded,
@@ -575,10 +544,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black, width: 3),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Text(
                   'AL',
@@ -661,10 +628,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [
@@ -673,7 +638,7 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.black, width: 3),
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             ),
             child: Icon(icon, color: Colors.black, size: 28),
           ),
@@ -707,23 +672,21 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
             decoration: BoxDecoration(
               color: AppColors.primary,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 3),
-              boxShadow: const [
-                BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-              ],
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: [AppColors.neoShadowSmall],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.monetization_on_rounded, 
-                    color: Colors.black, size: 18),
+                    color: Colors.white, size: 18),
                 const SizedBox(width: 6),
                 Text(
                   '$cost',
                   style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -765,10 +728,8 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [
@@ -794,7 +755,7 @@ class _WatchAndEarnScreenState extends State<WatchAndEarnScreen>
                       decoration: BoxDecoration(
                         color: AppColors.green,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.black, width: 2),
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                       ),
                       child: Text(
                         reward,

@@ -108,14 +108,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(32),
-                        border: Border.all(color: Colors.black, width: 4),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black,
-                            offset: Offset(8, 8),
-                            blurRadius: 0,
-                          ),
-                        ],
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                        boxShadow: [AppColors.neoShadowSmall],
                       ),
                       child: Center(
                         child: Icon(
@@ -134,14 +128,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(color: Colors.black, width: 3),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black,
-                          offset: Offset(4, 4),
-                          blurRadius: 0,
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                      boxShadow: [AppColors.neoShadowSmall],
                     ),
                     child: Text(
                       current.title.toUpperCase(),
@@ -161,16 +150,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.black, width: 3),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black,
-                          offset: Offset(4, 4),
-                          blurRadius: 0,
-                        ),
-                      ],
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                      boxShadow: [AppColors.neoShadowSmall],
                     ),
                     child: Text(
                       current.description,
@@ -204,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         shape: WidgetStatePropertyAll(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
-                            side: const BorderSide(color: Colors.black, width: 4),
+                            side: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                           ),
                         ),
                       ),
@@ -243,7 +226,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: 12,
       decoration: BoxDecoration(
         color: active ? Colors.black : Colors.transparent,
-        border: Border.all(color: Colors.black, width: 2),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.3), width: 1),
         borderRadius: BorderRadius.circular(6),
       ),
     );
@@ -268,7 +251,7 @@ class DottedPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black.withOpacity(0.1)
+      ..color = Colors.black.withValues(alpha: 0.1)
       ..strokeWidth = 2;
 
     const double gap = 24;

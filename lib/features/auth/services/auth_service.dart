@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../../../core/utils/log_service.dart';
 
 class AuthService {
@@ -84,9 +86,22 @@ class AuthService {
     try {
       final user = _auth.currentUser;
       if (user != null) {
+        // 1. Vercel uzerindeki API'ye silme istegi at
+        try {
+          final url = Uri.parse('https://dengim-admin.vercel.app/api/delete-account');
+          await http.post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'userId': user.uid})
+          );
+        } catch (e) {
+          LogService.e("Failed to trigger cascade delete API", e);
+        }
+        
+        // 2. Yerel oturumlari kapat (API Firebase'den sildigi icin sadece cikis yapiyoruz)
         await _googleSignIn.signOut();
-        await user.delete();
-        LogService.i("User account deleted.");
+        await _auth.signOut();
+        LogService.i("User account deleted via Next.js API.");
       }
     } catch (e) {
       LogService.e("Delete account error", e);
@@ -94,3 +109,4 @@ class AuthService {
     }
   }
 }
+

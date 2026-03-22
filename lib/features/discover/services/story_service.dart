@@ -35,7 +35,7 @@ class StoryService {
       final finalUserName = userName.isNotEmpty ? userName : (user.email?.split('@')[0] ?? 'Kullanıcı');
       final finalUserAvatar = userAvatar.isNotEmpty 
           ? userAvatar 
-          : 'https://api.dicebear.com/7.x/initials/png?seed=${finalUserName.substring(0, 1)}';
+          : 'https://ui-avatars.com/api/?name=${finalUserName.substring(0, 1)}&background=random&color=fff&size=128&font-size=0.4';
 
       // 2. Create Story Record in Firestore
       await _firestore.collection('stories').add({
@@ -79,7 +79,7 @@ class StoryService {
       final finalUserName = userName.isNotEmpty ? userName : (user.email?.split('@')[0] ?? 'Kullanıcı');
       final finalUserAvatar = userAvatar.isNotEmpty 
           ? userAvatar 
-          : 'https://api.dicebear.com/7.x/initials/png?seed=${finalUserName.substring(0, 1)}';
+          : 'https://ui-avatars.com/api/?name=${finalUserName.substring(0, 1)}&background=random&color=fff&size=128&font-size=0.4';
 
       // 2. Create Story Record in Firestore
       await _firestore.collection('stories').add({

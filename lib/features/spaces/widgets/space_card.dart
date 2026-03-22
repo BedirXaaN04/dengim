@@ -24,10 +24,8 @@ class SpaceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +40,7 @@ class SpaceCard extends StatelessWidget {
                   style: GoogleFonts.outfit(
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -66,7 +64,7 @@ class SpaceCard extends StatelessWidget {
                 space.description!.toUpperCase(),
                 style: GoogleFonts.outfit(
                   fontSize: 12,
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w700,
                   height: 1.4,
                 ),
@@ -104,22 +102,20 @@ class SpaceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.graphic_eq_rounded, size: 14, color: Colors.black),
+          const Icon(Icons.graphic_eq_rounded, size: 14, color: Colors.white),
           const SizedBox(width: 6),
           Text(
             'CANLI',
             style: GoogleFonts.outfit(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: Colors.black,
+              color: Colors.white,
               letterSpacing: 0.5,
             ),
           ),
@@ -143,14 +139,12 @@ class SpaceCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 2),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                ],
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                boxShadow: [AppColors.neoShadowSmall],
               ),
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: speakers[index].avatarUrl ?? 'https://api.dicebear.com/7.x/initials/png?seed=${speakers[index].name}',
+                  imageUrl: speakers[index].avatarUrl ?? 'https://ui-avatars.com/api/?name=${speakers[index].name}&background=random&color=fff&size=128&font-size=0.4',
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(color: Colors.black12),
                   errorWidget: (context, url, error) => const Icon(Icons.person, size: 18, color: Colors.black),
@@ -169,10 +163,8 @@ class SpaceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [

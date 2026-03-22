@@ -33,7 +33,7 @@ class ChatListItemData extends StatelessWidget {
         children: [
           SlidableAction(
             onPressed: (_) => onReply(message),
-            backgroundColor: AppColors.primary.withOpacity(0.8),
+            backgroundColor: AppColors.primary.withValues(alpha: 0.8),
             foregroundColor: Colors.black,
             icon: Icons.reply_rounded,
             label: 'Yanıtla',

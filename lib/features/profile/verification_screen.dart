@@ -1,7 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb; // YENİ
+import 'dart:io'; // Sadece mobil içindir. Web'de File Image hata vermemesi için kIsWeb ile saklanmalı
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/error_handler.dart';
 import '../auth/services/profile_service.dart';
@@ -14,7 +15,7 @@ class VerificationScreen extends StatefulWidget {
 }
 
 class _VerificationScreenState extends State<VerificationScreen> {
-  File? _selfieImage;
+  XFile? _selfieImage; // Değiştirildi
   bool _isUploading = false;
   final ImagePicker _picker = ImagePicker();
 
@@ -27,7 +28,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
     if (photo != null) {
       setState(() {
-        _selfieImage = File(photo.path);
+        _selfieImage = photo;
       });
     }
   }
@@ -38,7 +39,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     setState(() => _isUploading = true);
 
     try {
-      await ProfileService().requestVerification(XFile(_selfieImage!.path));
+      await ProfileService().requestVerification(_selfieImage!);
       
       if (mounted) {
         showDialog(
@@ -48,7 +49,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
-              side: const BorderSide(color: Colors.black, width: 4),
+              side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
             ),
             title: Text('BAŞVURU ALINDI ✅', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
             content: Text(
@@ -84,7 +85,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        shape: const Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        shape: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -108,12 +109,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
             Container(
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: Colors.black,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 4),
-                boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                boxShadow: [AppColors.neoShadow],
               ),
-              child: const Icon(Icons.verified_user_rounded, size: 60, color: Colors.black),
+              child: const Icon(Icons.verified_user_rounded, size: 60, color: Colors.white),
             ),
             const SizedBox(height: 32),
             Text(
@@ -145,10 +145,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.black, width: 4),
-                  boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.5),
+                  boxShadow: [AppColors.neoShadow],
                   image: DecorationImage(
-                    image: FileImage(_selfieImage!),
+                    image: kIsWeb ? NetworkImage(_selfieImage!.path) : FileImage(File(_selfieImage!.path)) as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -162,8 +162,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.black, width: 4),
-                    boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.5),
+                    boxShadow: [AppColors.neoShadow],
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -192,10 +192,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   label: Text("KAMERAYI AÇ", style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 16)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: const BorderSide(color: Colors.black, width: 3),
+                      borderRadius: BorderRadius.circular(AppColors.neoRadius),
                     ),
                     elevation: 0,
                   ),
@@ -211,8 +210,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         onPressed: _isUploading ? null : _takeSelfie,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
-                          side: const BorderSide(color: Colors.black, width: 3),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppColors.neoRadius)),
                         ),
                         child: Text("TEKRAR ÇEK", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
                       ),
@@ -226,15 +225,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         onPressed: _isUploading ? null : _submitVerification,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.black,
+                          foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: const BorderSide(color: Colors.black, width: 3),
+                            borderRadius: BorderRadius.circular(AppColors.neoRadius),
                           ),
                           elevation: 0,
                         ),
                         child: _isUploading 
-                          ? const CircularProgressIndicator(color: Colors.black)
+                          ? const CircularProgressIndicator(color: Colors.white)
                           : Text("GÖNDER", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
                       ),
                     ),

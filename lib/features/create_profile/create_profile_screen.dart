@@ -5,10 +5,8 @@ import '../../core/theme/app_colors.dart';
 import 'package:dengim/features/main/main_scaffold.dart'; 
 import '../auth/services/profile_service.dart';
 import '../../core/providers/user_provider.dart';
-import '../../core/utils/log_service.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({super.key});
@@ -178,7 +176,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         country: _countryController.text.trim(),
         interests: _selectedInterests,
         relationshipGoal: _selectedRelationshipGoal,
-        photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://api.dicebear.com/7.x/initials/png?seed=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}'],
+        photoUrls: photoUrls.isNotEmpty ? photoUrls : ['https://ui-avatars.com/api/?name=${_nameController.text.isNotEmpty ? _nameController.text[0] : "D"}&background=random&color=fff&size=128&font-size=0.4'],
         bio: _bioController.text.trim(),
         job: _jobController.text.trim(),
         education: _educationController.text.trim(),
@@ -210,7 +208,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         country: _countryController.text.trim().isNotEmpty ? _countryController.text.trim() : 'Dünya',
         interests: _selectedInterests,
         relationshipGoal: _selectedRelationshipGoal,
-        photoUrls: ['https://api.dicebear.com/7.x/initials/png?seed=${name[0]}'],
+        photoUrls: ['https://ui-avatars.com/api/?name=${name[0]}&background=random&color=fff&size=128&font-size=0.4'],
         bio: _bioController.text.trim(),
         job: _jobController.text.trim(),
         education: '',
@@ -256,7 +254,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         elevation: 0,
         centerTitle: true,
         toolbarHeight: 80,
-        shape: const Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        shape: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         leading: _currentPage > 0 
           ? IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
@@ -311,7 +309,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           height: 6,
           margin: const EdgeInsets.symmetric(horizontal: 2),
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : Colors.black.withOpacity(0.05),
+            color: isActive ? AppColors.primary : Colors.black.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(3),
             border: Border.all(color: Colors.black, width: 1),
           ),
@@ -323,9 +321,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget _buildBottomNavigation() {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black, width: 4)),
+        border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
       ),
       child: Row(
         children: [
@@ -337,8 +335,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   height: 60,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.black, width: 3),
+                    borderRadius: BorderRadius.circular(AppColors.neoRadius),
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: Center(
                     child: Text('GERİ', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black)),
@@ -355,14 +354,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 height: 60,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black, width: 3),
-                  boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                  borderRadius: BorderRadius.circular(AppColors.neoRadius),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Center(
                   child: Text(
                     _currentPage == _totalPages - 1 ? 'TAMAMLA' : 'İLERLE',
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black),
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white),
                   ),
                 ),
               ),
@@ -522,14 +520,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: const BorderSide(color: Colors.black, width: 4)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         title: Text('SONRA TAMAMLA?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: Text('PROFİLİNİ DAHA SONRA TAMAMLAYABİLİRSİN. ANCAK TAMAMLANMAMIŞ PROFİLLER DAHA AZ GÖRÜNÜRLÜK ALIR.', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w700)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text('KAPAT', style: GoogleFonts.outfit(color: AppColors.textSecondary, fontWeight: FontWeight.w900))),
           ElevatedButton(
             onPressed: () { Navigator.pop(ctx); _submitProfileMinimal(); },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.black, width: 2.5)), elevation: 0),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)), elevation: 0),
             child: Text('DEVAM ET', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
           ),
         ],
@@ -558,12 +556,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black),
             decoration: InputDecoration(
               hintText: placeholder,
-              hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.2)),
+              hintStyle: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.2)),
               filled: true,
               fillColor: Colors.white,
               contentPadding: const EdgeInsets.all(20),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.black, width: 3)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.black, width: 3)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 4)),
             ),
           ),
@@ -595,9 +593,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w800),
       decoration: InputDecoration(
         labelText: label, hintText: hint, filled: true, fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.black, width: 2.5)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.black, width: 2.5)),
-        labelStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.5), fontWeight: FontWeight.w900, fontSize: 11),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
+        labelStyle: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.5), fontWeight: FontWeight.w900, fontSize: 11),
       ),
       onChanged: (_) => setState(() {}),
     ));
@@ -615,12 +613,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: DropdownButtonFormField<String>(
-        value: _countryController.text.isEmpty ? null : _countryController.text,
+        initialValue: _countryController.text.isEmpty ? null : _countryController.text,
         style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w800),
         decoration: InputDecoration(
           filled: true, fillColor: Colors.white,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.black, width: 2.5)),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.black, width: 2.5)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         ),
         dropdownColor: Colors.white,
         isExpanded: true,
@@ -678,8 +676,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       onTap: () => setState(() => _selectedGender = label),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24),
-        decoration: BoxDecoration(color: isSelected ? AppColors.primary : Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.black, width: 3), boxShadow: [BoxShadow(color: Colors.black, offset: isSelected ? const Offset(2, 2) : const Offset(6, 6))]),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, color: Colors.black, size: 28), const SizedBox(width: 12), Text(label.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18))]),
+        decoration: BoxDecoration(color: isSelected ? AppColors.primary : Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: Color(0xFFEEEEEE), width: 1.0), boxShadow: [AppColors.neoShadowSmall]),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, color: isSelected ? Colors.white : Colors.black, size: 28), const SizedBox(width: 12), Text(label.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18, color: isSelected ? Colors.white : Colors.black))]),
       ),
     ));
   }
@@ -700,8 +698,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: BoxDecoration(color: isSelected ? AppColors.blue : Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.black, width: 3), boxShadow: [BoxShadow(color: Colors.black, offset: isSelected ? const Offset(2, 2) : const Offset(4, 4))]),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(interest['icon'] as IconData, size: 20, color: Colors.black), const SizedBox(width: 10), Text((interest['name'] as String).toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 14))]),
+              decoration: BoxDecoration(color: isSelected ? AppColors.primary : Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: Color(0xFFEEEEEE), width: 1.0), boxShadow: [AppColors.neoShadowSmall]),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(interest['icon'] as IconData, size: 20, color: isSelected ? Colors.white : Colors.black), const SizedBox(width: 10), Text((interest['name'] as String).toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 14, color: isSelected ? Colors.white : Colors.black))]),
             ),
           );
         }).toList(),
@@ -719,8 +717,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             onTap: () => setState(() => _selectedRelationshipGoal = goal['id']),
             child: Container(
               margin: const EdgeInsets.only(bottom: 16), padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: isSelected ? AppColors.secondary : Colors.white, borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.black, width: 3.5), boxShadow: [BoxShadow(color: Colors.black, offset: isSelected ? const Offset(2, 2) : const Offset(5, 5))]),
-              child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(goal['label']!.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18)), Text(goal['desc']!.toUpperCase(), style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.black54))])), if (isSelected) const Icon(Icons.check_circle_rounded, color: Colors.black, size: 28)]),
+              decoration: BoxDecoration(color: isSelected ? AppColors.primary : Colors.white, borderRadius: BorderRadius.circular(24), border: Border.all(color: Color(0xFFEEEEEE), width: 1.0), boxShadow: [AppColors.neoShadowSmall]),
+              child: Row(children: [Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(goal['label']!.toUpperCase(), style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 18, color: isSelected ? Colors.white : Colors.black)), Text(goal['desc']!.toUpperCase(), style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: isSelected ? Colors.white70 : Colors.black54))])), if (isSelected) const Icon(Icons.check_circle_rounded, color: Colors.white, size: 28)]),
             ),
           );
         }).toList(),

@@ -59,7 +59,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.1),
+                    AppColors.primary.withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                   radius: 1.2,
@@ -108,7 +108,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
@@ -161,7 +161,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -332,7 +332,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -346,7 +346,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
             onTap: () => Navigator.pop(context),
             icon: Icons.exit_to_app_rounded,
             label: 'AYRIL',
-            color: Colors.redAccent.withOpacity(0.1),
+            color: Colors.redAccent.withValues(alpha: 0.1),
             iconColor: Colors.redAccent,
           ),
 
@@ -366,7 +366,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
                   },
                   icon: Icons.front_hand_rounded,
                   label: 'EL KALDIR',
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   iconColor: AppColors.primary,
                 ),
               const SizedBox(width: 16),
@@ -375,7 +375,7 @@ class _SpaceDetailScreenState extends State<SpaceDetailScreen> {
                   // Paylaş
                 },
                 icon: Icons.ios_share_rounded,
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 iconColor: Colors.white70,
               ),
             ],

@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb; // YENİ
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -156,8 +158,15 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
         throw Exception('Ses kaydı alınamadı');
       }
       
-      final file = File(filePath);
-      final bytes = await file.readAsBytes();
+      Uint8List bytes;
+      if (kIsWeb) {
+         final xfile = XFile(filePath);
+         bytes = await xfile.readAsBytes();
+      } else {
+         final file = File(filePath);
+         bytes = await file.readAsBytes();
+      }
+      
       final audioUrl = await CloudinaryService.uploadAudioBytes(bytes);
       
       if (audioUrl != null) {
@@ -168,8 +177,11 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
           durationSeconds: duration,
         );
         
-        if (await file.exists()) {
-          await file.delete();
+        if (!kIsWeb) {
+            final file = File(filePath);
+            if (await file.exists()) {
+              await file.delete();
+            }
         }
         widget.onClearReply();
       } else {
@@ -204,24 +216,26 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
   }
 
   Widget _buildInputBar() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Colors.black, width: 4),
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
           IconButton(
             icon: _isUploading 
-                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
-                : const Icon(Icons.image, color: AppColors.primary),
+                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                : const Icon(Icons.image, color: Colors.black),
             onPressed: _isUploading ? null : _pickAndSendImage,
           ),
           IconButton(
-            icon: const Icon(Icons.mic, color: AppColors.primary),
+            icon: const Icon(Icons.mic, color: Colors.black),
             onPressed: _startRecording,
           ),
           Expanded(
@@ -237,16 +251,16 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
               },
               decoration: InputDecoration(
                 hintText: 'MESAJ YAZ...',
-                hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.w900, fontSize: 12),
+                hintStyle: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.3), fontWeight: FontWeight.w900, fontSize: 12),
                 filled: true,
                 fillColor: AppColors.scaffold,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Colors.black, width: 2),
+                  borderSide: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Colors.black, width: 2),
+                  borderSide: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -263,30 +277,32 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
             decoration: BoxDecoration(
               color: AppColors.primary,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
-              boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: [AppColors.neoShadowSmall],
             ),
             child: IconButton(
-              icon: const Icon(Icons.send_rounded, color: Colors.black),
+              icon: const Icon(Icons.send_rounded, color: Colors.white),
               onPressed: _sendMessage,
             ),
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildRecordingUI() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Colors.black, width: 4),
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
           IconButton(
             icon: const Icon(Icons.close_rounded, color: AppColors.red),
             onPressed: _cancelRecording,
@@ -298,7 +314,7 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
             decoration: BoxDecoration(
               color: AppColors.red,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 1.5),
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             ),
           ),
           const SizedBox(width: 12),
@@ -331,18 +347,18 @@ class _ChatInputWidgetState extends State<ChatInputWidget> {
              decoration: BoxDecoration(
                color: AppColors.primary,
                shape: BoxShape.circle,
-               border: Border.all(color: Colors.black, width: 2),
-               boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
+               border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+               boxShadow: [AppColors.neoShadowSmall],
              ),
              child: IconButton(
                icon: _isUploading 
-                   ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black)) 
-                   : const Icon(Icons.send_rounded, color: Colors.black),
+                   ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) 
+                   : const Icon(Icons.send_rounded, color: Colors.white),
                onPressed: _isUploading ? null : _stopAndSendRecording,
              ),
           ),
         ],
       ),
-    );
+    ));
   }
 }

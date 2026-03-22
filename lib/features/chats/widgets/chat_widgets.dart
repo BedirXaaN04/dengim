@@ -31,7 +31,7 @@ class ChatListItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
         decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.black, width: 1)),
+          border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         ),
         child: Row(
           children: [
@@ -44,10 +44,8 @@ class ChatListItem extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 2),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30),
@@ -68,7 +66,7 @@ class ChatListItem extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.green,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.black, width: 1.5),
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                       ),
                     ),
                   ),
@@ -97,7 +95,7 @@ class ChatListItem extends StatelessWidget {
                          _formatTime(chat.lastMessageTime),
                          style: GoogleFonts.outfit(
                            fontSize: 12,
-                           color: Colors.black.withOpacity(0.7),
+                           color: Colors.black.withValues(alpha: 0.7),
                            fontWeight: FontWeight.w800,
                          ),
                        ),
@@ -111,7 +109,7 @@ class ChatListItem extends StatelessWidget {
                            chat.lastMessage,
                            style: GoogleFonts.outfit(
                              fontSize: 13,
-                             color: Colors.black.withOpacity(0.6),
+                             color: Colors.black.withValues(alpha: 0.6),
                              fontWeight: chat.unreadCount > 0 ? FontWeight.w800 : FontWeight.w500,
                            ),
                            maxLines: 1,
@@ -124,14 +122,12 @@ class ChatListItem extends StatelessWidget {
                            decoration: BoxDecoration(
                              color: AppColors.primary,
                              borderRadius: BorderRadius.circular(8),
-                             border: Border.all(color: Colors.black, width: 1.5),
-                             boxShadow: const [
-                               BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                             ],
+                             border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                             boxShadow: [AppColors.neoShadowSmall],
                            ),
                            child: Text(
                              '${chat.unreadCount}',
-                             style: GoogleFonts.outfit(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w900),
+                             style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900),
                            ),
                          ),
                      ],
@@ -253,12 +249,12 @@ class _ChatBubbleState extends State<ChatBubble> {
               margin: EdgeInsets.fromLTRB(isMe ? 64 : 0, 4, isMe ? 0 : 64, 2),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
                 border: Border(
                   left: BorderSide(
                     color: isMe ? AppColors.primary : Colors.black,
-                    width: 3,
+                    width: AppColors.neoBorderWidthSmall,
                   ),
                 ),
               ),
@@ -306,19 +302,9 @@ class _ChatBubbleState extends State<ChatBubble> {
                   ),
                   border: Border.all(
                     color: Colors.black,
-                    width: 2,
+                    width: AppColors.neoBorderWidthSmall,
                   ),
-                  boxShadow: isMe ? [
-                    const BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(4, 4),
-                    )
-                  ] : [
-                    const BoxShadow(
-                      color: Colors.black,
-                      offset: Offset(2, 2),
-                    )
-                  ],
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Column(
                   crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -328,9 +314,9 @@ class _ChatBubbleState extends State<ChatBubble> {
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.black, width: 1.5),
+                          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -372,13 +358,13 @@ class _ChatBubbleState extends State<ChatBubble> {
                           _formatTime(widget.message.timestamp),
                           style: GoogleFonts.outfit(
                             fontSize: 11,
-                            color: Colors.black.withOpacity(0.7),
-                            fontWeight: FontWeight.w800,
+                            color: isMe ? Colors.white70 : Colors.black.withValues(alpha: 0.7),
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         if (isMe) ...[
                           const SizedBox(width: 4),
-                          _buildReadReceipt(),
+                          _buildReadReceipt(isMe),
                         ],
                       ],
                     ),
@@ -397,10 +383,8 @@ class _ChatBubbleState extends State<ChatBubble> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.black, width: 1.5),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                      ],
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2))],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -454,8 +438,8 @@ class _ChatBubbleState extends State<ChatBubble> {
           widget.message.content,
           style: GoogleFonts.outfit(
             fontSize: 15,
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+            color: isMe ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w500,
             height: 1.4,
           ),
         );
@@ -477,13 +461,13 @@ class _ChatBubbleState extends State<ChatBubble> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isMe ? Colors.black.withOpacity(0.15) : AppColors.primary,
+              color: isMe ? Colors.black.withValues(alpha: 0.15) : AppColors.primary,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             ),
             child: Icon(
               _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-              color: Colors.black,
+              color: isMe ? Colors.black : Colors.white,
               size: 24,
             ),
           ),
@@ -499,7 +483,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               Container(
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: FractionallySizedBox(
@@ -539,7 +523,7 @@ class _ChatBubbleState extends State<ChatBubble> {
   }
 
   /// Read Receipt Indicator
-  Widget _buildReadReceipt() {
+  Widget _buildReadReceipt(bool isMe) {
     // Üç durum: Gönderildi (✓), İletildi (✓✓), Okundu (✓✓ mavi)
     // ÖNEMLİ: Okundu bilgisi sadece Platinum üyeler için gösterilir
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -557,13 +541,13 @@ class _ChatBubbleState extends State<ChatBubble> {
     } else if (isRead && !isPlatinum) {
       // Platinum değilse ama okunduysa bile gri çift tık (iletildi gibi) göster
       icon = Icons.done_all; 
-      color = Colors.black38;
+      color = isMe ? Colors.white70 : Colors.black38;
     } else if (isSent) {
       icon = Icons.done; // ✓
-      color = Colors.black38; 
+      color = isMe ? Colors.white70 : Colors.black38; 
     } else {
       icon = Icons.schedule; 
-      color = Colors.black26; 
+      color = isMe ? Colors.white38 : Colors.black26; 
     }
     
     return Icon(icon, size: 14, color: color);

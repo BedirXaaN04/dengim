@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/providers/discovery_provider.dart';
-import '../../spaces/screens/spaces_screen.dart';
 import 'advanced_filters_modal.dart';
 import 'filter_bottom_sheet.dart'; 
 
@@ -30,7 +29,7 @@ class DiscoverHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -89,11 +88,6 @@ class DiscoverHeader extends StatelessWidget {
           // Right: Icons
           Row(
             children: [
-              _buildHeaderIcon(
-                Icons.graphic_eq_rounded,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SpacesScreen())),
-              ),
-              const SizedBox(width: 12),
               _buildHeaderIcon(
                 showSearchBar ? Icons.close : Icons.search_rounded,
                 onTap: onSearchToggle,

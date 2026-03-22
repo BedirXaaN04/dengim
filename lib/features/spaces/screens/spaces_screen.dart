@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -60,10 +59,8 @@ class _SpacesScreenState extends State<SpacesScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 2.5),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black, size: 18),
                 ),
@@ -71,12 +68,10 @@ class _SpacesScreenState extends State<SpacesScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.black, width: 2.5),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Row(
                   children: [
@@ -111,7 +106,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
             'CANLI SOHBETLERE KATILIN VEYA KENDİ ODANIZI OLUŞTURUN.',
             style: GoogleFonts.outfit(
               fontSize: 14,
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               fontWeight: FontWeight.w800,
               height: 1.4,
             ),
@@ -152,10 +147,8 @@ class _SpacesScreenState extends State<SpacesScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 3),
-              boxShadow: const [
-                BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-              ],
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: [AppColors.neoShadowSmall],
             ),
             child: const Icon(
               Icons.mic_none_rounded,
@@ -177,7 +170,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
             'İLK ODAYI SEN BAŞLATABİLİRSİN!',
             style: GoogleFonts.outfit(
               fontSize: 14,
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -191,8 +184,8 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
     // Sadece VIP Premium, Admin veya Moderatörler buton görebilir
     final canCreate = user.isPremium || 
-                     user.role == UserRole.admin || 
-                     user.role == UserRole.moderator;
+                     user.role == UserRole.admin.name || 
+                     user.role == UserRole.moderator.name;
 
     if (!canCreate) return null;
 
@@ -204,22 +197,20 @@ class _SpacesScreenState extends State<SpacesScreen> {
         decoration: BoxDecoration(
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.add_rounded, color: Colors.black, size: 24),
+            const Icon(Icons.add_rounded, color: Colors.white, size: 24),
             const SizedBox(width: 12),
             Text(
               'ODA BAŞLAT',
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w900,
                 fontSize: 14,
-                color: Colors.black,
+                color: Colors.white,
                 letterSpacing: 1.0,
               ),
             ),

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
@@ -56,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final name = profile?.name ?? 'Kullanıcı';
         final age = profile?.age ?? 18;
         final photoUrl = (profile?.photoUrls != null && profile!.photoUrls!.isNotEmpty)
-            ? profile!.photoUrls!.first
+            ? profile.photoUrls!.first
             : 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=500';
         final location = profile?.country ?? 'Konum Belirtilmedi';
         final bio = profile?.bio ?? 'Henüz bir biyografi eklenmemiş.';
@@ -170,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             location.toUpperCase(),
                             style: GoogleFonts.outfit(
                               fontSize: 14,
-                              color: Colors.black.withOpacity(0.6),
+                              color: Colors.black.withValues(alpha: 0.6),
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -205,33 +204,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildCreditAndTierCard(profile),
                       const SizedBox(height: 24),
 
-                      _buildActionBtn(
-                        icon: Icons.visibility_outlined,
-                        label: 'PROFİL ZİYARETÇİLERİ',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const VisitorsScreen()),
-                          );
-                        },
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildActionBtn(
+                              icon: Icons.visibility_outlined,
+                              label: 'ZİYARETÇİLER',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const VisitorsScreen()),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildActionBtn(
+                              icon: Icons.share_outlined,
+                              label: 'PAYLAŞ',
+                              onTap: () {
+                                if (profile != null) {
+                                  Share.share('DENGİM uygulamasında beni bul! Kullanıcı Adım: ${profile.name} \n\nHemen indir: https://dengimapp.com');
+                                }
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      _buildActionBtn(
-                        icon: Icons.share_outlined,
-                        label: 'PROFİLİ PAYLAŞ',
-                        onTap: () {
-                          if (profile != null) {
-                            Share.share('DENGİM uygulamasında beni bul! Kullanıcı Adım: ${profile.name} \n\nHemen indir: https://dengimapp.com');
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                       _buildActionBtn(
                         icon: Icons.logout,
                         label: 'ÇIKIŞ YAP',
-                        color: AppColors.red,
-                        textColor: Colors.black,
-                        borderColor: Colors.black,
+                        color: Colors.white,
+                        textColor: AppColors.textSecondary,
                         onTap: () async {
                           await AuthService().signOut();
                           if (context.mounted) {
@@ -265,10 +271,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.black, width: 2),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 20),
       ),
@@ -297,10 +301,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppColors.neoRadius),
-        border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Text(
         bio,
@@ -320,10 +322,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppColors.neoRadius),
-        border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Column(
         children: [
@@ -341,12 +341,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        border: isLast ? null : Border(bottom: BorderSide(color: Colors.black.withOpacity(0.1), width: 1)),
+        border: isLast ? null : Border(bottom: BorderSide(color: Colors.black.withValues(alpha: 0.1), width: 1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: GoogleFonts.outfit(fontSize: 14, color: Colors.black.withOpacity(0.5), fontWeight: FontWeight.w800)),
+          Text(label, style: GoogleFonts.outfit(fontSize: 14, color: Colors.black.withValues(alpha: 0.5), fontWeight: FontWeight.w800)),
           Text(value, style: GoogleFonts.outfit(fontSize: 14, color: Colors.black, fontWeight: FontWeight.w900)),
         ],
       ),
@@ -368,10 +368,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: color ?? Colors.white,
           borderRadius: BorderRadius.circular(AppColors.neoRadiusSmall),
-          border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -402,10 +400,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppColors.neoRadius),
-          border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -424,10 +420,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 3),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-                ],
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                boxShadow: [AppColors.neoShadowSmall],
               ),
               child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 36),
             ),
@@ -495,10 +489,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Row(
           children: [
@@ -507,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 2),
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
               ),
               child: const Icon(Icons.verified, color: Colors.black, size: 20),
             ),
@@ -530,7 +522,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: GoogleFonts.outfit(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -547,10 +539,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -579,7 +569,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.black, width: 2),
             ),
@@ -622,7 +612,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.black, width: 2),
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                   ),
                   child: Text(
                     'TAMAMLA',
@@ -648,10 +638,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: isPlatinum ? Colors.white : AppColors.primary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -686,10 +674,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.black, width: 3),
-            boxShadow: const [
-              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowSmall],
           ),
           child: Column(
             children: [
@@ -701,11 +687,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.primary,
+                            color: AppColors.primary, // Black
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black, width: 2),
+                            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                           ),
-                          child: const Icon(Icons.monetization_on_rounded, color: Colors.black, size: 22),
+                          child: const Icon(Icons.toll_rounded, color: Colors.white, size: 22),
                         ),
                         const SizedBox(width: 12),
                         Column(
@@ -724,7 +710,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: GoogleFonts.outfit(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.black.withOpacity(0.5),
+                                color: Colors.black.withValues(alpha: 0.5),
                               ),
                             ),
                           ],
@@ -768,7 +754,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: _buildMiniBtn(
                       icon: Icons.play_circle_filled_rounded,
                       label: 'İZLE & KAZAN',
-                      color: const Color(0xFF6C63FF),
+                      color: Colors.black,
+                      textColor: Colors.white,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const WatchAndEarnScreen()),
@@ -779,8 +766,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Expanded(
                     child: _buildMiniBtn(
                       icon: isPremium ? Icons.workspace_premium_rounded : Icons.star_rounded,
-                      label: isPremium ? tier.toUpperCase() : 'PREMIUM AL',
-                      color: AppColors.primary,
+                      label: isPremium ? tier.toUpperCase() : 'ÜYELİK',
+                      color: Colors.white,
+                      textColor: Colors.black,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const PremiumOfferScreen()),
@@ -801,6 +789,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String label,
     required Color color,
     required VoidCallback onTap,
+    Color textColor = Colors.black,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -809,19 +798,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.black, width: 2),
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.black, size: 18),
+            Icon(icon, color: textColor, size: 18),
             const SizedBox(width: 6),
             Text(
               label.toUpperCase(),
               style: GoogleFonts.outfit(
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
-                color: Colors.black,
+                color: textColor,
               ),
             ),
           ],

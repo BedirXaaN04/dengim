@@ -36,7 +36,7 @@ class DiscoverSearchBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(bottom: BorderSide(color: Colors.black, width: 2)),
+          border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         ),
         child: Column(
           children: [
@@ -57,7 +57,7 @@ class DiscoverSearchBar extends StatelessWidget {
                 style: GoogleFonts.outfit(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
                 decoration: InputDecoration(
                   hintText: 'PROFİL ARA...',
-                  hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.bold),
+                  hintStyle: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.3), fontSize: 16, fontWeight: FontWeight.bold),
                   prefixIcon: const Icon(Icons.search, color: Colors.black, size: 22),
                   suffixIcon: searchQuery.isNotEmpty
                       ? IconButton(
@@ -132,7 +132,7 @@ class DiscoverSearchBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.black.withOpacity(0.05))),
+          border: Border(bottom: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
         ),
         child: Row(
           children: [
@@ -142,7 +142,7 @@ class DiscoverSearchBar extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 2),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 2),
               ),
               child: ClipOval(
                 child: CachedNetworkImage(
@@ -187,7 +187,7 @@ class DiscoverSearchBar extends StatelessWidget {
                   Text(
                     '${user.age} • ${(user.location ?? user.country).toUpperCase()}',
                     style: GoogleFonts.outfit(
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withValues(alpha: 0.7),
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                     ),
@@ -197,7 +197,7 @@ class DiscoverSearchBar extends StatelessWidget {
             ),
             
             // Ok ikonu
-            Icon(Icons.chevron_right, color: Colors.black.withOpacity(0.4), size: 20),
+            Icon(Icons.chevron_right, color: Colors.black.withValues(alpha: 0.4), size: 20),
           ],
         ),
       ),

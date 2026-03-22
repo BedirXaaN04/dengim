@@ -103,8 +103,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       height: MediaQuery.of(context).size.height * 0.9,
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border(top: BorderSide(color: Colors.black, width: 4)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
       ),
       child: Stack(
         children: [
@@ -113,8 +113,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               // Header
               Container(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.black, width: 2.5)),
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
                 ),
                 child: Row(
                   children: [
@@ -183,14 +183,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             decoration: BoxDecoration(
                               color: AppColors.primary,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.black, width: 2),
+                              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                              boxShadow: [AppColors.neoShadowSmall],
                             ),
                             child: Text(
                               '${_settings.ageRange.start.toInt()} - ${_settings.ageRange.end.toInt()}',
                               style: GoogleFonts.outfit(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -209,14 +210,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             decoration: BoxDecoration(
                               color: AppColors.secondary,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.black, width: 2),
+                              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                              boxShadow: [AppColors.neoShadowSmall],
                             ),
                             child: Text(
                               '${_settings.distance.toInt()} KM',
                               style: GoogleFonts.outfit(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -259,10 +261,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black, width: 3),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(6, 6)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Center(
                   child: Text(
@@ -270,7 +270,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -288,7 +288,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       style: GoogleFonts.outfit(
         fontSize: 14,
         fontWeight: FontWeight.w900,
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withValues(alpha: 0.4),
         letterSpacing: 2.0,
       ),
     );
@@ -303,10 +303,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 2.5),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 22),
       ),
@@ -323,9 +321,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primary : Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black, width: 2.5),
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             boxShadow: [
-              BoxShadow(color: Colors.black, offset: isSelected ? const Offset(1, 1) : const Offset(4, 4)),
+              if (isSelected) AppColors.neoShadowSmall,
             ],
           ),
           child: Center(
@@ -334,7 +332,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               style: GoogleFonts.outfit(
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
-                color: Colors.black,
+                color: isSelected ? Colors.white : Colors.black,
               ),
             ),
           ),
@@ -393,10 +391,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 2.5),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [
@@ -405,9 +401,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             decoration: BoxDecoration(
               color: AppColors.primary,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: [AppColors.neoShadowSmall],
             ),
-            child: const Icon(Icons.location_on, color: Colors.black),
+            child: const Icon(Icons.location_on, color: Colors.white),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -464,15 +461,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             decoration: BoxDecoration(
               color: isSelected ? AppColors.primary : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 2),
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
               boxShadow: [
-                BoxShadow(color: Colors.black, offset: isSelected ? const Offset(1, 1) : const Offset(3, 3)),
+                if (isSelected) AppColors.neoShadowSmall,
               ],
             ),
             child: Text(
               interest.toUpperCase(),
               style: GoogleFonts.outfit(
-                color: Colors.black,
+                color: isSelected ? Colors.white : Colors.black,
                 fontWeight: FontWeight.w900,
                 fontSize: 12,
               ),

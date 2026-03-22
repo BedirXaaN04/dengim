@@ -19,8 +19,8 @@ class LoadingShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.white.withOpacity(0.05),
-      highlightColor: Colors.white.withOpacity(0.1),
+      baseColor: Colors.white.withValues(alpha: 0.05),
+      highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Container(
         height: height,
         width: width,
@@ -111,7 +111,7 @@ class EmptyStateWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 80, color: Colors.white.withOpacity(0.15)),
+            Icon(icon, size: 80, color: Colors.white.withValues(alpha: 0.15)),
             const SizedBox(height: 24),
             Text(
               title,
@@ -119,7 +119,7 @@ class EmptyStateWidget extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
               ),
             ),
             if (subtitle != null) ...[
@@ -129,7 +129,7 @@ class EmptyStateWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
-                  color: Colors.white.withOpacity(0.4),
+                  color: Colors.white.withValues(alpha: 0.4),
                 ),
               ),
             ],
@@ -177,7 +177,7 @@ class ErrorStateWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red.withOpacity(0.5)),
+            Icon(Icons.error_outline, size: 64, color: Colors.red.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
             Text(
               'Bir hata oluştu',
@@ -192,7 +192,7 @@ class ErrorStateWidget extends StatelessWidget {
               Text(
                 message!,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               ),
             ],
             if (onRetry != null) ...[
@@ -202,7 +202,7 @@ class ErrorStateWidget extends StatelessWidget {
                 icon: const Icon(Icons.refresh, color: Colors.white),
                 label: const Text('Tekrar Dene', style: TextStyle(color: Colors.white)),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.white.withOpacity(0.3)),
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
               ),

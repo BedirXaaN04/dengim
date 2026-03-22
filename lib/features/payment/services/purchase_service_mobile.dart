@@ -1,5 +1,6 @@
 // Mobile implementation for PurchaseService
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb; // YENİ
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -13,6 +14,8 @@ class PurchaseService {
   PurchaseService._internal();
 
   Future<void> init() async {
+    if (kIsWeb) return; // Web support for RevenueCat is limited/different
+
     await Purchases.setLogLevel(LogLevel.debug);
 
     PurchasesConfiguration configuration;
@@ -36,6 +39,7 @@ class PurchaseService {
   }
 
   Future<void> logIn(String userId) async {
+    if (kIsWeb) return;
     try {
       await Purchases.logIn(userId);
     } catch (e) {
@@ -44,10 +48,12 @@ class PurchaseService {
   }
 
   Future<void> logOut() async {
+    if (kIsWeb) return;
     await Purchases.logOut();
   }
 
   Future<Offerings?> getOfferings() async {
+    if (kIsWeb) return null;
     try {
       Offerings offerings = await Purchases.getOfferings();
       if (offerings.current != null) {
@@ -62,6 +68,7 @@ class PurchaseService {
   }
 
   Future<bool> purchasePackage(Package package) async {
+    if (kIsWeb) return false;
     try {
       CustomerInfo customerInfo = await Purchases.purchasePackage(package);
       return customerInfo.entitlements.all[entitlementId]?.isActive ?? false;
@@ -75,6 +82,7 @@ class PurchaseService {
   }
 
   Future<bool> checkPremiumStatus() async {
+    if (kIsWeb) return false;
     try {
       CustomerInfo customerInfo = await Purchases.getCustomerInfo();
       return customerInfo.entitlements.all[entitlementId]?.isActive ?? false;
@@ -85,6 +93,7 @@ class PurchaseService {
   }
 
   Future<bool> restorePurchases() async {
+    if (kIsWeb) return false;
     try {
       CustomerInfo customerInfo = await Purchases.restorePurchases();
       return customerInfo.entitlements.all[entitlementId]?.isActive ?? false;

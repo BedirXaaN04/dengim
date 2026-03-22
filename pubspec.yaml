@@ -1,7 +1,7 @@
 name: dengim
 description: DENGİM - Modern Premium Tanışma Uygulaması
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ^3.5.0
@@ -43,7 +43,7 @@ dependencies:
   # Reklamlar (Admob)
   google_mobile_ads: ^5.0.0
   
-  # Ücretsiz Harita - OpenStreetMap (API key gerektirmez!)
+  # Ücretsiz Harita - OpenStreetMap
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
   geolocator: ^13.0.0
@@ -62,7 +62,7 @@ dependencies:
   logger: ^2.4.0
   intl: ^0.19.0
   url_launcher: ^6.2.4
-  http: ^1.2.0
+  http: ^1.6.0
   share_plus: ^10.1.4
 
   # Animasyonlar
@@ -91,32 +91,42 @@ dependency_overrides:
   record_linux: ^1.3.0
   record_android: 1.3.0
 
-flutter_icons:
+# ═══════════════════════════════════════════════════════
+# LAUNCHER ICONS — B&W Modern (Adaptive Icon + Round)
+# ═══════════════════════════════════════════════════════
+flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon.png"
-  min_sdk_android: 21 # android min sdk min:16, default 21
+  min_sdk_android: 21
+  # Adaptive Icon (Android 8.0+) — black background, icon as foreground
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/icon.png"
+  # Round icon (some Android launchers use this)
+  image_path_android: "assets/icon.png"
+  remove_alpha_ios: true
   web:
     generate: true
     image_path: "assets/icon.png"
-    background_color: "#hex_code"
-    theme_color: "#hex_code"
-  windows:
-    generate: true
-    image_path: "assets/icon.png"
-    icon_size: 48 # min:48, max:256, default: 48
+    background_color: "#000000"
+    theme_color: "#000000"
 
+# ═══════════════════════════════════════════════════════
+# NATIVE SPLASH — Pure White (matches our B&W design)
+# ═══════════════════════════════════════════════════════
 flutter_native_splash:
-  color: "#FEEAE6" # Logonun arka planındaki o tatlı pembe tonu
+  color: "#FFFFFF"
+  color_dark: "#000000"
   image: "assets/icon.png"
   android_12:
     image: "assets/icon.png"
-    color: "#FEEAE6"
+    icon_background_color: "#000000"
+    color: "#000000"
   web: false
+  fullscreen: false
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
     - assets/demo_profiles/
-

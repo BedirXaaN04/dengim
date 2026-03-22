@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -83,10 +82,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.black, width: 4),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(8, 8)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -102,10 +99,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 3),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: ClipOval(
                     child: CachedNetworkImage(
@@ -142,7 +137,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                             style: GoogleFonts.outfit(
                               fontSize: 12, 
                               fontWeight: FontWeight.w900,
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                             )
                           ),
                         ],
@@ -174,15 +169,13 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           color: AppColors.primary,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.black, width: 3),
-                          boxShadow: const [
-                            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                          ],
+                          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                          boxShadow: [AppColors.neoShadowSmall],
                         ),
                         child: Center(
                           child: Text(
                             'PROFİLE GİT', 
-                            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.black)
+                            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white)
                           ),
                         ),
                       ),
@@ -196,10 +189,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.black, width: 3),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                        ],
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                        boxShadow: [AppColors.neoShadowSmall],
                       ),
                       child: const Icon(Icons.close, color: Colors.black, size: 28),
                     ),
@@ -246,7 +237,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           0.0, 0.0, 0.0, 1.0, 0.0,
                         ]),
                         child: ColorFiltered(
-                          colorFilter: ColorFilter.mode(const Color(0xFF0F172A).withOpacity(0.6), BlendMode.multiply),
+                          colorFilter: ColorFilter.mode(const Color(0xFF0F172A).withValues(alpha: 0.6), BlendMode.multiply),
                           child: tileWidget,
                         ),
                       );
@@ -287,7 +278,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-                      border: Border.all(color: Colors.black, width: 4),
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                     ),
                     child: SingleChildScrollView(
                       controller: scrollController,
@@ -300,7 +291,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                             Center(
                               child: Container(
                                 width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
-                                decoration: BoxDecoration(color: Colors.black.withOpacity(0.2), borderRadius: BorderRadius.circular(2)),
+                                decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
                               ),
                             ),
                             
@@ -314,12 +305,10 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                   decoration: BoxDecoration(
                                     color: AppColors.primary, 
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.black, width: 2),
-                                    boxShadow: const [
-                                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                                    ],
+                                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                                    boxShadow: [AppColors.neoShadowSmall],
                                   ),
-                                  child: Text('${provider.nearbyUsers.length} KİŞİ', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 10)),
+                                  child: Text('${provider.nearbyUsers.length} KİŞİ', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 10)),
                                 ),
                               ],
                             ),
@@ -335,7 +324,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                       activeTrackColor: Colors.black,
                                       inactiveTrackColor: Colors.black12,
                                       thumbColor: AppColors.primary,
-                                      overlayColor: AppColors.primary.withOpacity(0.2),
+                                      overlayColor: AppColors.primary.withValues(alpha: 0.2),
                                       trackHeight: 4,
                                       thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10, elevation: 2),
                                     ),
@@ -391,7 +380,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         color: AppColors.primary,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.black, width: 3),
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
       ),
     );
   }
@@ -405,10 +394,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 2.5),
-            boxShadow: const [
-              BoxShadow(color: Colors.black, offset: Offset(3, 3))
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowSmall],
           ),
           child: ClipOval(
             child: CachedNetworkImage(
@@ -425,10 +412,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             color: Colors.white, 
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.black, width: 2),
-            boxShadow: const [
-              BoxShadow(color: Colors.black, offset: Offset(2, 2))
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowSmall],
           ),
           child: Text(
             user.name.toUpperCase(), 
@@ -447,10 +432,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -472,11 +455,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Colors.black,
-                  width: 2,
+                  width: AppColors.neoBorderWidthSmall,
                 ),
-                boxShadow: activeCount > 0 ? const [
-                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                ] : null,
+                boxShadow: activeCount > 0 ? [AppColors.neoShadowSmall] : null,
               ),
               child: Row(
                 children: [
@@ -497,7 +478,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     style: GoogleFonts.outfit(
                       fontSize: 10, 
                       fontWeight: FontWeight.w900, 
-                      color: Colors.black,
+                      color: activeCount > 0 ? Colors.white : Colors.black,
                     ),
                   ),
                 ],
@@ -539,10 +520,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 24),
       ),

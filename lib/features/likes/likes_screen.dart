@@ -8,9 +8,7 @@ import 'package:provider/provider.dart';
 import '../../core/providers/likes_provider.dart';
 import '../../core/providers/badge_provider.dart';
 import '../../core/providers/user_provider.dart';
-import '../../core/services/config_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:shimmer/shimmer.dart';
 
 
 class LikesScreen extends StatefulWidget {
@@ -183,24 +181,28 @@ class _LikesScreenState extends State<LikesScreen> {
                               child: Column(
                                 children: [
                                   Container(
-                                    width: 80,
-                                    height: 80,
+                                    width: 120,
+                                    height: 120,
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: AppColors.surfaceLight,
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.black, width: 2),
-                                      boxShadow: const [
-                                        BoxShadow(color: Colors.black, offset: Offset(3, 3)),
+                                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 1.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.primary.withValues(alpha: 0.1),
+                                          blurRadius: 20,
+                                          spreadRadius: 5,
+                                        ),
                                       ],
                                     ),
-                                    child: const Icon(Icons.favorite_border_rounded, size: 40, color: Colors.black),
+                                    child: const Icon(Icons.favorite_rounded, size: 60, color: AppColors.primary),
                                   ),
-                                  const SizedBox(height: 24),
+                                  const SizedBox(height: 32),
                                   Text(
                                     "PROFİLİNİ GÜÇLENDİR 💪",
                                     style: GoogleFonts.outfit(
                                       color: Colors.black, 
-                                      fontSize: 18,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
@@ -209,9 +211,9 @@ class _LikesScreenState extends State<LikesScreen> {
                                     "Daha fazla fotoğraf ekle ve\nilgi çekici bir biyografi yaz.",
                                     textAlign: TextAlign.center,
                                     style: GoogleFonts.outfit(
-                                      color: Colors.black.withOpacity(0.5), 
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.textSecondary, 
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
                                       height: 1.4,
                                     ),
                                   ),
@@ -241,26 +243,25 @@ class _LikesScreenState extends State<LikesScreen> {
             children: [
               Expanded(
                 child: Container(
-                  height: 52,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black, width: 2),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                    ],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: TextField(
                     controller: _searchController,
                     onChanged: (val) => setState(() => _searchQuery = val),
                     enabled: isPremium,
-                    style: GoogleFonts.outfit(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                    textAlignVertical: TextAlignVertical.center,
+                    style: GoogleFonts.outfit(color: Colors.black, fontSize: 13, fontWeight: FontWeight.w600),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search, color: Colors.black, size: 20),
+                      prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary, size: 20),
                       hintText: "BEĞENİLERDE ARA...",
-                      hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontSize: 13, fontWeight: FontWeight.bold),
+                      hintStyle: GoogleFonts.outfit(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      isCollapsed: true,
                     ),
                   ),
                 ),
@@ -275,23 +276,21 @@ class _LikesScreenState extends State<LikesScreen> {
                   }
                 },
                 child: Container(
-                  height: 52,
+                  height: 48,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: _onlyOnline ? AppColors.green : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black, width: 2),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                    ],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: Center(
                     child: Text(
                       "ONLINE",
                       style: GoogleFonts.outfit(
-                        color: Colors.black,
+                        color: _onlyOnline ? Colors.white : Colors.black,
                         fontSize: 12,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -353,10 +352,8 @@ class _LikesScreenState extends State<LikesScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.black, width: 2.5),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-                        ],
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                        boxShadow: [AppColors.neoShadowSmall],
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(13),
@@ -391,9 +388,9 @@ class _LikesScreenState extends State<LikesScreen> {
   Widget _buildTopBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -423,10 +420,8 @@ class _LikesScreenState extends State<LikesScreen> {
         decoration: BoxDecoration(
           color: color ?? Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 2.5),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 22),
       ),
@@ -457,12 +452,8 @@ class _LikesScreenState extends State<LikesScreen> {
         decoration: BoxDecoration(
           color: isActive ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 2.5),
-          boxShadow: isActive ? const [
-            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-          ] : const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Text(
           title,
@@ -470,7 +461,7 @@ class _LikesScreenState extends State<LikesScreen> {
           style: GoogleFonts.outfit(
             fontSize: 10,
             fontWeight: FontWeight.w900,
-            color: Colors.black,
+            color: isActive ? Colors.white : Colors.black,
             letterSpacing: 0.5,
           ),
         ),
@@ -485,24 +476,28 @@ class _LikesScreenState extends State<LikesScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 100,
-            height: 100,
+            width: 120,
+            height: 120,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surfaceLight,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
-              boxShadow: const [
-                BoxShadow(color: Colors.black, offset: Offset(4, 4)),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 1.0),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  spreadRadius: 5,
+                ),
               ],
             ),
-            child: const Icon(Icons.favorite, size: 50, color: AppColors.red),
+            child: const Icon(Icons.favorite_rounded, size: 60, color: AppColors.primary),
           ),
           const SizedBox(height: 32),
           Text(
             "HENÜZ EŞLEŞME YOK",
             style: GoogleFonts.outfit(
               color: Colors.black,
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -511,7 +506,7 @@ class _LikesScreenState extends State<LikesScreen> {
             "Keşfet'e gidip insanları beğenmeye başla.\nKarşılıklı beğeniler eşleşme oluşturur!",
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               fontSize: 12,
               fontWeight: FontWeight.w800,
               height: 1.5,
@@ -532,10 +527,8 @@ class _LockedLikeCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(17),
@@ -561,14 +554,14 @@ class _LockedLikeCard extends StatelessWidget {
                   child: Icon(
                     Icons.person_rounded,
                     size: 60,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                   ),
                 ),
               ),
               // Blur overlay
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.35),
+                  color: Colors.black.withValues(alpha: 0.35),
                 ),
               ),
               // Lock icon and text
@@ -580,10 +573,8 @@ class _LockedLikeCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.black, width: 2),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                      ],
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                      boxShadow: [AppColors.neoShadowSmall],
                     ),
                     child: const Icon(Icons.lock_outline_rounded, color: Colors.black, size: 28),
                   ),
@@ -629,10 +620,8 @@ class _UnlockedLikeCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(17),
@@ -653,9 +642,9 @@ class _UnlockedLikeCard extends StatelessWidget {
                 right: 0,
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border(top: BorderSide(color: Colors.black, width: 3)),
+                    border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -672,27 +661,27 @@ class _UnlockedLikeCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (user.location != null) ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on_rounded, color: Colors.black, size: 10),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                user.location!.toUpperCase(),
-                                style: GoogleFonts.outfit(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.black.withOpacity(0.5),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                      ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_rounded, color: Colors.black, size: 10),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              user.location.toUpperCase(),
+                              style: GoogleFonts.outfit(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black.withValues(alpha: 0.5),
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
+                    ],
                       if (showActions) ...[
                         const SizedBox(height: 12),
                         Row(
@@ -705,12 +694,10 @@ class _UnlockedLikeCard extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: AppColors.red,
                                     borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.black, width: 2),
-                                    boxShadow: const [
-                                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                                    ],
+                                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                                    boxShadow: [AppColors.neoShadowSmall],
                                   ),
-                                  child: const Icon(Icons.close_rounded, color: Colors.black, size: 22),
+                                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 22),
                                 ),
                               ),
                             ),
@@ -723,12 +710,10 @@ class _UnlockedLikeCard extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: AppColors.primary,
                                     borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.black, width: 2),
-                                    boxShadow: const [
-                                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                                    ],
+                                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                                    boxShadow: [AppColors.neoShadowSmall],
                                   ),
-                                  child: const Icon(Icons.favorite_rounded, color: Colors.black, size: 22),
+                                  child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 22),
                                 ),
                               ),
                             ),
@@ -751,7 +736,7 @@ class _UnlockedLikeCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 1.5),
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                   ),
                   child: const Icon(Icons.favorite, color: Colors.red, size: 12),
                 ),
@@ -824,10 +809,10 @@ class _UnlockedLikeCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            border: const Border(
-              top: BorderSide(color: Colors.black, width: 3),
-              left: BorderSide(color: Colors.black, width: 3),
-              right: BorderSide(color: Colors.black, width: 3),
+            border: Border(
+              top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+              left: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+              right: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
             ),
           ),
           child: SingleChildScrollView(
@@ -840,7 +825,7 @@ class _UnlockedLikeCard extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -850,10 +835,8 @@ class _UnlockedLikeCard extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.black, width: 3),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(17),
@@ -886,23 +869,23 @@ class _UnlockedLikeCard extends StatelessWidget {
                         ),
                       ),
                       
-                      if (user.location != null) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on, size: 18, color: Colors.black),
-                            const SizedBox(width: 4),
-                            Text(
-                              user.location!.toUpperCase(),
-                              style: GoogleFonts.outfit(
-                                fontSize: 14,
-                                color: Colors.black.withOpacity(0.5),
-                                fontWeight: FontWeight.w800,
-                              ),
+                      ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on, size: 18, color: Colors.black),
+                          const SizedBox(width: 4),
+                          Text(
+                            user.location.toUpperCase(),
+                            style: GoogleFonts.outfit(
+                              fontSize: 14,
+                              color: Colors.black.withValues(alpha: 0.5),
+                              fontWeight: FontWeight.w800,
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
+                    ],
                       
                       if (user.bio != null && user.bio!.isNotEmpty) ...[
                         const SizedBox(height: 20),
@@ -919,7 +902,7 @@ class _UnlockedLikeCard extends StatelessWidget {
                           user.bio!,
                           style: GoogleFonts.outfit(
                             fontSize: 14,
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withValues(alpha: 0.6),
                             fontWeight: FontWeight.w600,
                             height: 1.5,
                           ),
@@ -943,10 +926,8 @@ class _UnlockedLikeCard extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: Colors.red,
                                     borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: Colors.black, width: 3),
-                                    boxShadow: const [
-                                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-                                    ],
+                                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                                    boxShadow: [AppColors.neoShadowSmall],
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -971,17 +952,15 @@ class _UnlockedLikeCard extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: AppColors.primary,
                                     borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: Colors.black, width: 3),
-                                    boxShadow: const [
-                                      BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-                                    ],
+                                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                                    boxShadow: [AppColors.neoShadowSmall],
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.favorite, color: Colors.black),
+                                      const Icon(Icons.favorite, color: Colors.white),
                                       const SizedBox(width: 8),
-                                      Text("EŞLEŞ", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 14)),
+                                      Text("EŞLEŞ", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
                                     ],
                                   ),
                                 ),
@@ -1027,10 +1006,8 @@ class _ActionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.black, width: isMain ? 2.5 : 2),
-          boxShadow: isMain ? const [
-            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-          ] : null,
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: isMain ? [AppColors.neoShadowSmall] : null,
         ),
         child: Icon(icon, color: Colors.black, size: isMain ? 22 : 18),
       ),

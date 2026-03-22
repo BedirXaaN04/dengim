@@ -115,7 +115,7 @@ class ProfileService {
       throw Exception("Upload returned null");
     } catch (e) {
       LogService.e("Upload failed (XFile), reverting to placeholder. UserId: $userId", e);
-      return 'https://api.dicebear.com/7.x/initials/png?seed=${userId}';
+      return 'https://ui-avatars.com/api/?name=${userId}&background=random&color=fff&size=128&font-size=0.4';
     }
   }
 
@@ -139,7 +139,7 @@ class ProfileService {
       throw Exception("Byte upload returned null");
     } catch (e) {
       LogService.e("Upload failed (Bytes), reverting to placeholder. UserId: $userId", e);
-      return 'https://api.dicebear.com/7.x/initials/png?seed=${userId}';
+      return 'https://ui-avatars.com/api/?name=${userId}&background=random&color=fff&size=128&font-size=0.4';
     }
   }
 
@@ -333,6 +333,62 @@ class ProfileService {
     } catch (e) {
       LogService.e("Search users error", e);
       return [];
+    }
+  }
+
+  /// Takip Et
+  Future<void> followUser(String targetUid) async {
+    final currentUid = _currentUser?.uid;
+    if (currentUid == null || currentUid == targetUid) return;
+
+    try {
+      final batch = _firestore.batch();
+      
+      // 1. Kendi following listeme ekle
+      final currentUserRef = _firestore.collection('users').doc(currentUid);
+      batch.update(currentUserRef, {
+        'following': FieldValue.arrayUnion([targetUid])
+      });
+      
+      // 2. Karşı tarafın followers listesine ekle
+      final targetUserRef = _firestore.collection('users').doc(targetUid);
+      batch.update(targetUserRef, {
+        'followers': FieldValue.arrayUnion([currentUid])
+      });
+
+      await batch.commit();
+      LogService.i("User $currentUid started following $targetUid");
+    } catch (e) {
+      LogService.e("Follow user error", e);
+      rethrow;
+    }
+  }
+
+  /// Takipten Çık
+  Future<void> unfollowUser(String targetUid) async {
+    final currentUid = _currentUser?.uid;
+    if (currentUid == null || currentUid == targetUid) return;
+
+    try {
+      final batch = _firestore.batch();
+      
+      // 1. Kendi following listemden çıkar
+      final currentUserRef = _firestore.collection('users').doc(currentUid);
+      batch.update(currentUserRef, {
+        'following': FieldValue.arrayRemove([targetUid])
+      });
+      
+      // 2. Karşı tarafın followers listesinden çıkar
+      final targetUserRef = _firestore.collection('users').doc(targetUid);
+      batch.update(targetUserRef, {
+        'followers': FieldValue.arrayRemove([currentUid])
+      });
+
+      await batch.commit();
+      LogService.i("User $currentUid unfollowed $targetUid");
+    } catch (e) {
+      LogService.e("Unfollow user error", e);
+      rethrow;
     }
   }
 }

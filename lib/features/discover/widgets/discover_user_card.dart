@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -42,21 +41,14 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
     final showLike = widget.percentX > 0.2;
     final showNope = widget.percentX < -0.2;
 
-    return AspectRatio(
-      aspectRatio: 3.8 / 5,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Container(
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.black, width: 4),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black,
-                offset: Offset(8, 8),
-              ),
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowLarge],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
@@ -64,7 +56,6 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
               fit: StackFit.expand,
               children: _buildStackChildren(showLike, showNope),
             ),
-          ),
         ),
       ),
     );
@@ -106,7 +97,7 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
                 margin: const EdgeInsets.only(right: 8),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.8),
+                  color: AppColors.primary.withValues(alpha: 0.8),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 16),
@@ -116,10 +107,8 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black, width: 2),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                ],
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                boxShadow: [AppColors.neoShadowSmall],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -165,8 +154,8 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
                   shape: BoxShape.circle,
                   color: _currentPhotoIndex == index
                     ? AppColors.primary
-                    : Colors.white.withOpacity(0.6),
-                  border: Border.all(color: Colors.black, width: 2),
+                    : Colors.white.withValues(alpha: 0.6),
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                   boxShadow: const [
                     BoxShadow(color: Colors.black26, offset: Offset(1, 1)),
                   ],
@@ -185,10 +174,8 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.black, width: 3),
-            boxShadow: const [
-              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadow],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -205,6 +192,8 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
                         color: Colors.black,
                         letterSpacing: -0.5,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (user.isVerified) ...[
@@ -220,15 +209,15 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
+                        color: AppColors.primary, // Black
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.black, width: 2),
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                       ),
                       child: Text(
                         _getGoalLabel(user.relationshipGoal).toUpperCase(),
                         style: GoogleFonts.outfit(
                           fontSize: 10,
-                          color: Colors.black,
+                          color: Colors.white, // White text on black chip
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -241,7 +230,7 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
                       style: GoogleFonts.outfit(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -299,18 +288,16 @@ class _DiscoverUserCardState extends State<DiscoverUserCard> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.black, width: 4),
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.5),
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(color: color.withOpacity(opacity.clamp(0.0, 1.0)), offset: const Offset(4, 4)),
-          ],
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Text(
           text,
           style: GoogleFonts.outfit(
             fontSize: 32,
             fontWeight: FontWeight.w900,
-            color: color.withOpacity(opacity.clamp(0.0, 1.0)),
+            color: color.withValues(alpha: opacity.clamp(0.0, 1.0)),
           ),
         ),
       ),

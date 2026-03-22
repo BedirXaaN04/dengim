@@ -265,8 +265,8 @@ class _ReportUserModalState extends State<ReportUserModal> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.red.withOpacity(0.1)
-                              : Colors.white.withOpacity(0.05),
+                              ? Colors.red.withValues(alpha: 0.1)
+                              : Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected ? Colors.red : Colors.white10,
@@ -321,7 +321,7 @@ class _ReportUserModalState extends State<ReportUserModal> {
                       hintStyle: GoogleFonts.plusJakartaSans(
                           color: Colors.white30),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
+                      fillColor: Colors.white.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.white10),
@@ -350,7 +350,7 @@ class _ReportUserModalState extends State<ReportUserModal> {
               color: AppColors.scaffold,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 20,
                   offset: const Offset(0, -4),
                 ),
@@ -365,7 +365,7 @@ class _ReportUserModalState extends State<ReportUserModal> {
                       : _submitReport,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    disabledBackgroundColor: Colors.red.withOpacity(0.3),
+                    disabledBackgroundColor: Colors.red.withValues(alpha: 0.3),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

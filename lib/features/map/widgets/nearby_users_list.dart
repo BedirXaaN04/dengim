@@ -28,10 +28,8 @@ class NearbyUserAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.black, width: 2.5),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                ],
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                boxShadow: [AppColors.neoShadowSmall],
               ),
               child: ClipOval(
                 child: CachedNetworkImage(
@@ -87,9 +85,9 @@ class NearbyUsersList extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         border: Border(
-          top: BorderSide(color: Colors.black, width: 3),
-          left: BorderSide(color: Colors.black, width: 3),
-          right: BorderSide(color: Colors.black, width: 3),
+          top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+          left: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+          right: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
       ),
       child: SafeArea(
@@ -105,7 +103,7 @@ class NearbyUsersList extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -128,17 +126,15 @@ class NearbyUsersList extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black, width: 2),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: Text(
                     '${users.length} KİŞİ',
                     style: GoogleFonts.outfit(
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
-                      color: Colors.black,
+                      color: Colors.white,
                       letterSpacing: 1.0,
                     ),
                   ),

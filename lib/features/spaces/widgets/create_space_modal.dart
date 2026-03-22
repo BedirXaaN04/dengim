@@ -32,9 +32,9 @@ class _CreateSpaceModalState extends State<CreateSpaceModal> {
           right: 24,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F1115).withOpacity(0.95),
+          color: const Color(0xFF0F1115).withValues(alpha: 0.95),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -111,7 +111,7 @@ class _CreateSpaceModalState extends State<CreateSpaceModal> {
             hintText: hint,
             hintStyle: GoogleFonts.plusJakartaSans(color: Colors.white24),
             filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
+            fillColor: Colors.white.withValues(alpha: 0.05),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
@@ -138,7 +138,7 @@ class _CreateSpaceModalState extends State<CreateSpaceModal> {
                 if (selected) setState(() => _selectedCategory = cat);
               },
               selectedColor: AppColors.primary,
-              backgroundColor: Colors.white.withOpacity(0.05),
+              backgroundColor: Colors.white.withValues(alpha: 0.05),
               labelStyle: GoogleFonts.plusJakartaSans(
                 color: isSelected ? Colors.black : Colors.white60,
                 fontWeight: FontWeight.bold,

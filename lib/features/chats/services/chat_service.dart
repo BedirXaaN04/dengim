@@ -150,6 +150,9 @@ class ChatService {
     await _firestore.collection('users').doc(user.uid).update({
       'messageCount': FieldValue.increment(1),
     });
+
+    // 4. Send Push Notification
+    await _sendChatNotification(receiverId, lastMessagePreview, chatId);
   }
 
   /// Fotoğraf Gönder
@@ -363,6 +366,9 @@ class ChatService {
       });
 
       LogService.i("Reply message sent successfully");
+      
+      // Bildirim gönder
+      await _sendChatNotification(receiverId, content, chatId);
     } catch (e) {
       LogService.e("Send reply message error", e);
     }
@@ -379,6 +385,43 @@ class ChatService {
       });
     } catch (e) {
       // Hata olursa sessizce geç
+    }
+  }
+
+  /// Mesaj bildirimlerini yollayan yardımcı fonksiyon
+  Future<void> _sendChatNotification(String targetUid, String bodyPreview, String chatId) async {
+    final user = currentUser;
+    if (user == null || targetUid.isEmpty) return;
+
+    try {
+      await _firestore.collection('users').doc(targetUid).collection('notifications').add({
+        'type': 'message',
+        'title': 'Yeni Mesaj 💬',
+        'body': bodyPreview,
+        'senderId': user.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'isRead': false,
+      });
+
+      // GET SENDER NAME
+      final senderDoc = await _firestore.collection('users').doc(user.uid).get();
+      final senderName = senderDoc.data()?['name'] ?? 'Kullanıcı';
+
+      // REAL PUSH NOTIFICATION VIA NEXT.JS
+      await NotificationService().sendPushNotification(
+        targetUid: targetUid,
+        title: senderName,
+        body: bodyPreview,
+        data: {
+          'type': 'chat',
+          'chatId': chatId,
+          'senderId': user.uid,
+          'clickAction': 'FLUTTER_NOTIFICATION_CLICK'
+        }
+      );
+
+    } catch (e) {
+      LogService.e("Chat notification delivery failed", e);
     }
   }
 }

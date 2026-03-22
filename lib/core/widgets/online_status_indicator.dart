@@ -60,7 +60,7 @@ class OnlineStatusIndicator extends StatelessWidget {
             : null,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF10B981).withOpacity(0.5),
+            color: const Color(0xFF10B981).withValues(alpha: 0.5),
             blurRadius: size * 0.5,
             spreadRadius: size * 0.1,
           ),
@@ -102,6 +102,7 @@ class OnlineStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         child,
         Positioned.fill(

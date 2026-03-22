@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +5,6 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/providers/subscription_provider.dart';
 import '../../core/providers/credit_provider.dart';
-import '../../core/providers/user_provider.dart';
 import '../../core/constants/tier_limits.dart';
 import '../../core/utils/log_service.dart';
 import '../ads/screens/watch_and_earn_screen.dart';
@@ -85,12 +83,10 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF6C63FF),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.black, width: 2.5),
-                            boxShadow: const [
-                              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                            ],
+                            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                            boxShadow: [AppColors.neoShadowSmall],
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +117,7 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                     'SATIN ALIMLARI GERİ YÜKLE',
                     style: GoogleFonts.outfit(
                       fontSize: 12,
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withValues(alpha: 0.4),
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -150,10 +146,8 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black, width: 2),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Row(
                   children: [
@@ -178,21 +172,19 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black, width: 2),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                    ],
+                    border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                    boxShadow: [AppColors.neoShadowSmall],
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.monetization_on_rounded, color: Colors.black, size: 16),
+                      const Icon(Icons.monetization_on_rounded, color: Colors.white, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         '${credit.balance}',
                         style: GoogleFonts.outfit(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ],
@@ -214,10 +206,8 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.black, width: 2),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 20),
       ),
@@ -232,16 +222,14 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
       decoration: BoxDecoration(
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black, width: 2.5),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Center(
         child: Text(
           '🔥 İLK AY %50 İNDİRİM FIRSATI!',
           style: GoogleFonts.outfit(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.w900,
             fontSize: 14,
           ),
@@ -263,10 +251,8 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(6, 6)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Column(
         children: [
@@ -276,9 +262,9 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
             decoration: BoxDecoration(
                color: color,
                shape: BoxShape.circle,
-               border: Border.all(color: Colors.black, width: 2),
+               border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             ),
-            child: Icon(icon, color: Colors.black, size: 40),
+            child: Icon(icon, color: color == AppColors.primary ? Colors.white : Colors.black, size: 40),
           ),
           const SizedBox(height: 20),
           Text(
@@ -365,10 +351,8 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black, width: 2),
-            boxShadow: const [
-              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowSmall],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -376,14 +360,14 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
               Text(
                 period,
                 style: GoogleFonts.outfit(
-                  color: Colors.black,
+                  color: color == AppColors.primary ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w900,
                 ),
               ),
               Text(
                 price,
                 style: GoogleFonts.outfit(
-                  color: Colors.black,
+                  color: color == AppColors.primary ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w900,
                   fontSize: 16,
                 ),
@@ -409,10 +393,8 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.black, width: 2),
-            boxShadow: const [
-              BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-            ],
+            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+            boxShadow: [AppColors.neoShadowSmall],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -420,14 +402,14 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
               Text(
                 period,
                 style: GoogleFonts.outfit(
-                  color: Colors.black,
+                  color: color == AppColors.primary ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w900,
                 ),
               ),
               Text(
                 product.price,
                 style: GoogleFonts.outfit(
-                  color: Colors.black,
+                  color: color == AppColors.primary ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w900,
                   fontSize: 16,
                 ),
@@ -452,8 +434,8 @@ class _PremiumOfferScreenState extends State<PremiumOfferScreen> {
             margin: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              color: _currentPage == index ? AppColors.primary : Colors.black.withOpacity(0.1),
-              border: Border.all(color: Colors.black, width: 1.5),
+              color: _currentPage == index ? AppColors.primary : Colors.black.withValues(alpha: 0.1),
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             ),
           );
         }),

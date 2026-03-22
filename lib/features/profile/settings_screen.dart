@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -35,7 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        shape: const Border(bottom: BorderSide(color: Colors.black, width: 3)),
+        shape: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -211,8 +210,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.black, width: 3),
-                      boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                      boxShadow: [AppColors.neoShadowSmall],
                     ),
                     child: Center(
                       child: Text(
@@ -259,7 +258,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           
           if (_isDeleting)
             Container(
-              color: Colors.black.withOpacity(0.8),
+              color: Colors.black.withValues(alpha: 0.8),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -308,8 +307,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Row(
           children: [
@@ -350,8 +349,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [
@@ -366,8 +365,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Theme(
             data: Theme.of(context).copyWith(
               switchTheme: SwitchThemeData(
-                thumbColor: MaterialStateProperty.all(value ? Colors.black : Colors.grey[300]),
-                trackColor: MaterialStateProperty.all(value ? AppColors.primary : Colors.grey[200]),
+                thumbColor: WidgetStateProperty.all(value ? Colors.black : Colors.grey[300]),
+                trackColor: WidgetStateProperty.all(value ? AppColors.primary : Colors.grey[200]),
               ),
             ),
             child: Switch(
@@ -387,7 +386,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 4),
+          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         title: Text(title.toUpperCase(), style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: Text(message, style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w600)),
@@ -408,7 +407,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 4),
+          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         title: Text("ŞİFRE SIFIRLA", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: Text(
@@ -427,7 +426,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               minimumSize: const Size(120, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: Colors.black, width: 3),
+                side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
               ),
               elevation: 0,
             ),
@@ -493,7 +492,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 4),
+          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         title: Row(
           children: [
@@ -528,7 +527,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               minimumSize: const Size(120, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: Colors.black, width: 3),
+                side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
               ),
               elevation: 0,
             ),
@@ -586,7 +585,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-          border: Border(top: BorderSide(color: Colors.black, width: 4)),
+          border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         ),
         child: Column(
           children: [
@@ -632,13 +631,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: isSelected ? AppColors.primary : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: isSelected ? null : const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: isSelected ? null : [AppColors.neoShadowSmall],
       ),
       child: ListTile(
-        leading: Icon(icon, color: Colors.black, size: 28),
-        title: Text(name.toUpperCase(), style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 16)),
-        trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.black) : null,
+        leading: Icon(icon, color: isSelected ? Colors.white : Colors.black, size: 28),
+        title: Text(name.toUpperCase(), style: GoogleFonts.outfit(color: isSelected ? Colors.white : Colors.black, fontWeight: FontWeight.w900, fontSize: 16)),
+        trailing: isSelected ? const Icon(Icons.check_circle, color: Colors.white) : null,
         onTap: () {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(

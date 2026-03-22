@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 
+/// Beta: Simplified swipe buttons — only Dislike, Like, and Undo.
+/// Super Like and Boost are removed for the beta version.
 class SwipeActionButtons extends StatelessWidget {
   final VoidCallback onUndo;
   final VoidCallback onDislike;
   final VoidCallback onLike;
-  final VoidCallback onSuperLike;
-  final VoidCallback onBoost;
 
   const SwipeActionButtons({
     super.key,
     required this.onUndo,
     required this.onDislike,
     required this.onLike,
-    required this.onSuperLike,
-    required this.onBoost,
   });
 
   @override
@@ -24,45 +22,32 @@ class SwipeActionButtons extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Undo — small secondary button
           _buildCircleButton(
             onTap: onUndo,
             size: 48,
             icon: Icons.undo_rounded,
-            color: Colors.black,
-            bgColor: AppColors.secondary,
+            color: Colors.black54,
+            bgColor: Colors.white,
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 24),
+          // Dislike
           _buildCircleButton(
             onTap: onDislike,
-            size: 64,
+            size: 68,
             icon: Icons.close_rounded,
             color: Colors.black,
             bgColor: Colors.white,
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 24),
+          // Like — primary CTA (large, black background)
           _buildCircleButton(
             onTap: onLike,
-            size: 80,
+            size: 84,
             icon: Icons.favorite_rounded,
-            iconSize: 36,
-            color: AppColors.red,
-            bgColor: AppColors.primary,
-          ),
-          const SizedBox(width: 16),
-          _buildCircleButton(
-            onTap: onSuperLike,
-            size: 64,
-            icon: Icons.star_rounded,
-            color: Colors.black,
-            bgColor: AppColors.blue,
-          ),
-          const SizedBox(width: 16),
-          _buildCircleButton(
-            onTap: onBoost,
-            size: 48,
-            icon: Icons.bolt_rounded,
-            color: Colors.black,
-            bgColor: AppColors.green,
+            iconSize: 38,
+            color: Colors.white,
+            bgColor: Colors.black,
           ),
         ],
       ),
@@ -85,15 +70,13 @@ class SwipeActionButtons extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadow],
         ),
         child: Icon(
           icon,
           color: color,
-          size: iconSize ?? (size * 0.45),
+          size: iconSize ?? (size * 0.44),
         ),
       ),
     );

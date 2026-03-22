@@ -5,7 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../utils/log_service.dart';
 import '../../features/auth/services/profile_service.dart';
+import '../../features/chats/screens/chat_detail_screen.dart';
+import '../../main.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -26,7 +31,12 @@ class NotificationService {
       const InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid,
       );
-      await _localNotifications.initialize(initializationSettings);
+      await _localNotifications.initialize(
+        initializationSettings,
+        onDidReceiveNotificationResponse: (NotificationResponse response) {
+          _handleNotificationClick(response.payload);
+        },
+      );
     }
 
     // 2. Request Permissions
@@ -61,8 +71,14 @@ class NotificationService {
             id: message.hashCode,
             title: message.notification?.title ?? "Yeni Bildirim",
             body: message.notification?.body ?? "",
+            payload: jsonEncode(message.data),
           );
         }
+      });
+
+      // Handle when app is opened via FCM tap from background
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        _handleNotificationClick(jsonEncode(message.data));
       });
 
       // 5. Firestore Push-like Listener (DEMO MODE)
@@ -107,6 +123,7 @@ class NotificationService {
     required int id,
     required String title,
     required String body,
+    String? payload,
   }) async {
     if (kIsWeb) return;
 
@@ -126,12 +143,80 @@ class NotificationService {
       title,
       body,
       platformChannelSpecifics,
+      payload: payload,
     );
+  }
+
+  void _handleNotificationClick(String? payload) {
+    if (payload == null) return;
+    try {
+      final Map<String, dynamic> data = jsonDecode(payload);
+      final String? chatId = data['chatId'];
+      final String? otherUserId = data['otherUserId'];
+      final String? otherUserName = data['otherUserName'];
+      final String? otherUserAvatar = data['otherUserAvatar'];
+
+      if (chatId != null && navigatorKey.currentState != null) {
+        navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (_) => ChatDetailScreen(
+              chatId: chatId,
+              otherUserId: otherUserId ?? '',
+              otherUserName: otherUserName ?? 'Kullanıcı',
+              otherUserAvatar: otherUserAvatar ?? '',
+            ),
+          ),
+        );
+      }
+    } catch(e) {
+      LogService.e('Navigation from notification failed', e);
+    }
   }
 
   static Future<void> updateToken() async {
     if (FirebaseAuth.instance.currentUser != null) {
       await NotificationService().initialize();
+    }
+  }
+
+  /// Harici Vercel / Next.js API'mize bildirim gönderme isteği atar
+  Future<void> sendPushNotification({
+    required String targetUid,
+    required String title,
+    required String body,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      // 1. Karşı tarafın FCM Token'ını veritabanından al
+      final doc = await _firestore.collection('users').doc(targetUid).get();
+      if (!doc.exists) return;
+      
+      final String? fcmToken = doc.data()?['fcmToken'];
+      if (fcmToken == null || fcmToken.isEmpty) {
+        LogService.w("Target user has no FCM token");
+        return;
+      }
+
+      // 2. Next.js API'ye HTTP POST at
+      final url = Uri.parse('https://dengim-admin.vercel.app/api/send-push');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'token': fcmToken,
+          'title': title,
+          'body': body,
+          'data': data ?? {},
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        LogService.i("Push notification successfully sent via Next.js API.");
+      } else {
+        LogService.e("Failed to send push notification: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      LogService.e("Error triggering Push API", e);
     }
   }
 

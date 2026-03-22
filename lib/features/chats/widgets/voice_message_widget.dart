@@ -100,16 +100,16 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
         gradient: widget.isMe
             ? LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.8),
+                  AppColors.primary.withValues(alpha: 0.8),
                   AppColors.primary,
                 ],
               )
             : null,
-        color: widget.isMe ? null : Colors.white.withOpacity(0.05),
+        color: widget.isMe ? null : Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
         border: widget.isMe
             ? null
-            : Border.all(color: Colors.white.withOpacity(0.1)),
+            : Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -122,8 +122,8 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
               height: 36,
               decoration: BoxDecoration(
                 color: widget.isMe
-                    ? Colors.black.withOpacity(0.2)
-                    : AppColors.primary.withOpacity(0.2),
+                    ? Colors.black.withValues(alpha: 0.2)
+                    : AppColors.primary.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: _isLoading
@@ -161,8 +161,8 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 10,
                     color: widget.isMe
-                        ? Colors.black.withOpacity(0.6)
-                        : Colors.white.withOpacity(0.6),
+                        ? Colors.black.withValues(alpha: 0.6)
+                        : Colors.white.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -176,8 +176,8 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
             Icons.mic,
             size: 16,
             color: widget.isMe
-                ? Colors.black.withOpacity(0.4)
-                : Colors.white.withOpacity(0.4),
+                ? Colors.black.withValues(alpha: 0.4)
+                : Colors.white.withValues(alpha: 0.4),
           ),
         ],
       ),
@@ -204,8 +204,8 @@ class _VoiceMessagePlayerState extends State<VoiceMessagePlayer> {
             color: isPassed
                 ? (widget.isMe ? Colors.black : AppColors.primary)
                 : (widget.isMe
-                    ? Colors.black.withOpacity(0.2)
-                    : Colors.white.withOpacity(0.2)),
+                    ? Colors.black.withValues(alpha: 0.2)
+                    : Colors.white.withValues(alpha: 0.2)),
             borderRadius: BorderRadius.circular(2),
           ),
         );
@@ -273,13 +273,13 @@ class _VoiceRecorderButtonState extends State<VoiceRecorderButton>
             height: 48,
             decoration: BoxDecoration(
               color: _isRecording
-                  ? Colors.red.withOpacity(0.2)
-                  : AppColors.primary.withOpacity(0.1),
+                  ? Colors.red.withValues(alpha: 0.2)
+                  : AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
               border: _isRecording
                   ? Border.all(
                       color: Colors.red
-                          .withOpacity(0.3 + _animationController.value * 0.4),
+                          .withValues(alpha: 0.3 + _animationController.value * 0.4),
                       width: 2 + _animationController.value * 2,
                     )
                   : null,

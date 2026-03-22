@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../../core/services/feature_flag_service.dart';
-import '../../../core/utils/log_service.dart';
 
 class AdService {
   static final AdService _instance = AdService._internal();
@@ -25,11 +24,23 @@ class AdService {
   static const String _androidRewardedId = 'ca-app-pub-3940256099942544/5224354917';
   static const String _iosRewardedId = 'ca-app-pub-3940256099942544/1712485313';
 
-  String get bannerAdUnitId => Platform.isAndroid ? _androidBannerId : _iosBannerId;
-  String get _interstitialAdUnitId => Platform.isAndroid ? _androidInterstitialId : _iosInterstitialId;
-  String get _rewardedAdUnitId => Platform.isAndroid ? _androidRewardedId : _iosRewardedId;
+  String get bannerAdUnitId {
+    if (kIsWeb) return '';
+    return Platform.isAndroid ? _androidBannerId : _iosBannerId;
+  }
+  
+  String get _interstitialAdUnitId {
+    if (kIsWeb) return '';
+    return Platform.isAndroid ? _androidInterstitialId : _iosInterstitialId;
+  }
+  
+  String get _rewardedAdUnitId {
+    if (kIsWeb) return '';
+    return Platform.isAndroid ? _androidRewardedId : _iosRewardedId;
+  }
 
   Future<void> init() async {
+    if (kIsWeb) return; // Ads are not supported on web in this setup
     await MobileAds.instance.initialize();
     _loadRewardedAd();
     _loadInterstitialAd();

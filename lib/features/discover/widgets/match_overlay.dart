@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../auth/models/user_profile.dart';
 
+/// Beta B&W Match Overlay — profile photos remain in color,
+/// all chrome/UI is pure black and white.
 class MatchOverlay extends StatelessWidget {
   final UserProfile matchedUser;
   final VoidCallback onDismiss;
@@ -22,26 +23,23 @@ class MatchOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Container(
-        color: Colors.black.withOpacity(0.9), // Darker, more dramatic back
+        color: Colors.black.withValues(alpha: 0.92),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Floating 'MATCH' tag
+            // MATCH label — tilted B&W neo-brutalist style
             Transform.rotate(
-              angle: -0.05,
+              angle: -0.04,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  border: Border.all(color: Colors.white, width: 4),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.white, offset: Offset(8, 8)),
-                  ],
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [BoxShadow(color: Colors.white54, offset: Offset(6, 6))],
                 ),
                 child: Text(
-                  "EŞLEŞTİNİZ!",
+                  'EŞLEŞTİNİZ!',
                   style: GoogleFonts.outfit(
-                    fontSize: 42,
+                    fontSize: 40,
                     fontWeight: FontWeight.w900,
                     color: Colors.black,
                     letterSpacing: -1.0,
@@ -49,76 +47,90 @@ class MatchOverlay extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 48),
-            
+            const SizedBox(height: 40),
+
             Text(
-              "ARTIK ${matchedUser.name.toUpperCase()} İLE KONUŞABİLİRSİN",
+              'ARTIK ${matchedUser.name.toUpperCase()} İLE KONUŞABİLİRSİN',
               style: GoogleFonts.outfit(
-                color: Colors.white, 
-                fontSize: 14, 
+                color: Colors.white70,
+                fontSize: 13,
                 fontWeight: FontWeight.w800,
-                letterSpacing: 1.2
+                letterSpacing: 1.2,
               ),
             ),
-            
-            const SizedBox(height: 60),
-            
-            // Avatars
+
+            const SizedBox(height: 56),
+
+            // Avatars row — photos stay in full color
             Stack(
               alignment: Alignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Me
                     Consumer<UserProvider>(
                       builder: (context, userProvider, _) {
-                        final myAvatar = userProvider.currentUser?.imageUrl ?? '';
-                        return _buildMatchAvatar(myAvatar, isMe: true);
+                        return _buildAvatar(userProvider.currentUser?.imageUrl ?? '');
                       },
                     ),
-                    const SizedBox(width: 20),
-                    // Them
-                    _buildMatchAvatar(matchedUser.imageUrl, isMe: false),
+                    const SizedBox(width: 24),
+                    _buildAvatar(matchedUser.imageUrl),
                   ],
                 ),
-                // Heart in middle
+                // Divider heart
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.black,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.black, width: 3),
+                    border: Border.all(color: Colors.white, width: 2),
                   ),
-                  child: const Icon(Icons.favorite_rounded, color: AppColors.red, size: 32),
+                  child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 28),
                 ),
               ],
             ),
-            
-            const SizedBox(height: 80),
-            
-            // Actions
+
+            const SizedBox(height: 72),
+
+            // CTA button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: _buildNeoMatchButton(
-                label: "MESAJ GÖNDER",
-                color: AppColors.primary,
-                onTap: onMessage, 
+              child: GestureDetector(
+                onTap: onMessage,
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'MESAJ GÖNDER',
+                      style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                        fontSize: 17,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             TextButton(
               onPressed: onDismiss,
               child: Text(
-                "KEŞFETMEYE DEVAM ET", 
+                'KEŞFETMEYE DEVAM ET',
                 style: GoogleFonts.outfit(
-                  color: Colors.white.withOpacity(0.6), 
-                  fontSize: 13, 
+                  color: Colors.white38,
+                  fontSize: 12,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.0,
-                )
+                ),
               ),
             ),
           ],
@@ -127,58 +139,19 @@ class MatchOverlay extends StatelessWidget {
     );
   }
 
-  Widget _buildMatchAvatar(String url, {required bool isMe}) {
+  Widget _buildAvatar(String url) {
     return Container(
-      width: 140,
-      height: 140,
+      width: 136,
+      height: 136,
       decoration: BoxDecoration(
-        color: Colors.white,
         shape: BoxShape.circle,
-        border: Border.all(color: isMe ? AppColors.blue : AppColors.secondary, width: 4),
-        boxShadow: [
-          BoxShadow(
-            color: isMe ? AppColors.blue.withOpacity(0.5) : AppColors.secondary.withOpacity(0.5), 
-            blurRadius: 20, 
-            spreadRadius: 5
-          ),
-        ],
+        border: Border.all(color: Colors.white, width: 3),
       ),
       child: ClipOval(
         child: url.isNotEmpty
-            ? CachedNetworkImage(
-                imageUrl: url,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => Container(color: Colors.white10),
-              )
-            : const Icon(Icons.person, size: 60, color: Colors.black),
-      ),
-    );
-  }
-
-  Widget _buildNeoMatchButton({required String label, required Color color, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 64,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.white, offset: Offset(4, 4)),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: GoogleFonts.outfit(
-              fontWeight: FontWeight.w900, 
-              color: Colors.black, 
-              fontSize: 18,
-              letterSpacing: 1.0
-            ),
-          ),
-        ),
+            ? CachedNetworkImage(imageUrl: url, fit: BoxFit.cover,
+                placeholder: (_, __) => Container(color: Colors.grey[900]))
+            : const Icon(Icons.person, size: 56, color: Colors.white),
       ),
     );
   }

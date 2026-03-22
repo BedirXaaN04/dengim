@@ -1,8 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_theme.dart';
 import '../../core/services/notification_service.dart';
 import '../discover/discover_screen.dart';
 import '../map/map_screen.dart';
@@ -44,29 +43,29 @@ class _MainScaffoldState extends State<MainScaffold> {
   List<_NavItem> _getNavItems(bool isMapEnabled) {
     return [
       const _NavItem(
-        icon: Icons.explore_outlined,
-        activeIcon: Icons.explore,
+        icon: CupertinoIcons.compass,
+        activeIcon: CupertinoIcons.compass_fill,
         label: 'Keşfet',
       ),
       if (isMapEnabled)
         const _NavItem(
-          icon: Icons.map_outlined,
-          activeIcon: Icons.map,
+          icon: CupertinoIcons.map,
+          activeIcon: CupertinoIcons.map_fill,
           label: 'Harita',
         ),
       const _NavItem(
-        icon: Icons.favorite_outline_rounded,
-        activeIcon: Icons.favorite_rounded,
+        icon: CupertinoIcons.heart,
+        activeIcon: CupertinoIcons.heart_fill,
         label: 'Beğeniler',
       ),
       const _NavItem(
-        icon: Icons.chat_bubble_outline_rounded,
-        activeIcon: Icons.chat_bubble_rounded,
+        icon: CupertinoIcons.chat_bubble_2,
+        activeIcon: CupertinoIcons.chat_bubble_2_fill,
         label: 'Mesajlar',
       ),
       const _NavItem(
-        icon: Icons.person_outline_rounded,
-        activeIcon: Icons.person_rounded,
+        icon: CupertinoIcons.person,
+        activeIcon: CupertinoIcons.person_solid,
         label: 'Profil',
       ),
     ];
@@ -111,9 +110,9 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   Widget _buildBottomNav(List<_NavItem> navItems) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black, width: 4)),
+        border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
       ),
       padding: EdgeInsets.only(
         left: 12, 
@@ -152,7 +151,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? Border.all(color: Colors.black, width: 2) : Border.all(color: Colors.transparent, width: 2),
+          border: isSelected ? Border.all(color: Color(0xFFEEEEEE), width: 1.0) : Border.all(color: Colors.transparent, width: AppColors.neoBorderWidth),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -162,8 +161,8 @@ class _MainScaffoldState extends State<MainScaffold> {
               children: [
                 Icon(
                   isSelected ? item.activeIcon : item.icon,
-                  size: 24,
-                  color: Colors.black,
+                  size: 26,
+                  color: isSelected ? Colors.white : AppColors.textSecondary,
                 ),
                 if (badgeCount > 0)
                   Positioned(
@@ -174,7 +173,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                       decoration: BoxDecoration(
                         color: AppColors.red,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.black, width: 1.5),
+                        border: Border.all(color: Colors.white, width: 1.0),
                       ),
                       constraints: const BoxConstraints(
                         minWidth: 18,
@@ -184,7 +183,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         badgeCount > 9 ? '9+' : '$badgeCount',
                         style: GoogleFonts.outfit(
                           fontSize: 9,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
                         textAlign: TextAlign.center,
@@ -196,11 +195,11 @@ class _MainScaffoldState extends State<MainScaffold> {
             if (isSelected) ...[
               const SizedBox(height: 4),
               Text(
-                item.label.toUpperCase(),
+                item.label,
                 style: GoogleFonts.outfit(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ]

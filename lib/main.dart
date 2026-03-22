@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +37,15 @@ import 'features/ads/services/ad_service.dart';
 
 import 'features/spaces/providers/space_provider.dart';
 import 'core/widgets/maintenance_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  LogService.i('Handling a background message: ${message.messageId}');
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,6 +89,7 @@ void main() async {
 
     // Bildirim servisini başlat
     try {
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
       await NotificationService().initialize();
     } catch (e) {
       LogService.w("Notification init warning: $e");
@@ -171,6 +180,7 @@ class _DengimAppState extends State<DengimApp> with WidgetsBindingObserver {
         return MaterialApp(
           title: 'DENGİM',
           debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
           theme: AppTheme.lightTheme,
           builder: (context, child) => ResponsiveCenterWrapper(
             child: NetworkWrapper(child: child!),
@@ -399,7 +409,7 @@ class DottedPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black.withOpacity(0.1)
+      ..color = Colors.black.withValues(alpha: 0.1)
       ..strokeWidth = 2;
 
     const double gap = 24;

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb; // YENİ
 import '../../core/theme/app_colors.dart';
 import '../../core/providers/user_provider.dart';
 import '../../core/utils/error_handler.dart';
 import '../auth/services/profile_service.dart';
 import '../auth/models/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:typed_data';
 import 'dart:io';
 import '../../core/services/audio_recorder_service.dart';
 import '../../core/services/cloudinary_service.dart';
@@ -155,8 +157,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _isRecording = false;
       });
       if (filePath != null) {
-        final file = File(filePath);
-        final bytes = await file.readAsBytes();
+        Uint8List bytes;
+        if (kIsWeb) {
+            // Web returns a blob URL, we need to fetch it to get bytes
+            // Note: Requires http package, but we can try using cross_file or just dio/http if available.
+            // A simpler way without extra packages is just returning the blob if Cloudinary handles it,
+            // but our CloudinaryService expects bytes.
+            // Using dart:html is discouraged for cross-platform, but we can use XFile if we wrap it.
+            // For now, let's use a dynamic fetch if on web, or just skip if we don't have http.
+            // Ideally record package on web returns an url we can read via standard ways.
+            // Let's use a generic approach using XFile (from image_picker which we already imported)
+            final xfile = XFile(filePath);
+            bytes = await xfile.readAsBytes();
+        } else {
+            final file = File(filePath);
+            bytes = await file.readAsBytes();
+        }
+        
         final url = await CloudinaryService.uploadAudioBytes(bytes);
         if (url != null) {
           setState(() {
@@ -296,17 +313,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.black, width: 2),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: _isSaving
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
                     : Text(
                         'KAYDET',
                         style: GoogleFonts.outfit(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontWeight: FontWeight.w900,
                           fontSize: 12,
                         ),
@@ -406,10 +421,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.black, width: 2),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 18),
       ),
@@ -434,10 +447,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black, width: 2.5),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -464,10 +475,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.black, width: 2.5),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
@@ -490,14 +499,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.black, width: 2),
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                       ),
                       child: Text(
                         'ANA',
                         style: GoogleFonts.outfit(
                           fontSize: 10,
                           fontWeight: FontWeight.w900,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -514,7 +523,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.red,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.black, width: 1.5),
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                     ),
                     child: const Icon(Icons.close, color: Colors.black, size: 12),
                   ),
@@ -536,10 +545,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black, width: 2.5),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: _videoUrl != null
             ? Stack(
@@ -576,7 +583,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.red,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 1.5),
+                          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                         ),
                         child: const Icon(Icons.close, color: Colors.black, size: 18),
                       ),
@@ -610,10 +617,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 2.5),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: _profileVoiceUrl != null
           ? Row(
@@ -645,7 +650,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.red,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.black, width: 1.5),
+                      border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                     ),
                     child: const Icon(Icons.close, color: Colors.black, size: 18),
                   ),
@@ -664,7 +669,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           decoration: BoxDecoration(
                             color: AppColors.red,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 1.5),
+                            border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -687,7 +692,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.black, width: 2),
+                              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
                             ),
                             child: const Icon(Icons.close, color: Colors.black, size: 18),
                           ),
@@ -700,10 +705,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             decoration: BoxDecoration(
                               color: AppColors.primary,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.black, width: 2),
-                              boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(2, 2))],
+                              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                              boxShadow: [AppColors.neoShadowSmall],
                             ),
-                            child: const Icon(Icons.check, color: Colors.black, size: 18),
+                            child: const Icon(Icons.check, color: Colors.white, size: 18),
                           ),
                         ),
                       ],
@@ -744,10 +749,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black, width: 2.5),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: TextField(
         controller: controller,
@@ -758,8 +761,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: InputDecoration(
           labelText: label.toUpperCase(),
           hintText: hint?.toUpperCase(),
-          hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.2), fontSize: 12, fontWeight: FontWeight.w900),
-          labelStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.4), fontSize: 12, fontWeight: FontWeight.w900),
+          hintStyle: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.2), fontSize: 12, fontWeight: FontWeight.w900),
+          labelStyle: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.4), fontSize: 12, fontWeight: FontWeight.w900),
           prefixIcon: Icon(icon, color: Colors.black, size: 20),
           filled: true,
           fillColor: Colors.transparent,
@@ -784,21 +787,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             decoration: BoxDecoration(
               color: isSelected ? AppColors.primary : Colors.white,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.black,
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black,
-                  offset: isSelected ? const Offset(2, 2) : const Offset(4, 4),
-                ),
-              ],
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: isSelected ? null : [AppColors.neoShadowSmall],
             ),
             child: Text(
               interest.toUpperCase(),
               style: GoogleFonts.outfit(
-                color: Colors.black,
+                color: isSelected ? Colors.white : Colors.black,
                 fontWeight: FontWeight.w900,
                 fontSize: 12,
               ),
@@ -826,13 +821,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             decoration: BoxDecoration(
               color: isSelected ? AppColors.primary : Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.black,
-                width: 2.5,
-              ),
-              boxShadow: const [
-                BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-              ],
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+              boxShadow: isSelected ? null : [AppColors.neoShadowSmall],
             ),
             child: Row(
               children: [
@@ -843,7 +833,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Text(
                         goal['label']!.toUpperCase(),
                         style: GoogleFonts.outfit(
-                          color: Colors.black,
+                          color: isSelected ? Colors.white : Colors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
                         ),
@@ -852,7 +842,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Text(
                         goal['desc']!.toUpperCase(),
                         style: GoogleFonts.outfit(
-                          color: Colors.black.withOpacity(0.5),
+                          color: isSelected ? Colors.white70 : Colors.black.withValues(alpha: 0.5),
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                         ),
@@ -861,7 +851,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 if (isSelected)
-                  const Icon(Icons.check_circle_rounded, color: Colors.black, size: 24),
+                  const Icon(Icons.check_circle_rounded, color: Colors.white, size: 24),
               ],
             ),
           ),
@@ -877,7 +867,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Colors.black, width: 3),
+          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         title: Text(
           "DEĞİŞİKLİKLER KAYBOLACAK",
@@ -899,10 +889,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 backgroundColor: AppColors.red,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
-                  side: const BorderSide(color: Colors.black, width: 2),
+                  side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                 ),
-                elevation: 4,
-                shadowColor: Colors.black,
+                elevation: 0,
               ),
               onPressed: () {
                 Navigator.pop(context); // Close dialog

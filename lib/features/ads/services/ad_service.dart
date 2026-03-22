@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import '../../../core/utils/log_service.dart';
 import 'ad_service_mobile.dart' if (dart.library.html) 'ad_service_web.dart' as ads;
 
 class AdService {

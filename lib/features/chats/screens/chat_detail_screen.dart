@@ -6,16 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/log_service.dart';
 import '../../../core/services/typing_indicator_service.dart';
 import '../../../core/widgets/online_status_indicator.dart';
 import '../../../core/providers/user_provider.dart';
 import '../../../core/services/feature_flag_service.dart';
-import '../../../core/services/read_receipt_service.dart';
 
 import '../models/chat_models.dart';
 import '../services/chat_service.dart';
-import '../widgets/chat_widgets.dart';
 import '../widgets/chat_list_item_data.dart';
 import '../widgets/chat_input_widget.dart';
 import '../../auth/services/report_service.dart';
@@ -60,7 +57,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     // Mark all messages as read (for read receipt indicators)
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      ReadReceiptService().markAllAsRead(chatId: widget.chatId, userId: uid);
+      // ReadReceiptService().markAllAsRead(chatId: widget.chatId, userId: uid);
     }    
     // Listen for new messages while in this screen to clear unread count
     _conversationSubscription = FirebaseFirestore.instance
@@ -155,7 +152,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
-                      side: const BorderSide(color: Colors.black, width: 4),
+                      side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                     ),
                     title: Text('KULLANICIYI ENGELLE?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
                     content: Text(
@@ -201,7 +198,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
-                      side: const BorderSide(color: Colors.black, width: 4),
+                      side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                     ),
                     title: Text('SOHBETİ SİL?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
                     content: Text(
@@ -247,7 +244,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
-        shape: const Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        shape: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -280,9 +277,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   LastSeenText(
                     userId: widget.otherUserId,
                     style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      color: Colors.black.withOpacity(0.5),
-                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -359,7 +356,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   return Center(
                     child: Text(
                       'HENÜZ MESAJ YOK',
-                      style: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontWeight: FontWeight.w900, fontSize: 12),
+                      style: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.3), fontWeight: FontWeight.w900, fontSize: 12),
                     ),
                   );
                 }
@@ -419,8 +416,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.black, width: 2),
-          left: BorderSide(color: AppColors.primary, width: 6),
+          top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
+          left: BorderSide(color: AppColors.primary, width: AppColors.neoBorderWidthLarge),
         ),
       ),
       child: Row(
@@ -494,13 +491,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(4, 4),
-            ),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -533,7 +525,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 4),
+          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         title: Text('RAPOR NEDENİ', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: SizedBox(

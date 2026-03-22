@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,9 +10,6 @@ import 'screens/chat_detail_screen.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/providers/chat_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:image_picker/image_picker.dart';
-import '../../core/services/cloudinary_service.dart';
 
 class ChatsScreen extends StatefulWidget {
   const ChatsScreen({super.key});
@@ -54,7 +50,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 4),
+          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         title: Text('SOHBETİ SİL?', style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.w900)),
         content: Text(
@@ -160,9 +156,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
       ),
       child: Column(
         children: [
@@ -173,12 +169,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.black, width: 2),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-                  ],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
-                child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.black, size: 24),
+                child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white, size: 24),
               ),
               const SizedBox(width: 16),
               Text(
@@ -210,10 +204,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [
@@ -226,7 +218,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
               },
               decoration: InputDecoration(
                 hintText: "SOHBETLERDE ARA...",
-                hintStyle: GoogleFonts.outfit(color: Colors.black.withOpacity(0.3), fontSize: 13, fontWeight: FontWeight.bold),
+                hintStyle: GoogleFonts.outfit(color: Colors.black.withValues(alpha: 0.3), fontSize: 13, fontWeight: FontWeight.bold),
                 border: InputBorder.none,
               ),
               style: GoogleFonts.outfit(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
@@ -259,10 +251,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                decoration: BoxDecoration(
                  color: Colors.white,
                  shape: BoxShape.circle,
-                 border: Border.all(color: Colors.black, width: 3),
-                 boxShadow: const [
-                   BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                 ],
+                 border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                 boxShadow: [AppColors.neoShadowSmall],
                ),
                child: const Icon(Icons.chat_bubble_outline_rounded, size: 48, color: Colors.black),
              ),
@@ -280,7 +270,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                "Eşleşmelerinizle sohbet etmeye\nburadan başlayabilirsiniz.", 
                textAlign: TextAlign.center,
                style: GoogleFonts.outfit(
-                 color: Colors.black.withOpacity(0.5), 
+                 color: Colors.black.withValues(alpha: 0.5), 
                  fontSize: 14, 
                  fontWeight: FontWeight.w800,
                  height: 1.5,
@@ -300,21 +290,19 @@ class _ChatsScreenState extends State<ChatsScreen> {
                child: Container(
                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                  decoration: BoxDecoration(
-                   color: AppColors.primary,
+                   color: AppColors.primary, // Black
                    borderRadius: BorderRadius.circular(16),
-                   border: Border.all(color: Colors.black, width: 3),
-                   boxShadow: const [
-                     BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                   ],
+                   border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                   boxShadow: [AppColors.neoShadowSmall],
                  ),
                  child: Row(
                    mainAxisSize: MainAxisSize.min,
                    children: [
-                     const Icon(Icons.explore_rounded, color: Colors.black, size: 20),
+                     const Icon(Icons.explore_rounded, color: Colors.white, size: 20),
                      const SizedBox(width: 12),
                      Text(
                        "KEŞFETMEYE BAŞLA", 
-                       style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.black)
+                       style: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)
                      ),
                    ],
                  ),
@@ -335,10 +323,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black, width: 2.5),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(3, 3)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 22),
       ),

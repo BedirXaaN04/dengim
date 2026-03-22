@@ -35,7 +35,7 @@ class DiscoverEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             Text(
-              "ŞU AN İÇİN BU KADAR! 🎉",
+              "Şu an için bu kadar 🎉 🎉",
               style: GoogleFonts.outfit(
                 color: Colors.black,
                 fontSize: 22,
@@ -44,10 +44,10 @@ class DiscoverEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "YAKINDAKİ TÜM PROFİLLERİ GÖRDÜN.\nDAHA FAZLA KİŞİ İÇİN FİLTRELERİNİ GENİŞLET\nVEYA DAHA SONRA TEKRAR DENE.",
+              "Yakındaki tüm profilleri gördün.\nDaha fazla kişi için filtrelerini genişlet\nveya daha sonra tekrar dene.",
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 fontSize: 14,
                 height: 1.5,
                 fontWeight: FontWeight.w800,

@@ -111,7 +111,7 @@ class _ReportDialogState extends State<ReportDialog> {
             height: 4,
             margin: const EdgeInsets.only(top: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -124,7 +124,7 @@ class _ReportDialogState extends State<ReportDialog> {
                 Icon(
                   Icons.flag_rounded,
                   size: 48,
-                  color: Colors.red.withOpacity(0.7),
+                  color: Colors.red.withValues(alpha: 0.7),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -141,7 +141,7 @@ class _ReportDialogState extends State<ReportDialog> {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ],
@@ -164,9 +164,9 @@ class _ReportDialogState extends State<ReportDialog> {
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Ek bilgi ekleyin (opsiyonel)',
-                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
+                      fillColor: Colors.white.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
@@ -187,12 +187,12 @@ class _ReportDialogState extends State<ReportDialog> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: _alsoBlock 
-                              ? Colors.red.withOpacity(0.1) 
-                              : Colors.white.withOpacity(0.05),
+                              ? Colors.red.withValues(alpha: 0.1) 
+                              : Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: _alsoBlock 
-                                ? Colors.red.withOpacity(0.3) 
+                                ? Colors.red.withValues(alpha: 0.3) 
                                 : Colors.transparent,
                           ),
                         ),
@@ -200,7 +200,7 @@ class _ReportDialogState extends State<ReportDialog> {
                           children: [
                             Icon(
                               _alsoBlock ? Icons.check_box : Icons.check_box_outline_blank,
-                              color: _alsoBlock ? Colors.red : Colors.white.withOpacity(0.5),
+                              color: _alsoBlock ? Colors.red : Colors.white.withValues(alpha: 0.5),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -219,7 +219,7 @@ class _ReportDialogState extends State<ReportDialog> {
                                     'Bu kullanıcı sizi göremeyecek',
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 12,
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: Colors.white.withValues(alpha: 0.5),
                                     ),
                                   ),
                                 ],
@@ -245,7 +245,7 @@ class _ReportDialogState extends State<ReportDialog> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        disabledBackgroundColor: Colors.red.withOpacity(0.5),
+                        disabledBackgroundColor: Colors.red.withValues(alpha: 0.5),
                       ),
                       child: _isLoading
                           ? const SizedBox(
@@ -273,7 +273,7 @@ class _ReportDialogState extends State<ReportDialog> {
                     child: Text(
                       'İptal',
                       style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
@@ -297,8 +297,8 @@ class _ReportDialogState extends State<ReportDialog> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected 
-              ? AppColors.primary.withOpacity(0.1) 
-              : Colors.white.withOpacity(0.05),
+              ? AppColors.primary.withValues(alpha: 0.1) 
+              : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? AppColors.primary : Colors.transparent,
@@ -309,7 +309,7 @@ class _ReportDialogState extends State<ReportDialog> {
           children: [
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.3),
+              color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.3),
             ),
             const SizedBox(width: 12),
             Text(
@@ -364,14 +364,14 @@ class BlockConfirmDialog extends StatelessWidget {
       content: Text(
         'Bu kullanıcıyı engellediğinizde:\n\n• Karşılıklı olarak birbirinizi göremezsiniz\n• Mesajlaşamazsınız\n• Keşfette çıkmaz\n\nDaha sonra ayarlardan engeli kaldırabilirsiniz.',
         style: GoogleFonts.plusJakartaSans(
-          color: Colors.white.withOpacity(0.7),
+          color: Colors.white.withValues(alpha: 0.7),
           height: 1.5,
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: Text('İptal', style: TextStyle(color: Colors.white.withOpacity(0.5))),
+          child: Text('İptal', style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
         ),
         ElevatedButton(
           onPressed: () async {

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/utils/error_handler.dart';
-import '../../core/widgets/state_widgets.dart';
 import '../auth/models/user_profile.dart';
 import '../auth/services/block_service.dart';
 
@@ -58,7 +56,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 4),
+          side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
         ),
         title: Text(
           'ENGELİ KALDIR?',
@@ -89,11 +87,11 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: Colors.black, width: 3),
+                side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
               ),
               elevation: 0,
             ),
-            child: Text('EVET, KALDIR', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
+            child: Text('EVET, KALDIR', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
           ),
         ],
       ),
@@ -123,7 +121,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        shape: const Border(bottom: BorderSide(color: Colors.black, width: 4)),
+        shape: Border(bottom: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -161,11 +159,11 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: const BorderSide(color: Colors.black, width: 2),
+                  side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
                 ),
                 elevation: 0,
               ),
-              child: Text('TEKRAR DENE', style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
+              child: Text('TEKRAR DENE', style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: Colors.white)),
             ),
           ],
         ),
@@ -184,8 +182,8 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black, width: 3),
-                  boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(4, 4))],
+                  border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                  boxShadow: [AppColors.neoShadowSmall],
                 ),
                 child: const Icon(Icons.block, size: 48, color: Colors.black),
               ),
@@ -229,8 +227,8 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 3),
-        boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Row(
         children: [
@@ -240,7 +238,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
             height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.black, width: 2),
+              border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
             ),
             child: ClipOval(
               child: CachedNetworkImage(
@@ -294,14 +292,14 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black, width: 2),
+                border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
               ),
               child: Text(
                 'KALDIR',
                 style: GoogleFonts.outfit(
                   fontSize: 11,
                   fontWeight: FontWeight.w900,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),

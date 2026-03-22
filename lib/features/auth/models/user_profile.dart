@@ -43,6 +43,8 @@ class UserProfile {
   final bool isGhostMode;
   final bool isIncognitoMode;
   final bool hasReceivedWelcomeBonus;
+  final List<String> followers; // YENİ: Takipçiler
+  final List<String> following; // YENİ: Takip ettikleri
 
   // Zamanlar
   final DateTime createdAt;
@@ -83,6 +85,8 @@ class UserProfile {
     this.isGhostMode = false,
     this.isIncognitoMode = false,
     this.hasReceivedWelcomeBonus = false,
+    this.followers = const [],
+    this.following = const [],
   });
 
   // Calculated age from birthDate
@@ -170,6 +174,8 @@ class UserProfile {
       'isGhostMode': isGhostMode,
       'isIncognitoMode': isIncognitoMode,
       'hasReceivedWelcomeBonus': hasReceivedWelcomeBonus,
+      'followers': followers,
+      'following': following,
     };
   }
 
@@ -232,6 +238,8 @@ class UserProfile {
       isGhostMode: map['isGhostMode'] ?? false,
       isIncognitoMode: map['isIncognitoMode'] ?? false,
       hasReceivedWelcomeBonus: map['hasReceivedWelcomeBonus'] ?? false,
+      followers: List<String>.from(map['followers'] ?? []),
+      following: List<String>.from(map['following'] ?? []),
     );
   }
 }

@@ -177,10 +177,10 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with TickerProvid
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.6),
+                  Colors.black.withValues(alpha: 0.6),
                   Colors.transparent,
                   Colors.transparent,
-                  Colors.black.withOpacity(isMe ? 0.3 : 0.6),
+                  Colors.black.withValues(alpha: isMe ? 0.3 : 0.6),
                 ],
                 stops: const [0.0, 0.2, 0.8, 1.0],
               ),

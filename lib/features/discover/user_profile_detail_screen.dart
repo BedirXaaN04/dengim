@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/services/safety_service.dart';
 import '../auth/models/user_profile.dart';
 import '../auth/services/discovery_service.dart';
 import '../profile/services/report_block_service.dart';
 import '../profile/widgets/video_player_modal.dart';
 import '../profile/widgets/voice_profile_player.dart';
+import '../../core/providers/user_provider.dart';
+import '../auth/services/profile_service.dart';
+import '../chats/services/chat_service.dart';
+import '../chats/screens/chat_detail_screen.dart';
 
 class UserProfileDetailScreen extends StatefulWidget {
   final String? userId;
@@ -99,10 +104,10 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                Colors.black.withOpacity(0.3),
+                                Colors.black.withValues(alpha: 0.3),
                                 Colors.transparent,
                                 Colors.transparent,
-                                Colors.black.withOpacity(0.5),
+                                Colors.black.withValues(alpha: 0.5),
                               ],
                               stops: const [0, 0.2, 0.7, 1],
                             ),
@@ -122,7 +127,7 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-                      border: Border(top: BorderSide(color: Colors.black, width: 4)),
+                      border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
                     ),
                     padding: const EdgeInsets.fromLTRB(24, 32, 24, 120),
                     child: Column(
@@ -171,7 +176,7 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
                                         style: GoogleFonts.outfit(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w800,
-                                          color: Colors.black.withOpacity(0.5),
+                                          color: Colors.black.withValues(alpha: 0.5),
                                         ),
                                       ),
                                     ),
@@ -181,6 +186,11 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
                             _buildOnlineStatus(profile.isOnline),
                           ],
                         ),
+                        const SizedBox(height: 16),
+
+                        // Followers count & Follow / Message Action
+                        _buildActionButtons(context, profile),
+                        
                         const SizedBox(height: 24),
 
                         // Info Chips Section
@@ -228,13 +238,13 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
                         ],
 
                         // Interests Section
-                        if (profile.interests != null && profile.interests!.isNotEmpty) ...[
+                        if (profile.interests.isNotEmpty) ...[
                           _buildSectionTitle("İLGİ ALANLARI"),
                           const SizedBox(height: 16),
                           Wrap(
                             spacing: 12,
                             runSpacing: 12,
-                            children: profile.interests!.map((interest) => _buildInterestTag(interest)).toList(),
+                            children: profile.interests.map((interest) => _buildInterestTag(interest)).toList(),
                           ),
                         ],
 
@@ -292,10 +302,8 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black, width: 2),
-        boxShadow: const [
-          BoxShadow(color: Colors.black, offset: Offset(2, 2)),
-        ],
+        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+        boxShadow: [AppColors.neoShadowSmall],
       ),
       child: Text(
         text.toUpperCase(),
@@ -312,9 +320,9 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isOnline ? AppColors.green.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+        color: isOnline ? AppColors.green.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isOnline ? AppColors.green : Colors.black, width: 2),
+        border: Border.all(color: isOnline ? AppColors.green : Colors.black, width: AppColors.neoBorderWidthSmall),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -345,7 +353,7 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
       spacing: 12,
       runSpacing: 12,
       children: [
-        if (profile.gender != null) _buildInfoChip(Icons.person_outline, profile.gender!),
+        _buildInfoChip(Icons.person_outline, profile.gender),
         if (profile.zodiacSign.isNotEmpty) _buildInfoChip(Icons.stars, profile.zodiacSign),
         if (profile.relationshipGoal != null) _buildInfoChip(Icons.search_rounded, _getGoalLabel(profile.relationshipGoal)),
         _buildInfoChip(Icons.location_on_outlined, "YAKINLARDA"),
@@ -357,9 +365,9 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.03),
+        color: Colors.black.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black.withOpacity(0.1), width: 1.5),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.1), width: AppColors.neoBorderWidthSmall),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -388,10 +396,8 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Icon(icon, color: Colors.black, size: 22),
       ),
@@ -411,22 +417,20 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(6, 6)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.black, size: 24),
+            Icon(icon, color: color == AppColors.primary ? Colors.white : Colors.black, size: 24),
             const SizedBox(width: 16),
             Text(
               label,
               style: GoogleFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.w900,
-                color: Colors.black,
+                color: color == AppColors.primary ? Colors.white : Colors.black,
                 letterSpacing: 0.5,
               ),
             ),
@@ -440,9 +444,9 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.blue.withOpacity(0.1),
+        color: AppColors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.blue, width: 2, style: BorderStyle.solid),
+        border: Border.all(color: AppColors.blue, width: AppColors.neoBorderWidthSmall, style: BorderStyle.solid),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,7 +486,7 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
-        side: BorderSide(color: Colors.black, width: 4),
+        side: BorderSide(color: Color(0xFFEEEEEE), width: 1.0),
       ),
       builder: (context) => Container(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 48),
@@ -559,10 +563,8 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black, width: 3),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-          ],
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -591,5 +593,154 @@ class _UserProfileDetailScreenState extends State<UserProfileDetailScreen> {
       case 'unsure': return '🤷‍♂️ Belirsiz';
       default: return 'Bilinmiyor';
     }
+  }
+
+  Widget _buildActionButtons(BuildContext context, UserProfile targetUser) {
+    final currentUser = context.watch<UserProvider>().currentUser;
+    if (currentUser == null || currentUser.uid == targetUser.uid) {
+      return const SizedBox.shrink(); // Don't show buttons on own profile
+    }
+
+    final isFollowing = currentUser.following.contains(targetUser.uid);
+    final followersCount = targetUser.followers.length;
+    final followingCount = targetUser.following.length;
+
+    return Column(
+      children: [
+        // İstatisikler
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildStatColumn('Takipçi', followersCount),
+            Container(height: 30, width: 2, color: Colors.black12),
+            _buildStatColumn('Takip', followingCount),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Butonlar
+        Row(
+          children: [
+            Expanded(
+              child: _buildNeoButton(
+                label: isFollowing ? 'TAKİPTEN ÇIK' : 'TAKİP ET',
+                icon: isFollowing ? Icons.person_remove : Icons.person_add,
+                color: isFollowing ? Colors.white : AppColors.primary,
+                textColor: isFollowing ? Colors.black : Colors.white,
+                onTap: () async {
+                  HapticFeedback.lightImpact();
+                  try {
+                    if (isFollowing) {
+                      await ProfileService().unfollowUser(targetUser.uid);
+                    } else {
+                      await ProfileService().followUser(targetUser.uid);
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Bir hata oluştu.')),
+                      );
+                    }
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildNeoButton(
+                label: 'MESAJ GÖNDER',
+                icon: Icons.send_rounded,
+                color: Colors.white,
+                textColor: Colors.black,
+                onTap: () async {
+                  HapticFeedback.lightImpact();
+                  try {
+                    // Create or find chat id
+                    final chatId = await ChatService().startChat(targetUser.uid);
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatDetailScreen(
+                            chatId: chatId,
+                            otherUserId: targetUser.uid,
+                            otherUserName: targetUser.name,
+                            otherUserAvatar: targetUser.imageUrl,
+                          ),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Sohbet başlatılamadı.')),
+                      );
+                    }
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatColumn(String label, int count) {
+    return Column(
+      children: [
+        Text(
+          count.toString(),
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+          ),
+        ),
+        Text(
+          label.toUpperCase(),
+          style: GoogleFonts.outfit(
+            fontSize: 10,
+            fontWeight: FontWeight.w800,
+            color: Colors.black54,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNeoButton({
+    required String label, 
+    required IconData icon, 
+    required Color color, 
+    required Color textColor,
+    required VoidCallback onTap
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+          boxShadow: [AppColors.neoShadowSmall],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: textColor, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

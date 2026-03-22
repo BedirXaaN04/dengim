@@ -104,7 +104,7 @@ class TopPicksSection extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
                       stops: const [0.7, 1.0],
                     ),
                   ),
@@ -137,14 +137,14 @@ class TopPicksSection extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 1.5),
                       boxShadow: [
-                        BoxShadow(color: AppColors.green.withOpacity(0.5), blurRadius: 4, spreadRadius: 1),
+                        BoxShadow(color: AppColors.green.withValues(alpha: 0.5), blurRadius: 4, spreadRadius: 1),
                       ],
                     ),
                   ),
                 ),
               if (!isPremium)
                 Container(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withValues(alpha: 0.4),
                   child: const Center(
                     child: Icon(Icons.lock_outline_rounded, color: Colors.white, size: 24),
                   ),
@@ -157,7 +157,7 @@ class TopPicksSection extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                   decoration: const BoxDecoration(
                     color: AppColors.primary,
-                    border: Border(top: BorderSide(color: Colors.black, width: 2.5)),
+                    border: Border(top: BorderSide(color: Color(0xFFEEEEEE), width: 1.0)),
                   ),
                   child: Text(
                     (isPremium ? user.name : 'AÇ').toUpperCase(),

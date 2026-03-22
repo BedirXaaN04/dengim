@@ -1,11 +1,7 @@
-import 'dart:math' as math;
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:confetti/confetti.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../core/theme/app_colors.dart';
 import '../auth/models/user_profile.dart';
 import '../auth/services/profile_service.dart';
@@ -16,30 +12,18 @@ import 'widgets/filter_bottom_sheet.dart';
 /// Keşfet Ekranı - Tinder tarzı Swipe Kartlar
 import 'package:provider/provider.dart';
 import '../../core/providers/discovery_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import '../../core/providers/story_provider.dart';
 import '../../core/providers/user_provider.dart';
-import '../notifications/notifications_screen.dart';
-import 'story_viewer_screen.dart';
-import 'package:image_picker/image_picker.dart';
-import 'models/story_model.dart';
-import '../payment/premium_offer_screen.dart';
-import 'user_profile_detail_screen.dart';
-import '../spaces/screens/spaces_screen.dart';
-import 'widgets/advanced_filters_modal.dart';
-import 'widgets/discover_header.dart';
-import 'widgets/swipe_action_buttons.dart';
-import '../ads/widgets/dengim_banner_ad.dart';
-import '../ads/screens/watch_and_earn_screen.dart';
 import '../../core/providers/credit_provider.dart';
 import '../../core/services/credit_service.dart';
 import '../../core/constants/tier_limits.dart';
+import '../payment/premium_offer_screen.dart';
 import '../../core/widgets/premium_required_modal.dart';
+import 'user_profile_detail_screen.dart';
+import 'widgets/discover_header.dart';
+import 'widgets/swipe_action_buttons.dart';
 import 'widgets/discover_empty_state.dart';
 import 'widgets/match_overlay.dart';
 import 'widgets/discover_search_bar.dart';
-import 'widgets/story_section.dart';
-import 'widgets/top_picks_section.dart';
 import 'widgets/discover_user_card.dart';
 
 class DiscoverScreen extends StatefulWidget {
@@ -51,9 +35,6 @@ class DiscoverScreen extends StatefulWidget {
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
   final CardSwiperController _cardController = CardSwiperController();
-  final ConfettiController _confettiController = ConfettiController(
-    duration: const Duration(seconds: 2),
-  );
   final TextEditingController _searchController = TextEditingController();
   
   FilterSettings _filterSettings = FilterSettings();
@@ -107,8 +88,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       // Haptic feedback
       HapticFeedback.mediumImpact();
       
-      // Hikayeleri yenile
-      await context.read<StoryProvider>().loadStories();
+      // Hikayeleri yenile (devre dışı)
+      // await context.read<StoryProvider>().loadStories();
       
       // Kullanıcıları yenile
       await context.read<DiscoveryProvider>().loadDiscoveryUsers(
@@ -220,7 +201,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       _matchedUser = user;
       _showMatch = true;
     });
-    _confettiController.play();
   }
 
   UserProfile? _matchedUser;
@@ -229,7 +209,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   @override
   void dispose() {
     _cardController.dispose();
-    _confettiController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -244,77 +223,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     _cardController.swipe(CardSwiperDirection.left);
   }
 
-  void _onSuperLike() async {
-    final userProvider = context.read<UserProvider>();
-    final currentUser = userProvider.currentUser;
-    final tier = currentUser?.subscriptionTier ?? 'free';
-    final superLikeLimit = TierLimits.getDailySuperLikes(tier);
-
-    if (superLikeLimit > 0) {
-      // Gold/Platinum - direkt gönder
-      _performSuperLike();
-    } else {
-      // Free kullanıcı - kredi ile gönderebilir
-      final creditProvider = context.read<CreditProvider>();
-      if (creditProvider.balance >= CreditService.costSuperLike) {
-        final success = await creditProvider.spendSuperLike();
-        if (success) {
-          _performSuperLike();
-        }
-      } else {
-        // Kredi yok, Premium modal göster
-        if (mounted) {
-          PremiumRequiredModal.show(
-            context,
-            featureName: 'Super Like',
-            requiredTier: 'gold',
-            creditCost: CreditService.costSuperLike,
-          );
-        }
-      }
-    }
-  }
-
-  void _performSuperLike() {
-    HapticFeedback.heavyImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('🌟 Super Like gönderildi!'),
-        backgroundColor: AppColors.secondary,
-        duration: Duration(seconds: 1),
-      )
-    );
-    _cardController.swipe(CardSwiperDirection.top);
-  }
-
-  void _onUndo() async {
-    final userProvider = context.read<UserProvider>();
-    final tier = userProvider.currentUser?.subscriptionTier ?? 'free';
-    final rewindLimit = TierLimits.getRewindsPerDay(tier);
-
-    if (rewindLimit > 0) {
-      HapticFeedback.lightImpact();
-      _cardController.undo();
-    } else {
-      // Free kullanıcı - kredi ile geri alabilir
-      final creditProvider = context.read<CreditProvider>();
-      if (creditProvider.balance >= CreditService.costUndoSwipe) {
-        final success = await creditProvider.spendUndo();
-        if (success) {
-          HapticFeedback.lightImpact();
-          _cardController.undo();
-        }
-      } else {
-        if (mounted) {
-          PremiumRequiredModal.show(
-            context,
-            featureName: 'Geri Al',
-            requiredTier: 'gold',
-            creditCost: CreditService.costUndoSwipe,
-          );
-        }
-      }
-    }
+  void _onUndo() {
+    HapticFeedback.lightImpact();
+    _cardController.undo();
   }
 
   void _onBoost() async {
@@ -365,15 +276,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.purpleAccent.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.bolt_rounded, color: Colors.purpleAccent, size: 24),
+              child: const Icon(Icons.bolt_rounded, color: Colors.black, size: 24),
             ),
             const SizedBox(width: 12),
             Text('Profilini Öne Çıkar', 
               style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               )
@@ -383,7 +294,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         content: Text(
           '30 dakika boyunca profilin daha fazla kişi tarafından görülecek ve eşleşme şansın artacak!',
           style: GoogleFonts.plusJakartaSans(
-            color: Colors.white70,
+            color: Colors.black87,
             fontSize: 14,
             height: 1.5,
           ),
@@ -392,7 +303,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('İptal', 
-              style: GoogleFonts.plusJakartaSans(color: Colors.white54, fontWeight: FontWeight.bold)
+              style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontWeight: FontWeight.bold)
             ),
           ),
           ElevatedButton(
@@ -401,15 +312,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               context.read<DiscoveryProvider>().activateBoost();
               HapticFeedback.heavyImpact();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('🚀 Boost Aktifleştirildi! Profilin öne çıkıyor.'),
-                  backgroundColor: Colors.purpleAccent,
+                SnackBar(
+                  content: Text('🚀 Boost Aktifleştirildi! Profilin öne çıkıyor.', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  backgroundColor: AppColors.primary, // Black
                   behavior: SnackBarBehavior.floating,
                 )
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purpleAccent,
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -493,50 +404,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
   }
 
-  Future<void> _pickAndUploadStory() async {
-    final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-    
-    if (image != null && mounted) {
-      try {
-        final userProvider = context.read<UserProvider>();
-        final storyProvider = context.read<StoryProvider>();
-        
-        final user = userProvider.currentUser;
-        if (user == null) return;
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hikayen yükleniyor...'), duration: Duration(seconds: 2))
-        );
-        
-        final bytes = await image.readAsBytes();
-        
-        await storyProvider.uploadStoryBytes(
-          bytes,
-          user.name, 
-          user.imageUrl,
-          isPremium: user.isPremium,
-          isVerified: user.isVerified,
-        );
-
-
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Hikaye paylaşıldı! 🎉'))
-          );
-        }
-      } catch (e) {
-        LogService.e("Story upload error in UI", e);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Yükleme başarısız oldu.'))
-          );
-        }
-      }
-    }
-  }
-
   void _onCardTap(UserProfile user) {
     HapticFeedback.lightImpact();
     Navigator.push(
@@ -551,8 +418,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Consumer2<DiscoveryProvider, StoryProvider>(
-        builder: (context, provider, storyProvider, child) {
+      body: Consumer<DiscoveryProvider>(
+        builder: (context, provider, child) {
           return Stack(
             children: [
               RefreshIndicator(
@@ -575,9 +442,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             },
                             filterSettings: _filterSettings,
                             onFiltersApplied: (settings) {
-                              setState(() {
-                                _filterSettings = settings;
-                              });
+                              setState(() => _filterSettings = settings);
                             },
                           ),
                           DiscoverSearchBar(
@@ -592,17 +457,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               _onSearchChanged('');
                             },
                           ),
-                          if (!_showSearchBar && storyProvider.isStoriesEnabled) 
-                            StorySection(
-                              activeStories: storyProvider.activeStories,
-                              onAddStory: _pickAndUploadStory,
-                            ),
-                          if (!_showSearchBar) 
-                            TopPicksSection(
-                              activeUsers: provider.activeUsers,
-                              onCardTap: _onCardTap,
-                            ),
-                          const SizedBox(height: 8),
                         ],
                       ),
                     ),
@@ -615,49 +469,45 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                 ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
                                 : provider.users.isEmpty
                                     ? DiscoverEmptyState(onShowFilters: _showFilters)
-                                : Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  child: CardSwiper(
-                                      controller: _cardController,
-                                      cardsCount: provider.users.length,
-                                      numberOfCardsDisplayed: 3,
-                                      backCardOffset: const Offset(0, 30),
-                                      padding: EdgeInsets.zero,
-                                      onSwipe: _onSwipe,
-                                      allowedSwipeDirection: const AllowedSwipeDirection.only(
-                                        left: true,
-                                        right: true,
-                                        up: true,
+                                    : Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        child: CardSwiper(
+                                          controller: _cardController,
+                                          cardsCount: provider.users.length,
+                                          numberOfCardsDisplayed: 3,
+                                          backCardOffset: const Offset(0, 30),
+                                          padding: EdgeInsets.zero,
+                                          onSwipe: _onSwipe,
+                                          allowedSwipeDirection: const AllowedSwipeDirection.only(
+                                            left: true,
+                                            right: true,
+                                          ),
+                                          cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
+                                            final user = provider.users[index];
+                                            return DiscoverUserCard(
+                                              user: user,
+                                              percentX: percentThresholdX.toDouble() ?? 0.0,
+                                              percentY: percentThresholdY.toDouble() ?? 0.0,
+                                              onTap: () => _onCardTap(user),
+                                            );
+                                          },
+                                        ),
                                       ),
-                                      cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
-                                        final user = provider.users[index];
-                                        return DiscoverUserCard(
-                                          user: user,
-                                          percentX: percentThresholdX != null ? percentThresholdX.toDouble() : 0.0,
-                                          percentY: percentThresholdY != null ? percentThresholdY.toDouble() : 0.0,
-                                          onTap: () => _onCardTap(user),
-                                        );
-                                      },
-                                    ),
-                                ),
                           ),
                           SwipeActionButtons(
                             onUndo: _onUndo,
                             onDislike: _onDislike,
                             onLike: _onLike,
-                            onSuperLike: _onSuperLike,
-                            onBoost: _onBoost,
                           ),
-                          const DengimBannerAd(),
-                          const SizedBox(height: 100), 
+                          const SafeArea(bottom: true, child: SizedBox(height: 24)),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              
-              // Yenileme göstergesi
+
+              // Refresh indicator overlay
               if (_isRefreshing)
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 60,
@@ -669,10 +519,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.black, width: AppColors.neoBorderWidthSmall),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black, offset: Offset(4, 4)),
-                        ],
+                        border: Border.all(color: Color(0xFFEEEEEE), width: 1.0),
+                        boxShadow: [AppColors.neoShadowSmall],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -680,10 +528,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           const SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: Colors.black,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.black),
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -699,37 +544,20 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ),
                   ),
                 ),
-              
-              if (storyProvider.isUploading)
-                Container(
-                  color: Colors.black45,
-                  child: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-                ),
 
-                if (_showMatch && _matchedUser != null)
-                  MatchOverlay(
-                    matchedUser: _matchedUser!, 
-                    onDismiss: _dismissMatch, 
-                    onMessage: _dismissMatch, // Or navigate to chat
-                  ),
-              Align(
-                alignment: Alignment.topCenter,
-                child: ConfettiWidget(
-                  confettiController: _confettiController,
-                  blastDirectionality: BlastDirectionality.explosive,
-                  colors: const [AppColors.primary, AppColors.secondary, AppColors.success],
+              // Match overlay (B&W)
+              if (_showMatch && _matchedUser != null)
+                MatchOverlay(
+                  matchedUser: _matchedUser!,
+                  onDismiss: _dismissMatch,
+                  onMessage: _dismissMatch,
                 ),
-              ),
             ],
           );
         },
       ),
     );
   }
-
-
-
-
-
 }
+
 
