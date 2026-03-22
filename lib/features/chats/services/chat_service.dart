@@ -5,6 +5,7 @@ import '../../auth/models/user_profile.dart'; // UserProfile için
 import '../../../core/utils/log_service.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/services/cloudinary_service.dart';
+import '../../../core/services/notification_service.dart';
 
 class ChatService {
   static final ChatService _instance = ChatService._internal();
